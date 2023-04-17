@@ -1,3 +1,10 @@
+plugins {
+    id 'com.google.gms.google-services'
+    id 'com.android.application'
+//    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -71,4 +78,9 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.google.firebase:firebase-appcheck-debug:16.1.2'
 }

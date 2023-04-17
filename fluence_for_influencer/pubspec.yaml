@@ -39,6 +39,7 @@ dependencies:
   equatable: ^2.0.3
   flutter_bloc: ^8.0.1
   cloud_firestore: ^4.4.2
+  firebase_app_check: ^0.1.1+14
 
   # Google Sign In
   firebase_auth: ^4.2.5
