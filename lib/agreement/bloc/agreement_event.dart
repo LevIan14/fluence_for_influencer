@@ -31,3 +31,12 @@ class CreateNewAgreement extends AgreementEvent {
   @override
   List<Object> get props => [newAgreement];
 }
+
+class AcceptAgreement extends AgreementEvent {
+  final String agreementId;
+
+  AcceptAgreement(this.agreementId);
+
+  @override
+  List<Object> get props => [agreementId];
+}

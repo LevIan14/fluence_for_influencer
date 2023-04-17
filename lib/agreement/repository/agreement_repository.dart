@@ -32,4 +32,15 @@ class AgreementRepository {
       throw Exception(e.toString());
     }
   }
+
+  Future<void> acceptAgreement(String agreementId) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("agreements")
+          .doc(agreementId)
+          .update({"influencer_agreement_status": "ACCEPTED"});
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

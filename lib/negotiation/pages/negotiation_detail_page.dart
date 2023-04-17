@@ -159,8 +159,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30))),
                               onPressed: () {
-                                acceptNegotiation(context);
-                                // _authenticateWithEmailAndPassword(context);
+                                acceptNegotiation();
                               },
                               child: const Text(
                                 "Accept",
@@ -211,8 +210,8 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
     }
   }
 
-  void acceptNegotiation(context) {
-    BlocProvider.of<InfluencerBloc>(context)
+  void acceptNegotiation() {
+    influencerBloc
         .add(GetInfluencerDetail(Constants.firebaseAuth.currentUser!.uid));
   }
 }
