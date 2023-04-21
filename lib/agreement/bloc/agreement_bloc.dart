@@ -44,7 +44,9 @@ class AgreementBloc extends Bloc<AgreementEvent, AgreementState> {
     on<AcceptAgreement>((event, emit) async {
       try {
         await agreementRepository.acceptAgreement(event.agreementId);
-        emit(AcceptAgreementSuccess());
+        final agreement =
+            await agreementRepository.getAgreementDetail(event.agreementId);
+        emit(AcceptAgreementSuccess(agreement));
       } catch (e) {
         emit(AgreementError(e.toString()));
       }

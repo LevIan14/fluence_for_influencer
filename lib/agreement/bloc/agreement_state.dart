@@ -29,7 +29,14 @@ class AgreementListLoaded extends AgreementState {
 
 class CreateNewAgreementSuccess extends AgreementState {}
 
-class AcceptAgreementSuccess extends AgreementState {}
+class AcceptAgreementSuccess extends AgreementState {
+  final dynamic agreement;
+
+  AcceptAgreementSuccess(this.agreement);
+
+  @override
+  List<Object> get props => [agreement];
+}
 
 class AgreementError extends AgreementState {
   final String error;

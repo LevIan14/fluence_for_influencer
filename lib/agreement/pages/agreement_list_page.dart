@@ -32,6 +32,9 @@ class _AgreementListPageState extends State<AgreementListPage> {
         child: BlocConsumer<AgreementBloc, AgreementState>(
             listener: (context, state) {},
             builder: (context, state) {
+              if (state is AgreementLoading) {
+                return const CircularProgressIndicator();
+              }
               if (state is AgreementListLoaded) {
                 return StreamBuilder(
                   stream: state.agreementList,

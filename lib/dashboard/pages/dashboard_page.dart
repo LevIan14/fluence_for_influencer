@@ -4,6 +4,7 @@ import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:fluence_for_influencer/negotiation/pages/negotiation_detail_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/transaction/pages/transaction_list_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -55,10 +56,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
-                children: [
-                  AgreementListPage(),
-                  NegotiationDetailPage(negotiationId: "")
-                ]),
+                children: [AgreementListPage(), TransactionListPage()]),
           ),
         ),
       );
