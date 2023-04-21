@@ -1,5 +1,6 @@
 import 'package:fluence_for_influencer/chat/pages/chat_list_page.dart';
 import 'package:fluence_for_influencer/dashboard/pages/dashboard_page.dart';
+import 'package:fluence_for_influencer/influencer/pages/influencer_profile_page.dart';
 import 'package:fluence_for_influencer/influencer/pages/influencer_setting_page.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List pages = [
     const DashboardPage(),
-    const InfluencerSettingPage(),
+    const ProfilePage(),
+    // const InfluencerSettingPage(),
     const ChatListPage()
   ];
   int currentIndexPage = 0;

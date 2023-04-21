@@ -26,3 +26,5 @@ class InfluencerError extends InfluencerState {
   @override
   List<Object?> get props => [error];
 }
+
+class InfluencerPortfolioUploaded extends InfluencerState { }
