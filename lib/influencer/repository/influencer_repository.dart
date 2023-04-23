@@ -36,7 +36,6 @@ class InfluencerRepository {
                 }
               });
             i.portfolio = portfolioList;
-            log('done');
           } catch (e) {
             throw Exception(e.toString());
           }
