@@ -36,7 +36,8 @@ class UploadInfluencerProfileImage extends InfluencerEvent {
 
 class UpdateInfluencerProfileSettings extends InfluencerEvent {
   final Influencer influencer;
-  UpdateInfluencerProfileSettings(this.influencer);
+  final XFile? img;
+  UpdateInfluencerProfileSettings(this.influencer, this.img);
 
   @override
   List<Object> get props => [influencer];

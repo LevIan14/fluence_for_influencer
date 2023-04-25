@@ -16,7 +16,7 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
       try {
         emit(InfluencerLoading());
         Influencer influencer = await influencerRepository.getInfluencerDetail(event.userId);
-        influencer = await influencerRepository.getInfluencerInsight(influencer);
+        if(influencer.facebookAccessToken != null && influencer.instagramUserId != null) influencer = await influencerRepository.getInfluencerInsight(influencer);
         emit(InfluencerLoaded(influencer));
       } catch (e) {
         emit(InfluencerError(e.toString()));
@@ -44,7 +44,7 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<UpdateInfluencerProfileSettings>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        
+        await influencerRepository.updateInfluencerProfileSettings(event.influencer, event.img);
       } catch (e) {
         emit(InfluencerError(e.toString()));
       }

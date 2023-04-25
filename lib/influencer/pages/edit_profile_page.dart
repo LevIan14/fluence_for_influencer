@@ -17,6 +17,7 @@ import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_cont
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_insights.dart';
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_page_menu.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_profile_avatar.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/category/bloc/category_bloc.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
@@ -37,7 +38,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-
+  final _formSettingsKey = GlobalKey<FormState>();
   late final InfluencerBloc influencerBloc;
   late final CategoryBloc categoryBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
@@ -45,6 +46,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   
   String userId = FirebaseAuth.instance.currentUser!.uid;
   bool verified = false;
+  bool _enableSaveBtn = true;
   
   late Influencer influencer;
   late final List<dynamic> categories;
@@ -59,16 +61,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return value!.isEmpty ? "Location can not be null." : null;
   }
   final TextEditingController _aboutController = TextEditingController();
-  String? _aboutValidator (String? value) {
-    return null;
-  }
+  // String? _aboutValidator (String? value) {
+  //   return null;
+  // }
   final TextEditingController _noteAgreementController = TextEditingController();
-  String? _noteAgreementValidator (String? value) {
-    return value!.isEmpty ? "Note agreement can not be null." : null;
-  }
+  // String? _noteAgreementValidator (String? value) {
+  //   return value!.isEmpty ? "Note agreement can not be null." : null;
+  // }
   final TextEditingController _genderController = TextEditingController();
   List<CategoryType> _selectedCategory = [];
-  late dynamic _selectedImageUrl;
+  XFile? _selectedImage;
   late ImageProvider<Object> _selectedImageWidget;
 
   @override
@@ -86,7 +88,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if(i.facebookAccessToken != null && i.instagramUserId != null){
         verified = true;
       } 
-      _selectedImageUrl = i.avatarUrl;
       _selectedImageWidget = NetworkImage(i.avatarUrl);
       _nameController.text = i.fullname;
       _genderController.text = i.gender.toString();
@@ -105,11 +106,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   onChangeAvatar(XFile img) {
     setState(() {
-      _selectedImageUrl = img.path;
+      _selectedImage = img;
       _selectedImageWidget = Image.file(File(img.path)).image;
     });
   }
   
+  bool allowToPop() {
+    if(influencer.fullname == _nameController.text
+      && influencer.location == _locationController.text
+      && influencer.about == _aboutController.text
+      && influencer.noteAgreement == _noteAgreementController.text
+      && influencer.gender == _genderController.text
+      && influencer.categoryType == _selectedCategory
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -131,9 +145,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
           },
           builder: (context, state) {
             if(state is InfluencerLoaded){
-              return Scaffold(
-                  appBar: buildAppBar(context),
-                  body: buildBody(context),
+              return WillPopScope(
+                onWillPop: () async {
+                  if(allowToPop()) return true;
+                  return createWillPopDialog(context);
+                },
+                child: Scaffold(
+                    appBar: buildAppBar(context),
+                    body: buildBody(context),
+                ),
               );
             }
             return Scaffold(
@@ -164,13 +184,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
           margin: const EdgeInsets.only(right: 15.0),
           alignment: Alignment.center,
           child: InkWell(
-            onTap: () {
+            onTap: _enableSaveBtn ? () {
               // save
               // buat bloc save + repository save
               // influencerBloc.add(UploadInfluencerProfileImage(userId, img));
-
-            },
-            child: const Text("Save", style: TextStyle(fontSize: 17.0, color: Constants.primaryColor, fontWeight: FontWeight.w500))
+              influencer.fullname = _nameController.text;
+              influencer.location = _locationController.text;
+              influencer.about = _aboutController.text;
+              influencer.noteAgreement = _noteAgreementController.text;
+              influencer.gender = _genderController.text;
+              influencer.categoryType = _selectedCategory;
+              influencerBloc.add(UpdateInfluencerProfileSettings(influencer, _selectedImage));
+              Navigator.of(context).pop();
+            } : null,
+            child: Text("Save", style: TextStyle(fontSize: 17.0, color: _enableSaveBtn ? Constants.primaryColor : Constants.grayColor, fontWeight: FontWeight.w500))
           ),
         ),
       ],
@@ -184,23 +211,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
         constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
         padding: EdgeInsets.symmetric(horizontal: margin * 2),
         decoration: const BoxDecoration(color: Constants.backgroundColor),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            buildProfileAvatar(influencer),
-            AppTextfield(field: "Name", fieldController: _nameController, validator: _nameValidator),
-            DirectingTextfield(field: "Gender", fieldController: _genderController, onTap: () => showGenderModal()),
-            AppTextfield(field: "Location", fieldController: _locationController, validator: _locationValidator),
-            buildCategoryTypeChips(categories),
-            DirectingTextfield(field: "About", fieldController: _aboutController, onTap: () async { 
-              final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "About", fieldController: _aboutController));
-              _aboutController.text = changedValue;
-            }),
-            DirectingTextfield(field: "Note Agreement", fieldController: _noteAgreementController, onTap: () async { 
-              final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "Note Agreement", fieldController: _noteAgreementController));
-              _noteAgreementController.text = changedValue;
-            }),
-          ],
+        child: Form(
+          key: _formSettingsKey,
+          onChanged: () {
+            setState(() {
+            _enableSaveBtn = _formSettingsKey.currentState!.validate();
+            });
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              buildProfileAvatar(influencer),
+              AppTextfield(field: "Name", fieldController: _nameController, validator: _nameValidator),
+              DirectingTextfield(field: "Gender", fieldController: _genderController, onTap: () => showGenderModal()),
+              AppTextfield(field: "Location", fieldController: _locationController, validator: _locationValidator),
+              buildCategoryTypeChips(categories),
+              DirectingTextfield(field: "About", fieldController: _aboutController, onTap: () async { 
+                final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "About", fieldController: _aboutController));
+                _aboutController.text = changedValue;
+              }),
+              DirectingTextfield(field: "Note Agreement", fieldController: _noteAgreementController, onTap: () async { 
+                final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "Note Agreement", fieldController: _noteAgreementController));
+                _noteAgreementController.text = changedValue;
+              }),
+            ],
+          ),
         ),
       ),
     );
@@ -384,7 +419,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               value: gender, 
               groupValue: _genderController.text, 
               onChanged: (value) {  
-                print('$value');
                 setState(() {
                   _genderController.text = value.toString();
                 });
@@ -402,5 +436,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
         );
       }
     );
+  }
+
+  Future<bool> createWillPopDialog(context) async {
+    Text dialogTitle = const Text("Discard changes?");
+    Text dialogContent = const Text("If you go back now, you will lose your changes.");
+    TextButton discardButton = TextButton(
+      child: Text("Discard changes"),
+      onPressed: () {
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton cancelButton = TextButton(
+      child: Text("Continue editing"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(context: context, builder: (context) => showAlertDialog(context, dialogTitle, dialogContent, discardButton, cancelButton));
+    if(!resp) return false;
+    return true;
   }
 }

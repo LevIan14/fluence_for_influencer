@@ -195,6 +195,6 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
         navigateAsFirstScreen(context, const MainPage());
       },
     );
-    return showALertDialog(context, dialogTitle, dialogContent, okayButton, null);
+    return showAlertDialog(context, dialogTitle, dialogContent, okayButton, null);
   }
 }

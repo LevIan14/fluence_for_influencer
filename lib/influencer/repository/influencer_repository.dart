@@ -233,16 +233,44 @@ class InfluencerRepository {
       UploadTask uploadTask = fileRef.putFile(file);
       TaskSnapshot snapshot = await uploadTask;
       String downloadURL = await snapshot.ref.getDownloadURL();
-      await FirebaseFirestore.instance
+      await Constants.firebaseFirestore
           .collection('influencers')
           .doc(influencerId)
           .update({'avatar_url': downloadURL});
       return downloadURL;
     } on FirebaseException catch (e) {
-      log(e.toString());
+      throw Exception(e.toString());
     }
-    return "";
   }
 
+  Future<void> updateInfluencerProfileSettings(Influencer influencer, XFile? img) async {
+    if(img != null){
+      try {
+        await uploadInfluencerImage(influencer.userId, img);
+      } catch (e) {
+        throw Exception(e.toString());
+      }
+    } 
+    try {
+      List<String> categoryTypeId = [];
+      for(CategoryType category in influencer.categoryType) { 
+        categoryTypeId.add(category.categoryTypeId);
+      }
+      await Constants.firebaseFirestore
+        .collection('influencers')
+        .doc(influencer.userId)
+        .update({
+          'about': influencer.about,
+          'category_type_id': categoryTypeId,
+          'fullname': influencer.fullname,
+          'gender': influencer.gender,
+          'location': influencer.location,
+          'note_agreement': influencer.noteAgreement,
+        });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+    return;
+  }
 
 }

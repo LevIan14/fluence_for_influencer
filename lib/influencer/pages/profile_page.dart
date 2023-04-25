@@ -152,6 +152,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       leading: Icon(Ionicons.pencil, color: Colors.grey.shade600),
                       title: Text("Edit Profile", style: textStyle),
                       onTap: () {
+                        Navigator.pop(context);
                         nextScreen(context, const EditProfilePage());
                       },
                     ),

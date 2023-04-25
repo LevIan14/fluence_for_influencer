@@ -51,7 +51,7 @@ class AppTextfield extends StatelessWidget {
         obscureText: isObscure,
         validator: (value) => validator(value),
         onChanged: (value) {},
-        onTap: () => onTap!(context),
+        onTap: onTap != null ? () => onTap!(context) : null,
       ),
     ]);
   }
