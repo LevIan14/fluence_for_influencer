@@ -195,6 +195,7 @@ class _MessageListPageState extends State<MessageListPage> {
                                             negotiationId: negotiationId,
                                             message: snapshot.data.docs[index]
                                                 ['message'],
+                                            chatId: widget.chatId,
                                             showDate: !isSameDate,
                                             timestamp: timestamp,
                                             date: date,
@@ -244,7 +245,6 @@ class _MessageListPageState extends State<MessageListPage> {
                               )),
                             ),
                           ),
-                          // AppTextfield(field: field, fieldController: fieldController, validator: validator, onTap: onTap)
                           Expanded(
                               child: TextFormField(
                             cursorColor: Colors.grey,

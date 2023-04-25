@@ -15,8 +15,14 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<GetInfluencerDetail>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        Influencer influencer = await influencerRepository.getInfluencerDetail(event.userId);
-        influencer = await influencerRepository.getInfluencerInsight(influencer);
+        Influencer influencer =
+            await influencerRepository.getInfluencerDetail(event.userId);
+        if (influencer.instagramUserId!.isNotEmpty &&
+            influencer.facebookAccessToken!.isNotEmpty) {
+          influencer =
+              await influencerRepository.getInfluencerInsight(influencer);
+        }
+
         emit(InfluencerLoaded(influencer));
       } catch (e) {
         emit(InfluencerError(e.toString()));
@@ -25,7 +31,8 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<UploadInfluencerPortfolio>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        await influencerRepository.uploadInfluencerPortfolio(event.influencerId, event.img, event.caption);
+        await influencerRepository.uploadInfluencerPortfolio(
+            event.influencerId, event.img, event.caption);
         emit(InfluencerPortfolioUploaded());
       } catch (e) {
         emit(InfluencerError(e.toString()));
@@ -34,8 +41,8 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<UploadInfluencerProfileImage>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        var profileImageURL = await influencerRepository
-            .uploadInfluencerImage(event.influencerId, event.img);
+        var profileImageURL = await influencerRepository.uploadInfluencerImage(
+            event.influencerId, event.img);
         emit(InfluencerProfileImageUploaded(profileImageURL));
       } catch (e) {
         emit(InfluencerError(e.toString()));
@@ -44,7 +51,6 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<UpdateInfluencerProfileSettings>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        
       } catch (e) {
         emit(InfluencerError(e.toString()));
       }

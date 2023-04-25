@@ -24,6 +24,19 @@ class SendMessage extends MessageEvent {
   List<Object> get props => [chatId, message];
 }
 
+class SendNewNegotiation extends MessageEvent {
+  final String chatId;
+  final String senderId;
+  final String negotiationId;
+  final String recentMessage;
+
+  SendNewNegotiation(
+      this.chatId, this.senderId, this.negotiationId, this.recentMessage);
+
+  @override
+  List<Object> get props => [chatId, senderId, negotiationId, recentMessage];
+}
+
 class CreateNewChatAndMessage extends MessageEvent {
   final String umkmId;
   final String influencerId;

@@ -37,6 +37,7 @@ class AgreementBloc extends Bloc<AgreementEvent, AgreementState> {
         await agreementRepository.createNewAgreement(event.newAgreement);
         emit(CreateNewAgreementSuccess());
       } catch (e) {
+        print(e.toString());
         emit(AgreementError(e.toString()));
       }
     });
