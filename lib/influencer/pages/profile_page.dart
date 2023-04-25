@@ -132,8 +132,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       actions: [
         IconButton(icon: const Icon(Ionicons.settings_outline, size: 27.0), tooltip: "Settings", onPressed: () { 
           showModalBottomSheet<dynamic>(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
             ),
             isScrollControlled: true,
             isDismissible: true,

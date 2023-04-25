@@ -33,3 +33,11 @@ class UploadInfluencerProfileImage extends InfluencerEvent {
   @override
   List<Object> get props => [influencerId];
 }
+
+class UpdateInfluencerProfileSettings extends InfluencerEvent {
+  final Influencer influencer;
+  UpdateInfluencerProfileSettings(this.influencer);
+
+  @override
+  List<Object> get props => [influencer];
+}

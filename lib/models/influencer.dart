@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/models/portfolio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -27,7 +28,7 @@ class Influencer {
   late int? fourWeekImpressions;
   late int? previousImpressions;
 
-  late List<dynamic>? categoryType;
+  late List<dynamic> categoryType;
   late List<Portfolio>? portfolio;
 
   Influencer(this.userId, this.portfolio, this.categoryType, this.fullname, this.gender, this.email, this.password, this.noteAgreement, this.location, this.avatarUrl, this.about,

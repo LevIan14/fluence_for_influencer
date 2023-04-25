@@ -7,4 +7,5 @@ class CategoryType {
   factory CategoryType.fromJson(String categoryTypeId, Map<String, dynamic> json){
     return CategoryType(categoryTypeId, json['name']);
   }
+
 }

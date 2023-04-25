@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +28,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
 
-// enum Gender { Male, Female, Unknown }
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -47,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool verified = false;
   
   late Influencer influencer;
-  late final List<CategoryType> categories;
+  late final List<dynamic> categories;
   final List<String> genders = ['Male', 'Female', 'Unknown'];
 
   final TextEditingController _nameController = TextEditingController();
@@ -66,11 +66,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _noteAgreementValidator (String? value) {
     return value!.isEmpty ? "Note agreement can not be null." : null;
   }
-
-  // late Gender _selectedGender;
   final TextEditingController _genderController = TextEditingController();
   List<CategoryType> _selectedCategory = [];
-  late ImageProvider<Object> _selectedImage;
+  late dynamic _selectedImageUrl;
+  late ImageProvider<Object> _selectedImageWidget;
 
   @override
   void initState() {
@@ -87,14 +86,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if(i.facebookAccessToken != null && i.instagramUserId != null){
         verified = true;
       } 
-      _selectedImage = NetworkImage(i.avatarUrl);
+      _selectedImageUrl = i.avatarUrl;
+      _selectedImageWidget = NetworkImage(i.avatarUrl);
       _nameController.text = i.fullname;
       _genderController.text = i.gender.toString();
-      _selectedCategory = i.categoryType as List<CategoryType>;
       _locationController.text = i.location;
+      _selectedCategory = i.categoryType as List<CategoryType>;
       _aboutController.text = i.about;
       _noteAgreementController.text = i.noteAgreement == null ? i.noteAgreement! : "";
-    });
+    });  
   }
 
   setCategoryTypeChips(List<CategoryType> categoryList) {
@@ -105,13 +105,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   onChangeAvatar(XFile img) {
     setState(() {
-      _selectedImage = Image.file(File(img.path)).image;
-    });
-  }
-
-  onChange(String gender){
-    setState(() {
-      _genderController.text = gender;
+      _selectedImageUrl = img.path;
+      _selectedImageWidget = Image.file(File(img.path)).image;
     });
   }
   
@@ -169,10 +164,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           margin: const EdgeInsets.only(right: 15.0),
           alignment: Alignment.center,
           child: InkWell(
-            onTap:() {
+            onTap: () {
               // save
               // buat bloc save + repository save
               // influencerBloc.add(UploadInfluencerProfileImage(userId, img));
+
             },
             child: const Text("Save", style: TextStyle(fontSize: 17.0, color: Constants.primaryColor, fontWeight: FontWeight.w500))
           ),
@@ -193,13 +189,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: [
             buildProfileAvatar(influencer),
             AppTextfield(field: "Name", fieldController: _nameController, validator: _nameValidator),
-            DirectingTextfield(field: "Gender", fieldController: _genderController, onTap: () { 
-              nextScreen(context, FullTextfield());
-            }),
+            DirectingTextfield(field: "Gender", fieldController: _genderController, onTap: () => showGenderModal()),
             AppTextfield(field: "Location", fieldController: _locationController, validator: _locationValidator),
             buildCategoryTypeChips(categories),
-            AppTextfield(field: "About", fieldController: _aboutController, validator: _aboutValidator),
-            AppTextfield(field: "Note Agreement", fieldController: _noteAgreementController, validator: _noteAgreementValidator),
+            DirectingTextfield(field: "About", fieldController: _aboutController, onTap: () async { 
+              final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "About", fieldController: _aboutController));
+              _aboutController.text = changedValue;
+            }),
+            DirectingTextfield(field: "Note Agreement", fieldController: _noteAgreementController, onTap: () async { 
+              final changedValue = await nextScreenAndGetValue(context, FullTextfieldPage(field: "Note Agreement", fieldController: _noteAgreementController));
+              _noteAgreementController.text = changedValue;
+            }),
           ],
         ),
       ),
@@ -228,7 +228,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundImage: _selectedImage,
+                        backgroundImage: _selectedImageWidget,
                       ),
                       Positioned(
                         bottom: 0,
@@ -290,10 +290,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
 }
 
-  Widget buildCategoryTypeChips(List<CategoryType> categories) {
+  Widget buildCategoryTypeChips(List<dynamic> categories) {
     List<Widget> widgetChips = [];
-    for(CategoryType category in categories) {
-      bool selected = _selectedCategory.contains(category);
+    for(var category in categories) {
+      bool selected = _selectedCategory.any((element) => element.categoryTypeId == category.categoryTypeId);
       Widget chip = FilterChip(
         padding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
         labelPadding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -361,6 +361,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: widgetChips,
         ),
       ],
+    );
+  }
+
+  void showGenderModal() {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      isScrollControlled: true,
+      context: context, 
+      builder: (context) {
+        TextStyle textStyle = const TextStyle(
+          color: Colors.black87,
+          fontSize: 18.0,
+        );
+        List<Widget> radios = [];
+        for(var gender in genders) {
+          radios.add(
+            RadioListTile(
+              title: Text(gender, style: textStyle),
+              value: gender, 
+              groupValue: _genderController.text, 
+              onChanged: (value) {  
+                print('$value');
+                setState(() {
+                  _genderController.text = value.toString();
+                });
+                Navigator.pop(context);
+              }
+            )
+          );
+        };
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: radios,
+          ),
+        );
+      }
     );
   }
 }

@@ -41,5 +41,13 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         emit(InfluencerError(e.toString()));
       }
     });
+    on<UpdateInfluencerProfileSettings>((event, emit) async {
+      try {
+        emit(InfluencerLoading());
+        
+      } catch (e) {
+        emit(InfluencerError(e.toString()));
+      }
+    });
   }
 }

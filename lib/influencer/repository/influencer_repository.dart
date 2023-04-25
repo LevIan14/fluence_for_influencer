@@ -29,6 +29,7 @@ class InfluencerRepository {
           for(var category in i.categoryType!) {
             CategoryType element = categoryTypeList.firstWhere((element) => element.categoryTypeId == category);
             categoryList.add(element);
+            log(element.categoryTypeName);
           }
           i.categoryType = categoryList;
         })
@@ -242,4 +243,6 @@ class InfluencerRepository {
     }
     return "";
   }
+
+
 }
