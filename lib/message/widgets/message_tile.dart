@@ -12,6 +12,7 @@ class MessageTile extends StatefulWidget {
   final String sender;
   final bool sentByMe;
   final String negotiationId;
+  final String chatId;
   const MessageTile(
       {Key? key,
       required this.message,
@@ -20,7 +21,8 @@ class MessageTile extends StatefulWidget {
       required this.date,
       required this.sender,
       required this.sentByMe,
-      required this.negotiationId})
+      required this.negotiationId,
+      required this.chatId})
       : super(key: key);
 
   @override
@@ -76,7 +78,10 @@ class _MessageTileState extends State<MessageTile> {
                         nextScreen(
                             context,
                             NegotiationDetailPage(
-                                negotiationId: widget.negotiationId));
+                              negotiationId: widget.negotiationId,
+                              chatId: widget.chatId,
+                              sentByMe: widget.sentByMe,
+                            ));
                       },
                       child: Container(
                         constraints: BoxConstraints(
@@ -98,12 +103,13 @@ class _MessageTileState extends State<MessageTile> {
                             color: widget.sentByMe
                                 ? Theme.of(context).primaryColor
                                 : Colors.grey[700]),
-                        child: Column(children: const [
+                        child: Column(children: [
                           Text(
-                            'Negotiation Created!',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            widget.message,
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.white),
                           ),
-                          Text(
+                          const Text(
                             "Tap to see details",
                             style: TextStyle(fontSize: 16, color: Colors.white),
                           )

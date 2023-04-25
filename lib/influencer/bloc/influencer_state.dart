@@ -10,7 +10,7 @@ class InfluencerInitial extends InfluencerState {}
 class InfluencerLoading extends InfluencerState {}
 
 class InfluencerLoaded extends InfluencerState {
-  final dynamic influencer;
+  final Influencer influencer;
 
   InfluencerLoaded(this.influencer);
 
@@ -27,7 +27,7 @@ class InfluencerError extends InfluencerState {
   List<Object?> get props => [error];
 }
 
-class InfluencerPortfolioUploaded extends InfluencerState { }
+class InfluencerPortfolioUploaded extends InfluencerState {}
 
 class InfluencerProfileImageUploaded extends InfluencerState {
   final String profileImageURL;
