@@ -31,5 +31,15 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         emit(InfluencerError(e.toString()));
       }
     });
+    on<UploadInfluencerProfileImage>((event, emit) async {
+      try {
+        emit(InfluencerLoading());
+        var profileImageURL = await influencerRepository
+            .uploadInfluencerImage(event.influencerId, event.img);
+        emit(InfluencerProfileImageUploaded(profileImageURL));
+      } catch (e) {
+        emit(InfluencerError(e.toString()));
+      }
+    });
   }
 }

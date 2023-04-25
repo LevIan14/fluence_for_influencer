@@ -4,16 +4,20 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/models/portfolio.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InfluencerRepository {
+  CategoryRepository categoryRepository = CategoryRepository();
   Future<dynamic> getInfluencerDetail(String influencerId) async {
     late final Influencer i;
     log(influencerId);
     List<Portfolio> portfolioList = [];
+    List<CategoryType> categoryTypeList = await categoryRepository.getCategoryTypeList();
     try {
       await Constants.firebaseFirestore
         .collection("influencers")
@@ -21,6 +25,12 @@ class InfluencerRepository {
         .get()
         .then((value) {
           i = Influencer.fromJson(value.id, value.data()!);
+          List<CategoryType> categoryList = [];
+          for(var category in i.categoryType!) {
+            CategoryType element = categoryTypeList.firstWhere((element) => element.categoryTypeId == category);
+            categoryList.add(element);
+          }
+          i.categoryType = categoryList;
         })
         .whenComplete(() async {
           try {
@@ -28,6 +38,7 @@ class InfluencerRepository {
               .collection("influencers")
               .doc(influencerId)
               .collection("portfolio")
+              .orderBy('uploaded_at', descending: true)
               .get()
               .then((value) {
                 for(var v in value.docs) {
@@ -56,6 +67,7 @@ class InfluencerRepository {
       TaskSnapshot snapshot = await uploadTask;
       String downloadURL = await snapshot.ref.getDownloadURL();
       try {
+      Timestamp now = Timestamp.now();
       await Constants.firebaseFirestore
         .collection("influencers")
         .doc(influencerId)
@@ -63,6 +75,7 @@ class InfluencerRepository {
         .add({
           'image_url': downloadURL,
           'caption': caption,
+          'uploaded_at': now,
         });
       } catch (e) {
         throw Exception(e.toString());
@@ -201,4 +214,32 @@ class InfluencerRepository {
     return response;
   }
 
+  Future<String> uploadInfluencerImage(String influencerId, XFile img) async {
+    // var img;
+    // try {
+    //   final ImageSource media = ImageSource.gallery;
+    //   img = await ImagePicker().pickImage(source: media);
+    //   if (img == null) return "";
+    // } catch (e) {
+    //   throw Exception(e.toString());
+    // }
+    String finalImagePath = 'influencers/$influencerId/${img.name}';
+    File file = File(img.path);
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileRef = storageRef
+          .child(finalImagePath); // defining image path in firebase storage
+      UploadTask uploadTask = fileRef.putFile(file);
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadURL = await snapshot.ref.getDownloadURL();
+      await FirebaseFirestore.instance
+          .collection('influencers')
+          .doc(influencerId)
+          .update({'avatar_url': downloadURL});
+      return downloadURL;
+    } on FirebaseException catch (e) {
+      log(e.toString());
+    }
+    return "";
+  }
 }

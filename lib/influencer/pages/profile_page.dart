@@ -2,10 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
-import 'package:fluence_for_influencer/influencer/pages/influencer_portfolio.dart';
-import 'package:fluence_for_influencer/influencer/pages/influencer_upload_portfolio.dart';
+import 'package:fluence_for_influencer/influencer/pages/edit_profile_page.dart';
+import 'package:fluence_for_influencer/influencer/pages/widget_portfolio.dart';
+import 'package:fluence_for_influencer/influencer/pages/upload_portfolio_page.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
@@ -20,7 +22,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.influencerId});
+
+  final String influencerId;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -30,20 +34,15 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   late final InfluencerBloc influencerBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
   late Influencer influencer;
-  bool verified = false;
   int currentTab = 0;
-  // late AnimationController controller;
-  // late Animation<Offset> offset;
-
+  bool verified = false;
 
   @override
   void initState() {
     super.initState();
-    String influencerId = Constants.firebaseAuth.currentUser!.uid;
+    String influencerId = widget.influencerId;
     influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
     influencerBloc.add(GetInfluencerDetail(influencerId));
-    // controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    // offset = Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(controller);
   }
 
   setInfluencerData(Influencer i) {
@@ -65,9 +64,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   navigateToUploadPortfolio(img){
     nextScreen(context, InfluencerUploadPortfolio(img: img));
   }
-    // Ambil chat id disini --> Fetch dari firebase lempar parameter uid umkm + influencer id
-    // Kalau gak ketemu, create chats + message docs baru, kembaliin chat idnya lagi
-    // Next page ke message page dengan parameter chat id
 
   @override
   Widget build(BuildContext context) {
@@ -92,17 +88,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     String loggedInUser = Constants.firebaseAuth.currentUser!.uid;
                     XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
                     if(img == null) return;
-                    // Uint8List imgBytes = await File(img.path).readAsBytes();
                     navigateToUploadPortfolio(img);
-                    // switch (controller.status) {
-                    //   case AnimationStatus.dismissed:
-                    //     controller.forward();
-                    //     break;
-                    //   // case AnimationStatus.completed:
-                    //   //   controller.reverse();
-                    //   //   break;
-                    //   default:
-                    // }
                   },
                   child: Container(
                     decoration: BoxDecoration(boxShadow: [
@@ -143,6 +129,53 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
       backgroundColor: Constants.backgroundColor,
+      actions: [
+        IconButton(icon: const Icon(Ionicons.settings_outline, size: 27.0), tooltip: "Settings", onPressed: () { 
+          showModalBottomSheet<dynamic>(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            isScrollControlled: true,
+            isDismissible: true,
+            context: context, 
+            builder: (context) {
+              TextStyle textStyle = const TextStyle(
+                color: Colors.black87,
+                fontSize: 18.0,
+              );
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: Icon(Ionicons.pencil, color: Colors.grey.shade600),
+                      title: Text("Edit Profile", style: textStyle),
+                      onTap: () {
+                        nextScreen(context, const EditProfilePage());
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Ionicons.key_outline, color: Colors.grey.shade600),
+                      title: Text("Change Password", style: textStyle),
+                      onTap: () {
+                        // nextScreen(context, const EditProfilePage());
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Ionicons.log_out_outline, color: Colors.grey.shade600),
+                      title: Text("Logout", style: textStyle),
+                      onTap: () {
+                        // nextScreen(context, const EditProfilePage());
+                      },
+                    )
+                  ],
+                ),
+              );
+            }
+          );
+        },)
+      ],
     );
   }
 
@@ -150,13 +183,15 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     double margin = 10.0;
     return SingleChildScrollView(
       child: Container(
+        constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
         padding: EdgeInsets.symmetric(horizontal: margin * 2),
         decoration: const BoxDecoration(color: Constants.backgroundColor),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             ProfilePageHeader(influencer, verified),
             ProfilePageMenu(currentTab: currentTab, onTapMenu: onChangeTab),
-            ProfilePageMenuContent(influencer, currentTab, verified),
+            ProfilePageMenuContent(context, influencer, currentTab, verified),
           ],
         ),
       ),
@@ -292,10 +327,17 @@ Widget ProfilePageHeader(Influencer influencer, bool verifiedStatus) {
   //   );
   // }
 
-Widget ProfilePageMenuContent(Influencer influencer, int currentTab, bool verifiedStatus) {
+Widget ProfilePageMenuContent(BuildContext context, Influencer influencer, int currentTab, bool verifiedStatus) {
   List<Widget> rawWidgets = [];
   List<Widget> finalWidgets = [];
   late Widget contentWidget;
+  Widget emptyContent = Container(
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10.0),
+      alignment: Alignment.center,
+      child: Text("There is no data to show.", style: TextStyle(color: Constants.grayColor, fontSize: 16.0, fontStyle: FontStyle.italic)),
+    )
+  );
   String content =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum. Tellus cras adipiscing enim eu turpis egestas pretium aenean pharetra. Ullamcorper eget nulla facilisi etiam dignissim diam quis enim lobortis. Platea dictumst quisque sagittis purus sit amet volutpat consequat. Nullam eget felis eget nunc lobortis mattis aliquam. At lectus urna duis convallis. Fames ac turpis egestas integer eget aliquet. Morbi non arcu risus quis varius quam quisque.";
   double margin = 15.0;
@@ -306,15 +348,19 @@ Widget ProfilePageMenuContent(Influencer influencer, int currentTab, bool verifi
     if(verifiedStatus) rawWidgets.add(ProfileMenuInsights(title: 'Instagram Metrics', influencer: influencer));
   } else if (currentTab == 1) {
     rawWidgets = [];
-    if(influencer.portfolio != null){
+    if(influencer.portfolio != null && influencer.portfolio!.isNotEmpty){
       for (var portfolio in influencer.portfolio!) {
-      rawWidgets.add(InfluencerPortfolio(portfolio: portfolio));
-    };
+        rawWidgets.add(InfluencerPortfolio(portfolio: portfolio));
+      }
+    } else {
+      rawWidgets.add(emptyContent);
     }
   } else if (currentTab == 2) {
     rawWidgets = [
       ProfileMenuContent(title: 'Good!', content: content),
     ];
+    // if review == null, 
+    //  rawWidgets.add(emptyContent);
   }
   for (Widget widget in rawWidgets) {
     finalWidgets.add(
@@ -324,10 +370,12 @@ Widget ProfilePageMenuContent(Influencer influencer, int currentTab, bool verifi
       )
     );
   }
-  contentWidget = Column(                                                                                                                                  
+  contentWidget = Column(            
+    mainAxisSize: MainAxisSize.max,                                                                                                                      
     children: finalWidgets
   );
   return Container(
+    // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
     margin: EdgeInsets.symmetric(vertical: margin),
     child: contentWidget,
   );

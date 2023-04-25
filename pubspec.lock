@@ -129,6 +129,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: "7d328c4d898a61efc3cd93655a0955858e29a0aa647f0f9e02d59b3bb275e2e8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.6"
   equatable:
     dependency: "direct main"
     description:
@@ -318,6 +326,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.1"
+  flutter_filter_dialog:
+    dependency: "direct main"
+    description:
+      name: flutter_filter_dialog
+      sha256: "5473b77c58c75144b8d2506598219816d3a1d6700f272f68a6f6ad64c686e834"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -717,6 +733,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  sticky_headers:
+    dependency: transitive
+    description:
+      name: sticky_headers
+      sha256: e932bf2afbfd6587779cd445a9a252ba1c610db9ba33942b6d902d738dd205ca
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   stream_channel:
     dependency: transitive
     description:

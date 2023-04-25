@@ -3,11 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
-import 'package:fluence_for_influencer/influencer/pages/influencer_profile_page.dart';
+import 'package:fluence_for_influencer/influencer/pages/profile_page.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
+import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/app_button.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -65,7 +67,7 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
       child: BlocListener<InfluencerBloc, InfluencerState>(
         listener: (context, state) {
           if(state is InfluencerPortfolioUploaded) {
-            showDialog(context: context, builder: (context) => showAlertDialog(context));
+            showDialog(context: context, builder: (context) => createDialog(context));
           }
         },
         child: SingleChildScrollView(
@@ -184,23 +186,15 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
 
   }
 
-  showAlertDialog(BuildContext context){
-
-    Widget okayButton = TextButton(
-      child: Text("Back to Profile"),
+  createDialog(BuildContext context){
+    Text dialogTitle = const Text("Portfolio Uploaded!");
+    Text dialogContent = const Text("New portfolio would be added to your profile.");
+    TextButton okayButton = TextButton(
+      child: Text("Back to Main Page"),
       onPressed: () {
-        Navigator.of(context).pop();
-        // nextScreenReplace(context, const ProfilePage());
+        navigateAsFirstScreen(context, const MainPage());
       },
     );
-
-    return AlertDialog(
-      title: Text("Portfolio Uploaded!"),
-      content: Text("New portfolio would be added to your profile."),
-      actions: [
-        okayButton
-      ],
-      elevation: 24.0,
-    );
+    return showALertDialog(context, dialogTitle, dialogContent, okayButton, null);
   }
 }
