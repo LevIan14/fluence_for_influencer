@@ -1,20 +1,20 @@
 class Agreement {
-  final String id;
-  final String influencerAgreement;
-  final String influencerAgreementStatus;
-  final String umkmAgreement;
-  final String umkmAgreementStatus;
+  final String agreementId;
   final String influencerId;
   final String umkmId;
   final String negotiationId;
+  final String? umkmAgreement;
+  final String umkmAgreementStatus;
+  final String? influencerAgreement;
+  final String influencerAgreementStatus;
 
   Agreement(
-      this.id,
-      this.influencerAgreement,
-      this.influencerAgreementStatus,
-      this.umkmAgreement,
-      this.umkmAgreementStatus,
+      this.agreementId,
       this.influencerId,
       this.umkmId,
-      this.negotiationId);
+      this.negotiationId,
+      this.umkmAgreement,
+      this.umkmAgreementStatus,
+      this.influencerAgreement,
+      this.influencerAgreementStatus);
 }

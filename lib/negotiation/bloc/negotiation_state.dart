@@ -18,6 +18,15 @@ class NegotiationLoaded extends NegotiationState {
   List<Object?> get props => [negotiationDetails];
 }
 
+class CreateNegotiationSuccess extends NegotiationState {
+  final String negotiationId;
+
+  CreateNegotiationSuccess(this.negotiationId);
+
+  @override
+  List<Object> get props => [negotiationId];
+}
+
 class UpdateNegotiationSuccess extends NegotiationState {}
 
 class AcceptNegotiationSuccess extends NegotiationState {}

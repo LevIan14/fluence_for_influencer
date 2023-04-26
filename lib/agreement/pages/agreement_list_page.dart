@@ -48,6 +48,8 @@ class _AgreementListPageState extends State<AgreementListPage> {
                                   nextScreen(
                                       context,
                                       AgreementDetailPage(
+                                          negotiationId: snapshot.data
+                                              .docs[index]['negotiation_id'],
                                           agreementId:
                                               snapshot.data.docs[index].id));
                                 },

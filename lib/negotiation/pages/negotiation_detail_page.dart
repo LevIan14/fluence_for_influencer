@@ -11,19 +11,15 @@ import 'package:fluence_for_influencer/negotiation/repository/negotiation_reposi
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
-import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NegotiationDetailPage extends StatefulWidget {
   final String negotiationId;
-  final String chatId;
-  final bool sentByMe;
+  final String? chatId;
+  final bool? sentByMe;
   const NegotiationDetailPage(
-      {Key? key,
-      required this.negotiationId,
-      required this.chatId,
-      required this.sentByMe})
+      {Key? key, required this.negotiationId, this.chatId, this.sentByMe})
       : super(key: key);
 
   @override
@@ -89,7 +85,9 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Details Negotiation'),
+          title: widget.sentByMe != null && widget.sentByMe!
+              ? const Text("Edit Negotiation")
+              : const Text('Details Negotiation'),
           elevation: 0,
           backgroundColor: Constants.primaryColor,
         ),
@@ -121,10 +119,15 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<NegotiationBloc, NegotiationState>(
               listener: (context, state) {
                 if (state is RejectNegotiationSuccess) {
-                  navigateAsFirstScreen(context, const MainPage());
+                  messageBloc.add(SendNewNegotiation(
+                      widget.chatId!,
+                      Constants.firebaseAuth.currentUser!.uid,
+                      widget.negotiationId,
+                      'Negotiation Rejected!'));
+                  // navigateAsFirstScreen(context, const MainPage());
                 } else if (state is UpdateNegotiationSuccess) {
                   messageBloc.add(SendNewNegotiation(
-                    widget.chatId,
+                    widget.chatId!,
                     Constants.firebaseAuth.currentUser!.uid,
                     widget.negotiationId,
                     "Negotiation Updated!",
@@ -268,7 +271,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
           builder: (context, state) {
             if (state is NegotiationLoaded) {
               if (state.negotiationDetails.negotiationStatus == 'PENDING' &&
-                  !widget.sentByMe) {
+                  widget.sentByMe! == false) {
                 return Padding(
                   padding: const EdgeInsets.all(8),
                   child: Column(
@@ -296,7 +299,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                 );
               } else if (state.negotiationDetails.negotiationStatus ==
                       "PENDING" &&
-                  widget.sentByMe) {
+                  widget.sentByMe!) {
                 return Padding(
                   padding: const EdgeInsets.all(8),
                   child: Column(

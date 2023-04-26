@@ -10,7 +10,7 @@ class AgreementInitial extends AgreementState {}
 class AgreementLoading extends AgreementState {}
 
 class AgreementLoaded extends AgreementState {
-  final dynamic agreement;
+  final Agreement agreement;
 
   AgreementLoaded(this.agreement);
 
@@ -30,7 +30,7 @@ class AgreementListLoaded extends AgreementState {
 class CreateNewAgreementSuccess extends AgreementState {}
 
 class AcceptAgreementSuccess extends AgreementState {
-  final dynamic agreement;
+  final Agreement agreement;
 
   AcceptAgreementSuccess(this.agreement);
 
