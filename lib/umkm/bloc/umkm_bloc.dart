@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/umkm/repository/umkm_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,11 +9,11 @@ class UmkmBloc extends Bloc<UmkmEvent, UmkmState> {
   final UmkmRepository umkmRepository;
 
   UmkmBloc({required this.umkmRepository}) : super(UmkmInitial()) {
-    on<GetUmkmName>((event, emit) async {
+    on<GetUmkmNameAndImage>((event, emit) async {
       try {
         emit(UmkmNameLoading());
-        final String umkmName = await umkmRepository.getUmkmName(event.umkmId);
-        emit(UmkmNameLoaded(umkmName));
+        final dynamic umkm = await umkmRepository.getUmkmDetail(event.umkmId);
+        emit(UmkmNameLoaded(umkm['fullname'], umkm['avatar_url']));
       } catch (e) {
         emit(UmkmError(e.toString()));
       }

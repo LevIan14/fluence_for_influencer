@@ -11,11 +11,12 @@ class UmkmNameLoading extends UmkmState {}
 
 class UmkmNameLoaded extends UmkmState {
   final String umkmName;
+  final String profileImageUmkmUrl;
 
-  UmkmNameLoaded(this.umkmName);
+  UmkmNameLoaded(this.umkmName, this.profileImageUmkmUrl);
 
   @override
-  List<Object> get props => [umkmName];
+  List<Object> get props => [umkmName, profileImageUmkmUrl];
 }
 
 class UmkmError extends UmkmState {
