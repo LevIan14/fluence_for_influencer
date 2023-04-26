@@ -82,7 +82,10 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                           "umkm_id": state.agreement.umkmId,
                           "transaction_status": "PENDING",
                           "progress": {
-                            "content_progress": {"status": "PENDING"},
+                            "content_progress": {
+                              "status": "PENDING",
+                              "influencer_note": ""
+                            },
                             "review_content": {
                               "status": "PENDING",
                               "influencer_note": "",
@@ -115,7 +118,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                 ),
                 BlocListener<TransactionBloc, TransactionState>(
                   listener: (context, state) {
-                    if (state is CreateNewTransactionSuccess) {
+                    if (state is TransactionProcessSuccess) {
                       navigateAsFirstScreen(context, const MainPage());
                     }
                   },

@@ -4,8 +4,6 @@ import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/pages/transaction_detail_page.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionListPage extends StatefulWidget {
@@ -49,7 +47,10 @@ class _TransactionListPageState extends State<TransactionListPage> {
                             return GestureDetector(
                               onTap: () {
                                 nextScreen(
-                                    context, const TransactionDetailPage());
+                                    context,
+                                    TransactionDetailPage(
+                                        transactionId:
+                                            snapshot.data.docs[index].id));
                               },
                               child: ListTile(
                                 title: Text(

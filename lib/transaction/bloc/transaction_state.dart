@@ -10,7 +10,7 @@ class TransactionInitial extends TransactionState {}
 class TransactionLoading extends TransactionState {}
 
 class TransactionLoaded extends TransactionState {
-  final dynamic transaction;
+  final OrderTransaction transaction;
 
   TransactionLoaded(this.transaction);
 
@@ -27,7 +27,7 @@ class TransactionListLoaded extends TransactionState {
   List<Object> get props => [transactionList];
 }
 
-class CreateNewTransactionSuccess extends TransactionState {}
+class TransactionProcessSuccess extends TransactionState {}
 
 class TransactionError extends TransactionState {
   final String error;
