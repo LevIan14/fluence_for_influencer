@@ -94,10 +94,11 @@ class PortfolioRepository {
         .delete();
       } catch (e) {
         throw Exception(e.toString());
-      } finally {
-        List<Portfolio> portfolioList = await getInfluencerPortfolioList(influencerId);
-        // kalo hrs return nnt di return
-      }
+      } 
+      // finally {
+      //   List<Portfolio> portfolioList = await getInfluencerPortfolioList(influencerId);
+      //   // kalo hrs return nnt di return
+      // }
     }
 
   }

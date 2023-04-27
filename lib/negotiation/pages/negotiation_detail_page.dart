@@ -115,7 +115,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<AgreementBloc, AgreementState>(
               listener: (context, state) {
                 if (state is CreateNewAgreementSuccess) {
-                  navigateAsFirstScreen(context, const MainPage());
+                  navigateAsFirstScreen(context, const MainPage(index: 0));
                 }
               },
             ),

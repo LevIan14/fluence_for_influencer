@@ -104,7 +104,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                         transactionBloc
                             .add(CreateNewTransaction(newTransaction));
                       } else {
-                        navigateAsFirstScreen(context, const MainPage());
+                        navigateAsFirstScreen(context, const MainPage(index: 0));
                       }
                     }
                     if (state is AgreementLoaded) {
@@ -119,7 +119,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                 BlocListener<TransactionBloc, TransactionState>(
                   listener: (context, state) {
                     if (state is TransactionProcessSuccess) {
-                      navigateAsFirstScreen(context, const MainPage());
+                      navigateAsFirstScreen(context, const MainPage(index: 0));
                     }
                   },
                 ),

@@ -42,6 +42,7 @@ class PortfolioBloc extends Bloc<PortfolioEvent, PortfolioState> {
     on<EditInfluencerPortfolio>((event, emit) async {
       try {
         await portfolioRepository.editInfluencerPortfolio(event.influencerId, event.editedPortfolio);
+        emit(InfluencerPortfolioUpdated());
       } catch (e) {
         emit(PortfolioError(e.toString()));
       }

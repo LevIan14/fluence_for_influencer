@@ -191,9 +191,9 @@ class _ProfilePageState extends State<ProfilePage>
                           },
                         ),
                         ListTile(
-                          leading: Icon(Ionicons.log_out_outline,
-                              color: Colors.grey.shade600),
-                          title: Text("Logout", style: textStyle),
+                          leading: const Icon(Ionicons.log_out_outline,
+                              color: Colors.red),
+                          title: Text("Logout", style: textStyle.copyWith(color: Colors.red)),
                           onTap: () {
                             // nextScreen(context, const EditProfilePage());
                           },

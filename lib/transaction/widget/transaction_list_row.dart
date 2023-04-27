@@ -1,3 +1,4 @@
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/negotiation/bloc/negotiation_bloc.dart';
@@ -32,13 +33,14 @@ class _TransactionListRowState extends State<TransactionListRow> {
 
   late final InfluencerBloc influencerBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
+  final CategoryRepository categoryRepository = CategoryRepository();
 
   String influencerName = "";
 
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
     influencerBloc.add(GetInfluencerDetail(widget.influencerId));
 
     negotiationBloc =

@@ -52,6 +52,7 @@ class InfluencerPortfolio extends StatelessWidget {
                             leading: Icon(Ionicons.pencil_outline, color: Colors.grey.shade600),
                             title: Text("Edit caption", style: textStyle),
                             onTap: () async {
+                              Navigator.pop(context);
                               nextScreen(context, EditPortfolioPage(portfolio: portfolio));
                               // influencerBloc.add();
                             },
@@ -61,7 +62,6 @@ class InfluencerPortfolio extends StatelessWidget {
                             title: Text("Delete portfolio", style: textStyle.copyWith(color: Colors.red)),
                             onTap: () async {
                               portfolioBloc.add(DeleteInfluencerPortfolio(influencerId, portfolio));
-                              Navigator.pop(context);
                             },
                           ),
                         ]

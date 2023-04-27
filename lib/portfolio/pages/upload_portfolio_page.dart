@@ -194,7 +194,7 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
     TextButton okayButton = TextButton(
       child: Text("Back to Main Page"),
       onPressed: () {
-        navigateAsFirstScreen(context, const MainPage());
+        navigateAsFirstScreen(context, const MainPage(index: 2));
       },
     );
     return showAlertDialog(context, dialogTitle, dialogContent, okayButton, null);

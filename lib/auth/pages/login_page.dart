@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: ((context, state) {
           if (state is Authenticated) {
-            nextScreenReplace(context, const MainPage());
+            nextScreenReplace(context, const MainPage(index: 0));
           }
           if (state is AuthError) {
             ScaffoldMessenger.of(context)
