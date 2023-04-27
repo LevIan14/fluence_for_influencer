@@ -60,7 +60,18 @@ class AgreementRepository {
     }
   }
 
-  Future<dynamic> updateInfluencerAgreement(
+  Future<void> needRevisionAgreement(String agreementId) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("agreements")
+          .doc(agreementId)
+          .update({"umkm_agreement_status": "ACCEPTED"});
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateInfluencerAgreement(
       String agreementId, String influencerAgreement) async {
     try {
       await Constants.firebaseFirestore
@@ -68,27 +79,23 @@ class AgreementRepository {
           .doc(agreementId)
           .update({
         "influencer_agreement": influencerAgreement,
-        "influencer_agreement_status": "ON REVIEW"
+        "influencer_agreement_status": "ON REVIEW",
+        "agreement_status": "ON PROCESS"
       });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 
-      DocumentSnapshot snapshot = await Constants.firebaseFirestore
+  Future<void> saveNoteInfluencerAgreement(
+      String agreementId, String influencerAgreement) async {
+    try {
+      await Constants.firebaseFirestore
           .collection("agreements")
           .doc(agreementId)
-          .get();
-
-      if (snapshot.exists) {
-        Agreement agreement = Agreement(
-          snapshot.id,
-          snapshot.get('influencer_id'),
-          snapshot.get('umkm_id'),
-          snapshot.get('negotiation_id'),
-          snapshot.get('umkm_agreement'),
-          snapshot.get('umkm_agreement_status'),
-          snapshot.get('influencer_agreement'),
-          snapshot.get('influencer_agreement_status'),
-        );
-        return agreement;
-      }
+          .update({
+        "influencer_agreement": influencerAgreement,
+      });
     } catch (e) {
       throw Exception(e.toString());
     }

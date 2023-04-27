@@ -90,5 +90,51 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         emit(TransactionError(e.toString()));
       }
     });
+
+    on<UpdateStatusReviewContent>((event, emit) async {
+      try {
+        await transactionRepository.updateStatusReviewContent(
+            event.transactionId,
+            event.influencerNote,
+            event.status,
+            event.orderTransactionProgress);
+        emit(TransactionProcessSuccess());
+      } catch (e) {
+        emit(TransactionError(e.toString()));
+      }
+    });
+
+    on<SaveNotesReviewContent>((event, emit) async {
+      try {
+        await transactionRepository.saveNotesReviewContent(event.transactionId,
+            event.influencerNote, event.orderTransactionProgress);
+        emit(TransactionProcessSuccess());
+      } catch (e) {
+        emit(TransactionError(e.toString()));
+      }
+    });
+
+    on<UpdateStatusReviewUpload>((event, emit) async {
+      try {
+        await transactionRepository.updateStatusReviewUpload(
+            event.transactionId,
+            event.influencerNote,
+            event.status,
+            event.orderTransactionProgress);
+        emit(TransactionProcessSuccess());
+      } catch (e) {
+        TransactionError(e.toString());
+      }
+    });
+
+    on<SaveNotesReviewUpload>((event, emit) async {
+      try {
+        await transactionRepository.saveNotesReviewUpload(event.transactionId,
+            event.influencerNote, event.orderTransactionProgress);
+        emit(TransactionProcessSuccess());
+      } catch (e) {
+        emit(TransactionError(e.toString()));
+      }
+    });
   }
 }

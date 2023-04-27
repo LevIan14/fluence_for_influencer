@@ -33,8 +33,8 @@ class TransactionRepository {
 
         ReviewUpload reviewUpload = ReviewUpload(
           snapshot.get("progress")['review_upload']['status'],
-          snapshot.get("progress")['review_content']['influencer_note'],
-          snapshot.get("progress")['review_content']['umkm_note'],
+          snapshot.get("progress")['review_upload']['influencer_note'],
+          snapshot.get("progress")['review_upload']['umkm_note'],
         );
 
         OrderTransactionProgress orderTransactionProgress =
@@ -96,8 +96,7 @@ class TransactionRepository {
           },
           "review_content": {
             "status": orderTransactionProgress.reviewContent.status,
-            "influencer_note":
-                orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note": influencerNote,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
           },
           "upload_progress": {
@@ -184,8 +183,7 @@ class TransactionRepository {
           },
           "review_upload": {
             "status": orderTransactionProgress.reviewUpload.status,
-            "influencer_note":
-                orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note": influencerNote,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
           },
         }
@@ -224,6 +222,160 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+          },
+        }
+      });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateStatusReviewContent(
+      String transactionId,
+      String influencerNote,
+      String status,
+      OrderTransactionProgress orderTransactionProgress) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("transactions")
+          .doc(transactionId)
+          .update({
+        "progress": {
+          "content_progress": {
+            "influencer_note":
+                orderTransactionProgress.contentProgress.influencerNote,
+            "status": orderTransactionProgress.contentProgress.status
+          },
+          "review_content": {
+            "status": status,
+            "influencer_note": influencerNote,
+            "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+          },
+          "upload_progress": {
+            "influencer_note":
+                orderTransactionProgress.uploadProgress.influencerNote,
+            "status": orderTransactionProgress.uploadProgress.status
+          },
+          "review_upload": {
+            "status": orderTransactionProgress.reviewUpload.status,
+            "influencer_note":
+                orderTransactionProgress.reviewUpload.influencerNote,
+            "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+          },
+        }
+      });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> saveNotesReviewContent(
+      String transactionId,
+      String influencerNote,
+      OrderTransactionProgress orderTransactionProgress) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("transactions")
+          .doc(transactionId)
+          .update({
+        "progress": {
+          "content_progress": {
+            "influencer_note":
+                orderTransactionProgress.contentProgress.influencerNote,
+            "status": orderTransactionProgress.contentProgress.status
+          },
+          "review_content": {
+            "status": orderTransactionProgress.reviewContent.status,
+            "influencer_note": influencerNote,
+            "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+          },
+          "upload_progress": {
+            "influencer_note":
+                orderTransactionProgress.uploadProgress.influencerNote,
+            "status": orderTransactionProgress.uploadProgress.status
+          },
+          "review_upload": {
+            "status": orderTransactionProgress.reviewUpload.status,
+            "influencer_note":
+                orderTransactionProgress.reviewUpload.influencerNote,
+            "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+          },
+        }
+      });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateStatusReviewUpload(
+      String transactionId,
+      String influencerNote,
+      String status,
+      OrderTransactionProgress orderTransactionProgress) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("transactions")
+          .doc(transactionId)
+          .update({
+        "progress": {
+          "content_progress": {
+            "influencer_note":
+                orderTransactionProgress.contentProgress.influencerNote,
+            "status": orderTransactionProgress.contentProgress.status
+          },
+          "review_content": {
+            "status": orderTransactionProgress.reviewContent.status,
+            "influencer_note":
+                orderTransactionProgress.reviewContent.influencerNote,
+            "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+          },
+          "upload_progress": {
+            "influencer_note":
+                orderTransactionProgress.uploadProgress.influencerNote,
+            "status": orderTransactionProgress.uploadProgress.status
+          },
+          "review_upload": {
+            "status": status,
+            "influencer_note": influencerNote,
+            "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+          },
+        }
+      });
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> saveNotesReviewUpload(
+      String transactionId,
+      String influencerNote,
+      OrderTransactionProgress orderTransactionProgress) async {
+    try {
+      await Constants.firebaseFirestore
+          .collection("transactions")
+          .doc(transactionId)
+          .update({
+        "progress": {
+          "content_progress": {
+            "influencer_note":
+                orderTransactionProgress.contentProgress.influencerNote,
+            "status": orderTransactionProgress.contentProgress.status
+          },
+          "review_content": {
+            "status": orderTransactionProgress.reviewContent.status,
+            "influencer_note":
+                orderTransactionProgress.reviewContent.influencerNote,
+            "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+          },
+          "upload_progress": {
+            "influencer_note":
+                orderTransactionProgress.uploadProgress.influencerNote,
+            "status": orderTransactionProgress.uploadProgress.status
+          },
+          "review_upload": {
+            "status": orderTransactionProgress.reviewUpload.status,
+            "influencer_note": influencerNote,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
           },
         }

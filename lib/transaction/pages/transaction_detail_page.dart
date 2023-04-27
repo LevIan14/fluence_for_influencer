@@ -1,5 +1,6 @@
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
+import 'package:fluence_for_influencer/transaction/pages/review/review_page.dart';
 import 'package:fluence_for_influencer/transaction/pages/transaction_progress_page.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
@@ -102,15 +103,61 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
               return Container();
             },
           ),
-          bottomNavigationBar: BlocConsumer<TransactionBloc, TransactionState>(
-            listener: (context, state) {},
+          bottomNavigationBar: BlocBuilder<TransactionBloc, TransactionState>(
             builder: (context, state) {
               if (state is TransactionLoaded) {
                 return Padding(
                     padding: const EdgeInsets.all(8),
                     child: state.transaction.transactionStatus == "DONE"
-                        ? ElevatedButton(
-                            onPressed: () {}, child: const Text("Back"))
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              state.transaction.reviewId.isEmpty
+                                  ? SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            nextScreen(
+                                                context,
+                                                ReviewPage(
+                                                    influencerId: state
+                                                        .transaction
+                                                        .influencerId,
+                                                    transactionId:
+                                                        widget.transactionId));
+                                          },
+                                          child: const Text("Give Review")),
+                                    )
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            nextScreen(
+                                                context,
+                                                ReviewPage(
+                                                    influencerId: state
+                                                        .transaction
+                                                        .influencerId,
+                                                    transactionId:
+                                                        widget.transactionId,
+                                                    reviewId: state
+                                                        .transaction.reviewId));
+                                          },
+                                          child: const Text("Check Review"))),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton(
+                                    onPressed: () {
+                                      nextScreen(
+                                          context,
+                                          TransactionProgressPage(
+                                            transactionId: widget.transactionId,
+                                          ));
+                                    },
+                                    child: const Text("Check Progress")),
+                              ),
+                            ],
+                          )
                         : ElevatedButton(
                             onPressed: () {
                               nextScreen(

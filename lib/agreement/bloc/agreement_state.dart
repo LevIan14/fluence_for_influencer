@@ -29,6 +29,8 @@ class AgreementListLoaded extends AgreementState {
 
 class CreateNewAgreementSuccess extends AgreementState {}
 
+class AgreementProcessSuccess extends AgreementState {}
+
 class AcceptAgreementSuccess extends AgreementState {
   final Agreement agreement;
 

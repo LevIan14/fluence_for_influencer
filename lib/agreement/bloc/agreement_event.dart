@@ -41,9 +41,25 @@ class AcceptAgreement extends AgreementEvent {
   List<Object> get props => [agreementId];
 }
 
+class NeedRevisionAgreement extends AgreementEvent {
+  final String agreementId;
+
+  NeedRevisionAgreement(this.agreementId);
+
+  @override
+  List<Object> get props => [agreementId];
+}
+
 class UpdateInfluencerAgreement extends AgreementEvent {
   final String agreementId;
   final String influencerAgreement;
 
   UpdateInfluencerAgreement(this.agreementId, this.influencerAgreement);
+}
+
+class SaveNoteInfluencerAgreement extends AgreementEvent {
+  final String agreementId;
+  final String influencerAgreement;
+
+  SaveNoteInfluencerAgreement(this.agreementId, this.influencerAgreement);
 }

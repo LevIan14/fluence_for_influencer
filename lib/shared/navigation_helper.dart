@@ -1,4 +1,3 @@
-import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 void nextScreen(context, page) {
@@ -16,6 +15,7 @@ void navigateAsFirstScreen(context, page) {
 }
 
 dynamic nextScreenAndGetValue(context, page) {
-  final result = Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  final result =
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
   return result;
 }

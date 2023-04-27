@@ -59,6 +59,33 @@ class SaveNotesContentProgress extends TransactionEvent {
       [transactionId, influencerNote, orderTransactionProgress];
 }
 
+class UpdateStatusReviewContent extends TransactionEvent {
+  final String transactionId;
+  final String influencerNote;
+  final String status;
+  final OrderTransactionProgress orderTransactionProgress;
+
+  UpdateStatusReviewContent(this.transactionId, this.influencerNote,
+      this.status, this.orderTransactionProgress);
+
+  @override
+  List<Object> get props =>
+      [transactionId, influencerNote, status, orderTransactionProgress];
+}
+
+class SaveNotesReviewContent extends TransactionEvent {
+  final String transactionId;
+  final String influencerNote;
+  final OrderTransactionProgress orderTransactionProgress;
+
+  SaveNotesReviewContent(
+      this.transactionId, this.influencerNote, this.orderTransactionProgress);
+
+  @override
+  List<Object> get props =>
+      [transactionId, influencerNote, orderTransactionProgress];
+}
+
 class UpdateStatusUploadProgress extends TransactionEvent {
   final String transactionId;
   final String influencerNote;
@@ -79,6 +106,33 @@ class SaveNotesUploadProgress extends TransactionEvent {
   final OrderTransactionProgress orderTransactionProgress;
 
   SaveNotesUploadProgress(
+      this.transactionId, this.influencerNote, this.orderTransactionProgress);
+
+  @override
+  List<Object> get props =>
+      [transactionId, influencerNote, orderTransactionProgress];
+}
+
+class UpdateStatusReviewUpload extends TransactionEvent {
+  final String transactionId;
+  final String influencerNote;
+  final String status;
+  final OrderTransactionProgress orderTransactionProgress;
+
+  UpdateStatusReviewUpload(this.transactionId, this.influencerNote, this.status,
+      this.orderTransactionProgress);
+
+  @override
+  List<Object> get props =>
+      [transactionId, influencerNote, status, orderTransactionProgress];
+}
+
+class SaveNotesReviewUpload extends TransactionEvent {
+  final String transactionId;
+  final String influencerNote;
+  final OrderTransactionProgress orderTransactionProgress;
+
+  SaveNotesReviewUpload(
       this.transactionId, this.influencerNote, this.orderTransactionProgress);
 
   @override

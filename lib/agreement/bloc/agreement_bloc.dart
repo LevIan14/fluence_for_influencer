@@ -53,13 +53,32 @@ class AgreementBloc extends Bloc<AgreementEvent, AgreementState> {
       }
     });
 
+    on<NeedRevisionAgreement>((event, emit) async {
+      try {
+        await agreementRepository.needRevisionAgreement(event.agreementId);
+        emit(AgreementProcessSuccess());
+      } catch (e) {
+        emit(AgreementError(e.toString()));
+      }
+    });
+
     on<UpdateInfluencerAgreement>((event, emit) async {
       try {
         emit(AgreementLoading());
-        final Agreement agreement =
-            await agreementRepository.updateInfluencerAgreement(
-                event.agreementId, event.influencerAgreement);
-        emit(AgreementLoaded(agreement));
+        await agreementRepository.updateInfluencerAgreement(
+            event.agreementId, event.influencerAgreement);
+        emit(AgreementProcessSuccess());
+      } catch (e) {
+        emit(AgreementError(e.toString()));
+      }
+    });
+
+    on<SaveNoteInfluencerAgreement>((event, emit) async {
+      try {
+        emit(AgreementLoading());
+        await agreementRepository.saveNoteInfluencerAgreement(
+            event.agreementId, event.influencerAgreement);
+        emit(AgreementProcessSuccess());
       } catch (e) {
         emit(AgreementError(e.toString()));
       }

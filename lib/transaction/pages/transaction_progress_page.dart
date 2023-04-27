@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
+import 'package:fluence_for_influencer/transaction/model/progress/review_upload.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,26 +61,33 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                                 "DONE"
                             ? StepState.complete
                             : StepState.indexed,
-                        content: Container(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              nextScreen(
-                                  context,
-                                  ContentProgressPage(
-                                      transactionId: widget.transactionId));
-                            },
-                            child: Text("Update Status"),
-                          ),
+                        content: ElevatedButton(
+                          onPressed: () {
+                            nextScreen(
+                                context,
+                                ContentProgressPage(
+                                    transactionId: widget.transactionId));
+                          },
+                          child: Text("Update Status"),
                         )),
                     Step(
-                        isActive: currentStep == 1,
-                        state: state.transaction.orderProgress.reviewContent
-                                    .status ==
-                                "DONE"
-                            ? StepState.complete
-                            : StepState.indexed,
-                        title: const Text("Review Content"),
-                        content: Container()),
+                      isActive: currentStep == 1,
+                      state: state.transaction.orderProgress.reviewContent
+                                  .status ==
+                              "DONE"
+                          ? StepState.complete
+                          : StepState.indexed,
+                      title: const Text("Review Content"),
+                      content: ElevatedButton(
+                        onPressed: () {
+                          nextScreen(
+                              context,
+                              ReviewContentPage(
+                                  transactionId: widget.transactionId));
+                        },
+                        child: const Text("Update Status"),
+                      ),
+                    ),
                     Step(
                       isActive: currentStep == 2,
                       state: state.transaction.orderProgress.uploadProgress
@@ -106,7 +114,15 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                             ? StepState.complete
                             : StepState.indexed,
                         title: const Text("Review Upload"),
-                        content: Container()),
+                        content: ElevatedButton(
+                          onPressed: () {
+                            nextScreen(
+                                context,
+                                ReviewUploadPage(
+                                    transactionId: widget.transactionId));
+                          },
+                          child: Text("Update Status"),
+                        )),
                     const Step(
                         title: Text("Done Review"),
                         content: Text("Done Review Page"))
