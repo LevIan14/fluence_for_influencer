@@ -22,7 +22,7 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
       try {
         emit(InfluencerLoading());
         late Influencer influencer;
-        influencer = await influencerRepository.getInfluencerDetail(event.userId);
+        influencer = await influencerRepository.getInfluencerDetail(event.influencerId);
         List<CategoryType> categoryTypeList = await categoryRepository.getCategoryTypeList();
         List<CategoryType> influencerCategoryList = [];
         for(var category in influencer.categoryType) {

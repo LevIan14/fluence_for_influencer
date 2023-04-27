@@ -6,12 +6,12 @@ abstract class InfluencerEvent extends Equatable {
 }
 
 class GetInfluencerDetail extends InfluencerEvent {
-  final String userId;
+  final String influencerId;
 
-  GetInfluencerDetail(this.userId);
+  GetInfluencerDetail(this.influencerId);
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [influencerId];
 }
 
 // class UploadInfluencerProfileImage extends InfluencerEvent {

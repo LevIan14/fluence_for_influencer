@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage>
     setState(() {
       influencer = i;
       if (i.facebookAccessToken != null && i.instagramUserId != null) {
-        log('${i.facebookAccessToken} ${i.instagramUserId}');
+        print('${i.facebookAccessToken} ${i.instagramUserId}');
         verified = true;
       }
     });
@@ -448,6 +448,8 @@ class _ProfilePageState extends State<ProfilePage>
       )
     );
   }
+
+
 }
   // Widget ProfileAvatar(double verticalMargin, double parentWidth) {
   //   return Container(
