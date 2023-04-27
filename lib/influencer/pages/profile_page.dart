@@ -3,17 +3,22 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
+import 'package:fluence_for_influencer/portfolio/bloc/portfolio_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/edit_profile_page.dart';
-import 'package:fluence_for_influencer/influencer/pages/widget_portfolio.dart';
-import 'package:fluence_for_influencer/influencer/pages/upload_portfolio_page.dart';
+import 'package:fluence_for_influencer/portfolio/pages/upload_portfolio_page.dart';
+import 'package:fluence_for_influencer/portfolio/pages/widget_portfolio.dart';
+import 'package:fluence_for_influencer/portfolio/pages/upload_portfolio_page.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
+import 'package:fluence_for_influencer/models/portfolio.dart';
+import 'package:fluence_for_influencer/portfolio/repository/portfolio_repository.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_button.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_profile_avatar.dart';
-import 'package:fluence_for_influencer/shared/widgets/_profile/profile_page_menu.dart';
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_content.dart';
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_insights.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +40,10 @@ class _ProfilePageState extends State<ProfilePage>
   late final InfluencerBloc influencerBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
   late Influencer influencer;
+  late final PortfolioBloc portfolioBloc;
+  final PortfolioRepository portfolioRepository = PortfolioRepository();
+  final CategoryRepository categoryRepository = CategoryRepository();
+  
   int currentTab = 0;
   bool verified = false;
 
@@ -42,7 +51,8 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
     String influencerId = widget.influencerId;
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
+    portfolioBloc = PortfolioBloc(portfolioRepository: portfolioRepository);
     influencerBloc.add(GetInfluencerDetail(influencerId));
   }
 
@@ -55,8 +65,18 @@ class _ProfilePageState extends State<ProfilePage>
       }
     });
   }
+  
+  setInfluencerPortfolioList(List<Portfolio> updatedPortfolioList){
+    setState(() {
+      influencer.portfolio = updatedPortfolioList;
+    });
+  }
 
   onChangeTab(tab) {
+    if(tab == 1) {
+      // Tab PORTFOLIO
+      portfolioBloc.add(GetInfluencerPortfolioList(influencer.userId));
+    }
     setState(() {
       currentTab = tab;
     });
@@ -71,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage>
     return MultiBlocProvider(
       providers: [
         BlocProvider<InfluencerBloc>(create: (context) => influencerBloc),
+        BlocProvider<PortfolioBloc>(create: (context) => portfolioBloc),
       ],
       child: BlocConsumer<InfluencerBloc, InfluencerState>(
         listener: (context, state) {
@@ -81,37 +102,32 @@ class _ProfilePageState extends State<ProfilePage>
         builder: (context, state) {
           if (state is InfluencerLoaded) {
             return Scaffold(
-              appBar: buildAppBar(context),
-              body: buildBody(context),
-              floatingActionButton: currentTab == 1
-                  ? FloatingActionButton(
-                      backgroundColor: Color.fromARGB(255, 255, 234, 240),
-                      onPressed: () async {
-                        String loggedInUser =
-                            Constants.firebaseAuth.currentUser!.uid;
-                        XFile? img = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
-                        if (img == null) return;
-                        navigateToUploadPortfolio(img);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(.1),
-                              blurRadius: 15.0,
-                              spreadRadius: 0.0,
-                              offset: const Offset(
-                                0.0,
-                                5.0,
-                              )),
-                        ]),
-                        child: const Icon(Ionicons.add_outline,
-                            color: Constants.primaryColor),
-                      ),
-                      // const Text("Contact", style: TextSty
-                      //le(color: Colors.white))
-                    )
-                  : null,
+                appBar: buildAppBar(context),
+                body: buildBody(context),
+                floatingActionButton: currentTab == 1 ? FloatingActionButton(
+                  backgroundColor: const Color.fromARGB(255, 255, 234, 240),
+                  onPressed: () async {
+                    XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if(img == null) return;
+                    navigateToUploadPortfolio(img);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(.1),
+                          blurRadius: 15.0,
+                          spreadRadius: 0.0,
+                          offset: const Offset(
+                            0.0,
+                            5.0,
+                          )),
+                    ]),
+                    child: const Icon(Ionicons.add_outline,
+                        color: Constants.primaryColor),
+                  ),
+                  // const Text("Contact", style: TextSty
+                  //le(color: Colors.white))
+                ) : null,
             );
           }
           return Scaffold(
@@ -203,196 +219,265 @@ class _ProfilePageState extends State<ProfilePage>
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            ProfilePageHeader(influencer, verified),
-            ProfilePageMenu(currentTab: currentTab, onTapMenu: onChangeTab),
-            ProfilePageMenuContent(context, influencer, currentTab, verified),
+            buildProfilePageHeader(),
+            buildProfilePageTab(),
+            buildProfilePageContent(),
           ],
         ),
       ),
     );
   }
-}
 
-Widget ProfilePageHeader(Influencer influencer, bool verifiedStatus) {
-  double margin = 10.0;
-  Widget verifiedWidget = verifiedStatus
-      ? Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(left: margin / 2),
-          child: const Image(
-            image: AssetImage('assets/verified.png'),
-            height: 28,
-            width: 28,
-          ),
-        )
-      : Container();
-  Widget followersCountWidget = verifiedStatus
-      ? Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              // decoration: BoxDecoration(color: Constants.primaryColor),
-              margin: EdgeInsets.only(right: margin / 2),
-              child: Text("${influencer.followersCount} Followers",
-                  style: const TextStyle(
-                      color: Constants.primaryColor,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18.0)),
-            ),
-            Container(
-                margin: EdgeInsets.only(right: margin / 2),
-                child: const Text("·",
-                    style: TextStyle(
-                      color: Color.fromARGB(129, 162, 0, 32),
-                      fontSize: 20.0,
-                    ))),
+  Widget buildProfilePageHeader() {
+    double margin = 10.0;
+    Widget verifiedWidget = verified ? Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(left: margin / 2),
+      child: const Image(
+        image: AssetImage('assets/verified.png'),
+        height: 28,
+        width: 28,
+      ),
+    ) : Container();
+    Widget followersCountWidget = verified ? 
+      Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+        // decoration: BoxDecoration(color: Constants.primaryColor),
+          margin: EdgeInsets.only(right: margin / 2),
+          child: Text("${influencer.followersCount} Followers",
+              style: const TextStyle(
+                  color: Constants.primaryColor,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 18.0)),
+        ),
+        Container(
+          margin: EdgeInsets.only(right: margin / 2),
+          child: const Text("·",
+              style: TextStyle(
+                color: Color.fromARGB(129, 162, 0, 32),
+                fontSize: 20.0,
+              ))),
           ],
-        )
-      : Container();
+      )
+    : Container();
 
-  return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-    double parentWidth = constraints.maxWidth;
-    return Container(
-        width: parentWidth,
-        margin: EdgeInsets.only(bottom: margin / 2),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppProfileAvatar(
-                verticalMargin: margin,
-                parentWidth: parentWidth,
-                avatarUrl: influencer.avatarUrl),
-            Container(
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      double parentWidth = constraints.maxWidth;
+      return Container(
+          width: parentWidth,
+          margin: EdgeInsets.only(bottom: margin / 2),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppProfileAvatar(verticalMargin: margin, parentWidth: parentWidth, avatarUrl: influencer.avatarUrl),
+              Container(
                 margin: EdgeInsets.symmetric(vertical: margin),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(influencer.fullname,
+                        style: const TextStyle(
+                            color: Constants.primaryColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 23.0)
+                    ),
+                    verifiedWidget,
+                  ]
+                )
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: margin),
+                height: 20.0,
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(influencer.fullname,
-                          style: const TextStyle(
-                              color: Constants.primaryColor,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 23.0)),
-                      verifiedWidget,
-                    ])),
-            Container(
-              margin: EdgeInsets.only(bottom: margin),
-              height: 20.0,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    followersCountWidget,
-                    Container(
-                      // decoration: BoxDecoration(color: Constants.primaryColor),
-                      // margin: EdgeInsets.only(left: margin / 2),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Ionicons.location_outline,
-                                color: Color.fromARGB(129, 162, 0, 32),
-                                size: 18.0),
-                            Container(
-                                margin: EdgeInsets.only(left: margin / 3),
-                                child: Text(influencer.location,
-                                    style: const TextStyle(
-                                        color: Color.fromARGB(129, 162, 0, 32),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18.0)))
-                          ]),
-                    )
-                  ]),
-            )
-          ],
-        ));
-  });
-}
+                      followersCountWidget,
+                      Container(
+                        // decoration: BoxDecoration(color: Constants.primaryColor),
+                        // margin: EdgeInsets.only(left: margin / 2),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Ionicons.location_outline,
+                                  color: Color.fromARGB(129, 162, 0, 32),
+                                  size: 18.0),
+                              Container(
+                                  margin:
+                                      EdgeInsets.only(left: margin / 3),
+                                  child: Text(influencer.location,
+                                      style: const TextStyle(
+                                          color:
+                                              Color.fromARGB(129, 162, 0, 32),
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18.0)))
+                            ]),
+                      )
+                    ]),
+              )
+            ],
+          ));
+    });
+  }
 
-// Widget ProfileAvatar(double verticalMargin, double parentWidth) {
-//   return Container(
-//     margin: EdgeInsets.symmetric(vertical: verticalMargin),
-//     child:
-//         // FutureBuilder(
-//         // future: _avatar,
-//         // builder: (context, snapshot) {
-//         //   if(snapshot.connectionState == ConnectionState.done){
-//         // return
-//         Container(
-//       width: parentWidth * 0.3,
-//       height: parentWidth * 0.3,
-//       child: CircleAvatar(
-//         radius: 14,
-//         backgroundImage: NetworkImage(
-//           widget.influencer.avatarUrl,
-//         ),
-//       ),
-//     ),
-// }
-//   if(snapshot.connectionState == ConnectionState.waiting){
-//     return Container(
-//       width: parentWidth * 0.15,
-//       height: parentWidth * 0.15,
-//       child: CircularProgressIndicator(),
-//     );
-//   }
-//   return Container();
-// },
-//   );
-// }
+  Widget buildProfilePageTab() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ProfileMenuButton(title: 'Description', tab: 0, active: currentTab == 0, onTapMenu: onChangeTab),
+        ProfileMenuButton(title: 'Portofolio', tab: 1, active: currentTab == 1, onTapMenu: onChangeTab),
+        ProfileMenuButton(title: 'Reviews', tab: 2, active: currentTab == 2, onTapMenu: onChangeTab),
+      ],
+    );
+  }
 
-Widget ProfilePageMenuContent(BuildContext context, Influencer influencer,
-    int currentTab, bool verifiedStatus) {
-  List<Widget> rawWidgets = [];
-  List<Widget> finalWidgets = [];
-  late Widget contentWidget;
-  Widget emptyContent = Container(
-      child: Container(
-    padding: EdgeInsets.symmetric(vertical: 10.0),
-    alignment: Alignment.center,
-    child: Text("There is no data to show.",
-        style: TextStyle(
-            color: Constants.grayColor,
-            fontSize: 16.0,
-            fontStyle: FontStyle.italic)),
-  ));
-  String content =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum. Tellus cras adipiscing enim eu turpis egestas pretium aenean pharetra. Ullamcorper eget nulla facilisi etiam dignissim diam quis enim lobortis. Platea dictumst quisque sagittis purus sit amet volutpat consequat. Nullam eget felis eget nunc lobortis mattis aliquam. At lectus urna duis convallis. Fames ac turpis egestas integer eget aliquet. Morbi non arcu risus quis varius quam quisque.";
-  double margin = 15.0;
-  if (currentTab == 0) {
-    rawWidgets = [
-      ProfileMenuContent(title: 'About', content: content),
-    ];
-    if (verifiedStatus)
-      rawWidgets.add(ProfileMenuInsights(
-          title: 'Instagram Metrics', influencer: influencer));
-  } else if (currentTab == 1) {
-    rawWidgets = [];
-    if (influencer.portfolio != null && influencer.portfolio!.isNotEmpty) {
-      for (var portfolio in influencer.portfolio!) {
-        rawWidgets.add(InfluencerPortfolio(portfolio: portfolio));
-      }
-    } else {
-      rawWidgets.add(emptyContent);
+  Widget buildProfilePageContent() {
+    Widget emptyContent = Container(
+      padding: EdgeInsets.symmetric(vertical: 10.0),
+      alignment: Alignment.center,
+      child: const Text("There is no data to show.", style: TextStyle(color: Constants.grayColor, fontSize: 16.0, fontStyle: FontStyle.italic)),
+    );
+    double margin = 15.0;
+    if (currentTab == 0) {
+      return buildDescriptionWidget(margin);
+      // if about == null,
+    } else if (currentTab == 1) {
+      return buildPortfolioWidget(margin);
+    } else if (currentTab == 2) {
+      return buildReviewWidget(margin);
+      // if review == null, 
+      //  rawWidgets.add(emptyContent);
     }
-  } else if (currentTab == 2) {
-    rawWidgets = [
-      ProfileMenuContent(title: 'Good!', content: content),
+    return Container();
+  }
+
+  Widget buildDescriptionWidget(double margin) {
+    List<Widget> finalWidgets = [];
+    List<Widget> widgets = [
+      ProfileMenuContent(title: 'About', content: influencer.about),
     ];
-    // if review == null,
-    //  rawWidgets.add(emptyContent);
+    if(verified) widgets.add(ProfileMenuInsights(title: 'Instagram Metrics', influencer: influencer));
+    for(var widget in widgets){
+      finalWidgets.add(
+        Container(
+          margin: EdgeInsets.only(bottom: margin),
+          child: widget,
+        )
+      );
+    }
+    return Container(
+      // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+      margin: EdgeInsets.symmetric(vertical: margin),
+      child: Column(            
+        mainAxisSize: MainAxisSize.max,                                                                                                                      
+        children: finalWidgets,
+      )
+    );
   }
-  for (Widget widget in rawWidgets) {
-    finalWidgets.add(Container(
-      margin: EdgeInsets.only(bottom: margin),
-      child: widget,
-    ));
+
+  Widget buildPortfolioWidget(double margin) {
+    List<Widget> portfolioWidget = [];
+    return BlocConsumer<PortfolioBloc, PortfolioState>(
+      listener: (context, state) {
+        if(state is InfluencerPortfolioUploaded || state is InfluencerPortfolioUpdated || state is InfluencerPortfolioDeleted){
+          portfolioBloc.add(GetInfluencerPortfolioList(influencer.userId));
+        }
+        if(state is InfluencerPortfoliosLoaded){
+          setInfluencerPortfolioList(state.portfolioList);
+        }
+      },
+      builder: (context, state) {
+        if(state is InfluencerPortfoliosLoaded) {
+          if(state.portfolioList.isNotEmpty) {
+            for(var portfolio in state.portfolioList){
+              portfolioWidget.add(
+                Container(
+                  margin: EdgeInsets.only(bottom: margin),
+                  child: InfluencerPortfolio(portfolio: portfolio, portfolioBloc: portfolioBloc),
+                )
+              );
+            }
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: margin),
+              child: Column(            
+                mainAxisSize: MainAxisSize.max,                                                                                                                      
+                children: portfolioWidget,
+              )
+            );
+          }
+          return Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            alignment: Alignment.center,
+            child: const Text("There is no data to show.", style: TextStyle(color: Constants.grayColor, fontSize: 16.0, fontStyle: FontStyle.italic)),
+          );
+        }
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(),
+        );
+      },
+    );
   }
-  contentWidget =
-      Column(mainAxisSize: MainAxisSize.max, children: finalWidgets);
-  return Container(
-    // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-    margin: EdgeInsets.symmetric(vertical: margin),
-    child: contentWidget,
-  );
+
+  Widget buildReviewWidget(double margin) {
+    String content =
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum.";
+    List<Widget> finalWidgets = [];
+    List<Widget> widgets = [
+      ProfileMenuContent(title: 'Good!', content: content),      
+    ];
+    for(var widget in widgets){
+      finalWidgets.add(
+        Container(
+          margin: EdgeInsets.only(bottom: margin),
+          child: widget,
+        )
+      );
+    }
+    return Container(
+      // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+      margin: EdgeInsets.symmetric(vertical: margin),
+      child: Column(            
+        mainAxisSize: MainAxisSize.max,                                                                                                                      
+        children: finalWidgets,
+      )
+    );
+  }
 }
+  // Widget ProfileAvatar(double verticalMargin, double parentWidth) {
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(vertical: verticalMargin),
+  //     child:
+  //         // FutureBuilder(
+  //         // future: _avatar,
+  //         // builder: (context, snapshot) {
+  //         //   if(snapshot.connectionState == ConnectionState.done){
+  //         // return
+  //         Container(
+  //       width: parentWidth * 0.3,
+  //       height: parentWidth * 0.3,
+  //       child: CircleAvatar(
+  //         radius: 14,
+  //         backgroundImage: NetworkImage(
+  //           widget.influencer.avatarUrl,
+  //         ),
+  //       ),
+  //     ),
+      // }
+      //   if(snapshot.connectionState == ConnectionState.waiting){
+      //     return Container(
+      //       width: parentWidth * 0.15,
+      //       height: parentWidth * 0.15,
+      //       child: CircularProgressIndicator(),
+      //     );
+      //   }
+      //   return Container();
+      // },
+  //   );
+  // 
+

@@ -27,8 +27,6 @@ class InfluencerError extends InfluencerState {
   List<Object?> get props => [error];
 }
 
-class InfluencerPortfolioUploaded extends InfluencerState {}
-
 class InfluencerProfileImageUploaded extends InfluencerState {
   final String profileImageURL;
   InfluencerProfileImageUploaded(this.profileImageURL);
@@ -36,3 +34,4 @@ class InfluencerProfileImageUploaded extends InfluencerState {
   @override
   List<Object?> get props => [profileImageURL];
 }
+

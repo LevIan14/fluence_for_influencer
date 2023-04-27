@@ -14,25 +14,14 @@ class GetInfluencerDetail extends InfluencerEvent {
   List<Object> get props => [userId];
 }
 
-class UploadInfluencerPortfolio extends InfluencerEvent {
-  final String influencerId;
-  final XFile img;
-  final String caption;
+// class UploadInfluencerProfileImage extends InfluencerEvent {
+//   final String influencerId;
+//   final XFile img;
+//   UploadInfluencerProfileImage(this.influencerId, this.img);
 
-  UploadInfluencerPortfolio(this.influencerId, this.img, this.caption);
-
-  @override
-  List<Object> get props => [influencerId, img, caption];
-}
-
-class UploadInfluencerProfileImage extends InfluencerEvent {
-  final String influencerId;
-  final XFile img;
-  UploadInfluencerProfileImage(this.influencerId, this.img);
-
-  @override
-  List<Object> get props => [influencerId];
-}
+//   @override
+//   List<Object> get props => [influencerId, img];
+// }
 
 class UpdateInfluencerProfileSettings extends InfluencerEvent {
   final Influencer influencer;

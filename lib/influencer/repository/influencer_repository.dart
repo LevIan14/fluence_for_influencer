@@ -12,13 +12,9 @@ import 'package:fluence_for_influencer/category/repository/category_repository.d
 import 'package:image_picker/image_picker.dart';
 
 class InfluencerRepository {
-  CategoryRepository categoryRepository = CategoryRepository();
-  Future<dynamic> getInfluencerDetail(String influencerId) async {
+
+  Future<Influencer> getInfluencerDetail(String influencerId) async {
     late final Influencer i;
-    log(influencerId);
-    List<Portfolio> portfolioList = [];
-    List<CategoryType> categoryTypeList =
-        await categoryRepository.getCategoryTypeList();
     try {
       await Constants.firebaseFirestore
           .collection("influencers")
@@ -26,33 +22,6 @@ class InfluencerRepository {
           .get()
           .then((value) {
         i = Influencer.fromJson(value.id, value.data()!);
-        List<CategoryType> categoryList = [];
-        for (var category in i.categoryType) {
-          CategoryType element = categoryTypeList
-              .firstWhere((element) => element.categoryTypeId == category);
-          categoryList.add(element);
-          log(element.categoryTypeName);
-        }
-        i.categoryType = categoryList;
-      }).whenComplete(() async {
-        try {
-          await Constants.firebaseFirestore
-              .collection("influencers")
-              .doc(influencerId)
-              .collection("portfolio")
-              .orderBy('uploaded_at', descending: true)
-              .get()
-              .then((value) {
-            for (var v in value.docs) {
-              Portfolio portfolio = Portfolio.fromJson(v.id, v.data());
-              portfolioList.add(portfolio);
-            }
-          });
-          i.portfolio = portfolioList;
-        } catch (e) {
-          print(e.toString());
-          throw Exception(e.toString());
-        }
       });
     } catch (e) {
       throw Exception(e.toString());
@@ -60,36 +29,64 @@ class InfluencerRepository {
     return i;
   }
 
-  Future<void> uploadInfluencerPortfolio(
-      String influencerId, XFile img, String caption) async {
+  
+  Future<String> updateInfluencerAvatar(String influencerId, String avatarUrl, XFile img) async {
     try {
-      String finalImagePath = 'influencers/$influencerId/portfolio/${img.name}';
-      File file = File(img.path);
-      final storageRef = FirebaseStorage.instance.ref();
+      final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
+      avatarRef.delete();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+    String finalImagePath = 'influencers/$influencerId/${img.name}';
+    File file = File(img.path);
+    try {
+      final storageRef = Constants.firebaseStorage.ref();
       final fileRef = storageRef
           .child(finalImagePath); // defining image path in firebase storage
       UploadTask uploadTask = fileRef.putFile(file);
       TaskSnapshot snapshot = await uploadTask;
       String downloadURL = await snapshot.ref.getDownloadURL();
+      await Constants.firebaseFirestore
+          .collection('influencers')
+          .doc(influencerId)
+          .update({'avatar_url': downloadURL});
+      return downloadURL;
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateInfluencerProfileSettings(Influencer influencer, XFile? img) async {
+    if(img != null){
       try {
-        Timestamp now = Timestamp.now();
-        await Constants.firebaseFirestore
-            .collection("influencers")
-            .doc(influencerId)
-            .collection("portfolio")
-            .add({
-          'image_url': downloadURL,
-          'caption': caption,
-          'uploaded_at': now,
-        });
+        await updateInfluencerAvatar(influencer.userId, influencer.avatarUrl, img);
       } catch (e) {
         throw Exception(e.toString());
       }
-    } on FirebaseException catch (e) {
+    } 
+    try {
+      List<String> categoryTypeId = [];
+      for(CategoryType category in influencer.categoryType) { 
+        categoryTypeId.add(category.categoryTypeId);
+      }
+      await Constants.firebaseFirestore
+        .collection('influencers')
+        .doc(influencer.userId)
+        .update({
+          'about': influencer.about,
+          'category_type_id': categoryTypeId,
+          'fullname': influencer.fullname,
+          'gender': influencer.gender,
+          'location': influencer.location,
+          'note_agreement': influencer.noteAgreement,
+        });
+    } catch (e) {
       throw Exception(e.toString());
     }
     return;
   }
+
+
 
   Future<Influencer> getInfluencerInsight(Influencer influencer) async {
     log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');
@@ -230,63 +227,4 @@ class InfluencerRepository {
     }
     return response;
   }
-
-  Future<String> uploadInfluencerImage(String influencerId, XFile img) async {
-    // var img;
-    // try {
-    //   final ImageSource media = ImageSource.gallery;
-    //   img = await ImagePicker().pickImage(source: media);
-    //   if (img == null) return "";
-    // } catch (e) {
-    //   throw Exception(e.toString());
-    // }
-    String finalImagePath = 'influencers/$influencerId/${img.name}';
-    File file = File(img.path);
-    try {
-      final storageRef = FirebaseStorage.instance.ref();
-      final fileRef = storageRef
-          .child(finalImagePath); // defining image path in firebase storage
-      UploadTask uploadTask = fileRef.putFile(file);
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadURL = await snapshot.ref.getDownloadURL();
-      await Constants.firebaseFirestore
-          .collection('influencers')
-          .doc(influencerId)
-          .update({'avatar_url': downloadURL});
-      return downloadURL;
-    } on FirebaseException catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> updateInfluencerProfileSettings(Influencer influencer, XFile? img) async {
-    if(img != null){
-      try {
-        await uploadInfluencerImage(influencer.userId, img);
-      } catch (e) {
-        throw Exception(e.toString());
-      }
-    } 
-    try {
-      List<String> categoryTypeId = [];
-      for(CategoryType category in influencer.categoryType) { 
-        categoryTypeId.add(category.categoryTypeId);
-      }
-      await Constants.firebaseFirestore
-        .collection('influencers')
-        .doc(influencer.userId)
-        .update({
-          'about': influencer.about,
-          'category_type_id': categoryTypeId,
-          'fullname': influencer.fullname,
-          'gender': influencer.gender,
-          'location': influencer.location,
-          'note_agreement': influencer.noteAgreement,
-        });
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-    return;
-  }
-
 }

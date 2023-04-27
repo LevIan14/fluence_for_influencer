@@ -6,16 +6,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/full_textfield_page.dart';
-import 'package:fluence_for_influencer/influencer/pages/upload_portfolio_page.dart';
-import 'package:fluence_for_influencer/influencer/pages/widget_portfolio.dart';
+import 'package:fluence_for_influencer/portfolio/pages/upload_portfolio_page.dart';
+import 'package:fluence_for_influencer/portfolio/pages/widget_portfolio.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
-import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_content.dart';
-import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_insights.dart';
-import 'package:fluence_for_influencer/shared/widgets/_profile/profile_page_menu.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_profile_avatar.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
@@ -78,7 +75,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
     categoryBloc = CategoryBloc(categoryRepository: categoryRepository);
     influencerBloc.add(GetInfluencerDetail(userId));
     categoryBloc.add(GetCategoryTypeListRequested());

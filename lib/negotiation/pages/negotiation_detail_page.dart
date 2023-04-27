@@ -1,5 +1,6 @@
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
@@ -28,6 +29,8 @@ class NegotiationDetailPage extends StatefulWidget {
 
 class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   String umkmId = "";
+  
+  final CategoryRepository categoryRepository = CategoryRepository();
   final InfluencerRepository influencerRepository = InfluencerRepository();
   late final InfluencerBloc influencerBloc;
 
@@ -63,7 +66,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
 
     agreementBloc = AgreementBloc(agreementRepository: agreementRepository);
 
