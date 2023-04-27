@@ -5,10 +5,10 @@ abstract class UmkmEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetUmkmName extends UmkmEvent {
+class GetUmkmNameAndImage extends UmkmEvent {
   final String umkmId;
 
-  GetUmkmName(this.umkmId);
+  GetUmkmNameAndImage(this.umkmId);
 
   @override
   List<Object> get props => [umkmId];

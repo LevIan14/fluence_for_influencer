@@ -3,9 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
+import 'package:fluence_for_influencer/portfolio/bloc/portfolio_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/profile_page.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/portfolio/repository/portfolio_repository.dart';
 import 'package:fluence_for_influencer/shared/app_button.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
@@ -27,15 +29,15 @@ class InfluencerUploadPortfolio extends StatefulWidget {
 
 class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
   final String influencerId = Constants.firebaseAuth.currentUser!.uid;
-  final TextEditingController titleController = TextEditingController();
+  // final TextEditingController titleController = TextEditingController();
   final TextEditingController captionController = TextEditingController();
-  final InfluencerRepository influencerRepository = InfluencerRepository();
-  late final InfluencerBloc influencerBloc;
+  late final PortfolioBloc portfolioBloc;
+  final PortfolioRepository portfolioRepository = PortfolioRepository();
 
   @override
   initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    portfolioBloc = PortfolioBloc(portfolioRepository: portfolioRepository);
   }
 
   getImgBytes() async {
@@ -63,8 +65,8 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
   Widget buildBody(BuildContext context) {
     double margin = 10.0;
     return BlocProvider(
-      create: (context) => influencerBloc,
-      child: BlocListener<InfluencerBloc, InfluencerState>(
+      create: (context) => portfolioBloc,
+      child: BlocListener<PortfolioBloc, PortfolioState>(
         listener: (context, state) {
           if(state is InfluencerPortfolioUploaded) {
             showDialog(context: context, builder: (context) => createDialog(context));
@@ -165,7 +167,7 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
                       // ),
                       ElevatedButton(
                         onPressed: () {
-                          influencerBloc.add(UploadInfluencerPortfolio(influencerId, widget.img, captionController.text));
+                          portfolioBloc.add(UploadInfluencerPortfolio(influencerId, widget.img, captionController.text));
                         },
                         style: ButtonStyle(
                           shape:
@@ -192,9 +194,9 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
     TextButton okayButton = TextButton(
       child: Text("Back to Main Page"),
       onPressed: () {
-        navigateAsFirstScreen(context, const MainPage());
+        navigateAsFirstScreen(context, const MainPage(index: 2));
       },
     );
-    return showALertDialog(context, dialogTitle, dialogContent, okayButton, null);
+    return showAlertDialog(context, dialogTitle, dialogContent, okayButton, null);
   }
 }

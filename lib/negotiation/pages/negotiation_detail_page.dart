@@ -1,20 +1,26 @@
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/message/bloc/message_bloc.dart';
+import 'package:fluence_for_influencer/message/repository/message_repository.dart';
 import 'package:fluence_for_influencer/negotiation/bloc/negotiation_bloc.dart';
+import 'package:fluence_for_influencer/negotiation/model/negotiation.dart';
 import 'package:fluence_for_influencer/negotiation/repository/negotiation_repository.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
-import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NegotiationDetailPage extends StatefulWidget {
   final String negotiationId;
-  const NegotiationDetailPage({Key? key, required this.negotiationId})
+  final String? chatId;
+  final bool? sentByMe;
+  const NegotiationDetailPage(
+      {Key? key, required this.negotiationId, this.chatId, this.sentByMe})
       : super(key: key);
 
   @override
@@ -23,6 +29,8 @@ class NegotiationDetailPage extends StatefulWidget {
 
 class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   String umkmId = "";
+  
+  final CategoryRepository categoryRepository = CategoryRepository();
   final InfluencerRepository influencerRepository = InfluencerRepository();
   late final InfluencerBloc influencerBloc;
 
@@ -32,32 +40,37 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   final NegotiationRepository negotiationRepository = NegotiationRepository();
   late final NegotiationBloc negotiationBloc;
 
+  late final MessageBloc messageBloc;
+  final MessageRepository messageRepository = MessageRepository();
+
   final TextEditingController _projectTitleController = TextEditingController();
-  final TextEditingController _rangeDateController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _projectDurationController =
+      TextEditingController();
+  final TextEditingController _projectPriceController = TextEditingController();
   final TextEditingController _projectDescController = TextEditingController();
+
+  late Map<String, DateTime> projectDuration;
+
   String? _projectTitleValidator(String? value) {
     return value!.isEmpty ? "Insert project title" : null;
   }
 
-  String? _rangeDateValidator(String? value) {
+  String? _projectDurationValidator(String? value) {
     return value!.isEmpty ? "Insert range date" : null;
   }
 
-  String? _amountValidator(String? value) {
+  String? _projectPriceValidator(String? value) {
     return value!.isEmpty ? "Insert negotiation amount" : null;
-  }
-
-  String? _projectDescValidator(String? value) {
-    return value!.isEmpty ? "Insert project description" : null;
   }
 
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository);
+    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
 
     agreementBloc = AgreementBloc(agreementRepository: agreementRepository);
+
+    messageBloc = MessageBloc(messageRepository: messageRepository);
 
     negotiationBloc =
         NegotiationBloc(negotiationRepository: negotiationRepository);
@@ -70,11 +83,14 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
       providers: [
         BlocProvider(create: (context) => negotiationBloc),
         BlocProvider(create: (context) => influencerBloc),
-        BlocProvider(create: (context) => agreementBloc)
+        BlocProvider(create: (context) => agreementBloc),
+        BlocProvider(create: (context) => messageBloc)
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Details Negotiation'),
+          title: widget.sentByMe != null && widget.sentByMe!
+              ? const Text("Edit Negotiation")
+              : const Text('Details Negotiation'),
           elevation: 0,
           backgroundColor: Constants.primaryColor,
         ),
@@ -84,10 +100,10 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
               listener: (context, state) {
                 if (state is InfluencerLoaded) {
                   final newAgreement = {
-                    "influencer_agreement": state.influencer['note_agreement'],
-                    "influencer_agreement_status": "",
+                    "influencer_agreement": state.influencer.noteAgreement,
+                    "influencer_agreement_status": "PENDING",
                     "umkm_agreement": "",
-                    "umkm_agreement_status": "",
+                    "umkm_agreement_status": "PENDING",
                     "influencer_id": Constants.firebaseAuth.currentUser!.uid,
                     "umkm_id": umkmId,
                     "negotiation_id": widget.negotiationId
@@ -99,7 +115,33 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<AgreementBloc, AgreementState>(
               listener: (context, state) {
                 if (state is CreateNewAgreementSuccess) {
-                  navigateAsFirstScreen(context, const MainPage());
+                  navigateAsFirstScreen(context, const MainPage(index: 0));
+                }
+              },
+            ),
+            BlocListener<NegotiationBloc, NegotiationState>(
+              listener: (context, state) {
+                if (state is RejectNegotiationSuccess) {
+                  messageBloc.add(SendNewNegotiation(
+                      widget.chatId!,
+                      Constants.firebaseAuth.currentUser!.uid,
+                      widget.negotiationId,
+                      'Negotiation Rejected!'));
+                  // navigateAsFirstScreen(context, const MainPage());
+                } else if (state is UpdateNegotiationSuccess) {
+                  messageBloc.add(SendNewNegotiation(
+                    widget.chatId!,
+                    Constants.firebaseAuth.currentUser!.uid,
+                    widget.negotiationId,
+                    "Negotiation Updated!",
+                  ));
+                }
+              },
+            ),
+            BlocListener<MessageBloc, MessageState>(
+              listener: (context, state) {
+                if (state is NewChatAndMessageCreated) {
+                  Navigator.pop(context);
                 }
               },
             )
@@ -113,79 +155,111 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                     state.negotiationDetails.projectTitle;
                 _projectDescController.text =
                     state.negotiationDetails.projectDesc ?? "";
-                _amountController.text =
-                    state.negotiationDetails.amount.toString();
-                _rangeDateController.text = state.negotiationDetails.rangeDate;
+                _projectPriceController.text =
+                    state.negotiationDetails.projectPrice.toString();
+                _projectDurationController.text =
+                    "${DateUtil.dateWithDayFormat(state.negotiationDetails.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(state.negotiationDetails.projectDuration['end']!)}";
 
+                projectDuration = {
+                  "start": state.negotiationDetails.projectDuration['start']!,
+                  "end": state.negotiationDetails.projectDuration['end']!
+                };
                 return SingleChildScrollView(
                   child: Container(
                       padding: const EdgeInsets.only(
                           left: 16, right: 16, bottom: 16),
                       child: Column(
                         children: [
-                          AppTextfield(
-                              field: 'Project Title',
-                              // initialValue: state.negotiationDetails.projectTitle,
-                              fieldController: _projectTitleController,
-                              validator: _projectTitleValidator),
-                          AppTextfield(
-                            field: "Range Date",
-                            // initialValue: state.negotiationDetails.rangeDate,
-                            fieldController: _rangeDateController,
-                            validator: _rangeDateValidator,
-                            onTap: pickDateRange,
-                          ),
-                          AppTextfield(
-                              keyboardType: TextInputType.number,
-                              // initialValue:
-                              //     state.negotiationDetails.amount.toString(),
-                              field: 'Amount',
-                              fieldController: _amountController,
-                              validator: _amountValidator),
-                          AppTextfield(
-                              field: 'Project Description',
-                              // initialValue:
-                              //     state.negotiationDetails.projectDesc ?? "",
-                              fieldController: _projectDescController,
-                              validator: _projectDescValidator),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30))),
-                              onPressed: () {
-                                acceptNegotiation();
-                              },
-                              child: const Text(
-                                "Accept",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("Project Title"),
+                                    Chip(
+                                        label: Text(
+                                      state
+                                          .negotiationDetails.negotiationStatus,
+                                      style: const TextStyle(fontSize: 10),
+                                    )),
+                                  ],
+                                ),
+                                TextFormField(
+                                  controller: _projectTitleController,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: _projectTitleValidator,
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                  elevation: 0,
-                                  side: const BorderSide(
-                                      color: Constants.primaryColor),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30))),
-                              onPressed: () {
-                                // _authenticateWithEmailAndPassword(context);
-                              },
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16),
-                              ),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Project Duration"),
+                                TextFormField(
+                                  controller: _projectDurationController,
+                                  onTap: () async {
+                                    DateTimeRange? newDateRange =
+                                        await showDateRangePicker(
+                                            context: context,
+                                            firstDate:
+                                                DateTime(DateTime.now().year),
+                                            lastDate: DateTime(2100));
+                                    if (newDateRange != null) {
+                                      String startDate =
+                                          DateUtil.dateWithDayFormat(
+                                              newDateRange.start);
+                                      String endDate =
+                                          DateUtil.dateWithDayFormat(
+                                              newDateRange.end);
+
+                                      projectDuration = {
+                                        "start": newDateRange.start,
+                                        "end": newDateRange.end
+                                      };
+                                      _projectDurationController.text =
+                                          "$startDate - $endDate";
+                                    }
+                                  },
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: _projectDurationValidator,
+                                ),
+                              ],
                             ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Project Price"),
+                                TextFormField(
+                                  controller: _projectPriceController,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: _projectPriceValidator,
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Project Description"),
+                              TextFormField(
+                                controller: _projectDescController,
+                                maxLines: null,
+                              ),
+                            ],
                           ),
                         ],
                       )),
@@ -194,6 +268,90 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
               return Text(state.toString());
             },
           ),
+        ),
+        bottomNavigationBar: BlocConsumer<NegotiationBloc, NegotiationState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            if (state is NegotiationLoaded) {
+              if (state.negotiationDetails.negotiationStatus == 'PENDING' &&
+                  widget.sentByMe! == false) {
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              acceptNegotiation(
+                                  state.negotiationDetails.influencerId);
+                            },
+                            child: const Text("Accept")),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                            onPressed: () {
+                              rejectNegotiation();
+                            },
+                            child: const Text("Reject")),
+                      )
+                    ],
+                  ),
+                );
+              } else if (state.negotiationDetails.negotiationStatus ==
+                      "PENDING" &&
+                  widget.sentByMe!) {
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Negotiation negotiation = Negotiation(
+                                  widget.negotiationId,
+                                  state.negotiationDetails.influencerId,
+                                  state.negotiationDetails.umkmId,
+                                  _projectTitleController.text,
+                                  _projectDescController.text,
+                                  double.parse(_projectPriceController.text),
+                                  projectDuration,
+                                  state.negotiationDetails.negotiationStatus);
+                              negotiationBloc
+                                  .add(UpdateNegotiation(negotiation));
+                              // acceptNegotiation(
+                              //     state.negotiationDetails.influencerId);
+                            },
+                            child: const Text("Submit")),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Back")),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Back")),
+                );
+              }
+            }
+            return Container();
+          },
         ),
       ),
     );
@@ -206,12 +364,16 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
     if (newDateRange != null) {
       String startDate = DateUtil.dateWithDayFormat(newDateRange.start);
       String endDate = DateUtil.dateWithDayFormat(newDateRange.end);
-      _rangeDateController.text = "$startDate - $endDate";
+      _projectDurationController.text = "$startDate - $endDate";
     }
   }
 
-  void acceptNegotiation() {
-    influencerBloc
-        .add(GetInfluencerDetail(Constants.firebaseAuth.currentUser!.uid));
+  void acceptNegotiation(String influencerId) {
+    negotiationBloc.add(AcceptNegotiation(widget.negotiationId));
+    influencerBloc.add(GetInfluencerDetail(influencerId));
+  }
+
+  void rejectNegotiation() {
+    negotiationBloc.add(RejectNegotiation(widget.negotiationId));
   }
 }

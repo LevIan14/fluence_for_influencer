@@ -6,7 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 class Portfolio {
   final String portfolioId;
   final String imageUrl;
-  final String? caption;
+  String? caption;
   final Timestamp uploadedAt;
 
   Portfolio(this.portfolioId, this.imageUrl, this.caption, this.uploadedAt);

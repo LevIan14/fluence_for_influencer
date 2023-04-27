@@ -27,5 +27,15 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         emit(MessageError(e.toString()));
       }
     });
+
+    on<SendNewNegotiation>((event, emit) async {
+      try {
+        await messageRepository.sendNewNegotiation(event.chatId, event.senderId,
+            event.negotiationId, event.recentMessage);
+        emit(NewChatAndMessageCreated(event.chatId));
+      } catch (e) {
+        emit(MessageError(e.toString()));
+      }
+    });
   }
 }

@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            navigateAsFirstScreen(context, const MainPage());
+            navigateAsFirstScreen(context, const MainPage(index: 0));
           }
           if (state is AuthError) {
             ScaffoldMessenger.of(context)

@@ -48,7 +48,7 @@ class FluenceForInfluencer extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 final bool isLoggedIn = snapshot.hasData;
-                return isLoggedIn ? const MainPage() : const LoginPage();
+                return isLoggedIn ? const MainPage(index: 0) : const LoginPage();
               }
               return const Center(
                 child: CircularProgressIndicator(),

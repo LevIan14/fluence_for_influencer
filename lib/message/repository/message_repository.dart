@@ -37,4 +37,28 @@ class MessageRepository {
       throw Exception(e.toString());
     }
   }
+
+  Future<dynamic> sendNewNegotiation(String chatId, String senderId,
+      String negotiationId, String message) async {
+    try {
+      Timestamp timestamp = Timestamp.now();
+      await Constants.firebaseFirestore
+          .collection("chats")
+          .doc(chatId)
+          .collection("messages")
+          .add({
+        "message": message,
+        "created_at": timestamp,
+        "sender_id": senderId,
+        "negotiation_id": negotiationId
+      });
+
+      await Constants.firebaseFirestore
+          .collection("chats")
+          .doc(chatId)
+          .update({"recent_message": message, "updated_at": timestamp});
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

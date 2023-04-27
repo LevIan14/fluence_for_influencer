@@ -12,79 +12,81 @@ import 'package:fluence_for_influencer/category/repository/category_repository.d
 import 'package:image_picker/image_picker.dart';
 
 class InfluencerRepository {
-  CategoryRepository categoryRepository = CategoryRepository();
-  Future<dynamic> getInfluencerDetail(String influencerId) async {
+
+  Future<Influencer> getInfluencerDetail(String influencerId) async {
     late final Influencer i;
-    log(influencerId);
-    List<Portfolio> portfolioList = [];
-    List<CategoryType> categoryTypeList = await categoryRepository.getCategoryTypeList();
     try {
       await Constants.firebaseFirestore
-        .collection("influencers")
-        .doc(influencerId)
-        .get()
-        .then((value) {
-          i = Influencer.fromJson(value.id, value.data()!);
-          List<CategoryType> categoryList = [];
-          for(var category in i.categoryType!) {
-            CategoryType element = categoryTypeList.firstWhere((element) => element.categoryTypeId == category);
-            categoryList.add(element);
-          }
-          i.categoryType = categoryList;
-        })
-        .whenComplete(() async {
-          try {
-            await Constants.firebaseFirestore
-              .collection("influencers")
-              .doc(influencerId)
-              .collection("portfolio")
-              .orderBy('uploaded_at', descending: true)
-              .get()
-              .then((value) {
-                for(var v in value.docs) {
-                  Portfolio portfolio = Portfolio.fromJson(v.id, v.data());
-                  portfolioList.add(portfolio);
-                }
-              });
-            i.portfolio = portfolioList;
-          } catch (e) {
-            throw Exception(e.toString());
-          }
-        });
+          .collection("influencers")
+          .doc(influencerId)
+          .get()
+          .then((value) {
+        i = Influencer.fromJson(value.id, value.data()!);
+      });
     } catch (e) {
       throw Exception(e.toString());
     }
     return i;
   }
 
-  Future<void> uploadInfluencerPortfolio(String influencerId, XFile img, String caption) async {
+  
+  Future<String> updateInfluencerAvatar(String influencerId, String avatarUrl, XFile img) async {
     try {
-      String finalImagePath = 'influencers/$influencerId/portfolio/${img.name}';
-      File file = File(img.path);
-      final storageRef = FirebaseStorage.instance.ref();
-      final fileRef = storageRef.child(finalImagePath); // defining image path in firebase storage
+      final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
+      avatarRef.delete();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+    String finalImagePath = 'influencers/$influencerId/${img.name}';
+    File file = File(img.path);
+    try {
+      final storageRef = Constants.firebaseStorage.ref();
+      final fileRef = storageRef
+          .child(finalImagePath); // defining image path in firebase storage
       UploadTask uploadTask = fileRef.putFile(file);
       TaskSnapshot snapshot = await uploadTask;
       String downloadURL = await snapshot.ref.getDownloadURL();
-      try {
-      Timestamp now = Timestamp.now();
       await Constants.firebaseFirestore
-        .collection("influencers")
-        .doc(influencerId)
-        .collection("portfolio")
-        .add({
-          'image_url': downloadURL,
-          'caption': caption,
-          'uploaded_at': now,
-        });
+          .collection('influencers')
+          .doc(influencerId)
+          .update({'avatar_url': downloadURL});
+      return downloadURL;
+    } on FirebaseException catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateInfluencerProfileSettings(Influencer influencer, XFile? img) async {
+    if(img != null){
+      try {
+        await updateInfluencerAvatar(influencer.userId, influencer.avatarUrl, img);
       } catch (e) {
         throw Exception(e.toString());
       }
-    } on FirebaseException catch(e) {
+    } 
+    try {
+      List<String> categoryTypeId = [];
+      for(CategoryType category in influencer.categoryType) { 
+        categoryTypeId.add(category.categoryTypeId);
+      }
+      await Constants.firebaseFirestore
+        .collection('influencers')
+        .doc(influencer.userId)
+        .update({
+          'about': influencer.about,
+          'category_type_id': categoryTypeId,
+          'fullname': influencer.fullname,
+          'gender': influencer.gender,
+          'location': influencer.location,
+          'note_agreement': influencer.noteAgreement,
+        });
+    } catch (e) {
       throw Exception(e.toString());
     }
     return;
   }
+
+
 
   Future<Influencer> getInfluencerInsight(Influencer influencer) async {
     log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');
@@ -96,15 +98,17 @@ class InfluencerRepository {
     List<String> topAudienceCity = [];
     try {
       try {
-        HttpClientResponse response = await getUserFromAPI(influencer.instagramUserId!, influencer.facebookAccessToken!);
+        HttpClientResponse response = await getUserFromAPI(
+            influencer.instagramUserId!, influencer.facebookAccessToken!);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         followersCount = res["followers_count"];
-      } catch(e) {
+      } catch (e) {
         throw Exception(e.toString());
       }
       try {
-        HttpClientResponse response = await getAudienceFromAPI(influencer.instagramUserId!, influencer.facebookAccessToken!);
+        HttpClientResponse response = await getAudienceFromAPI(
+            influencer.instagramUserId!, influencer.facebookAccessToken!);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         Map<String, dynamic> data = res["data"].first;
@@ -115,14 +119,15 @@ class InfluencerRepository {
           toBeSorted.add({'city': key, 'value': value});
         });
         toBeSorted.sort((a, b) => b['value'].compareTo(a['value']));
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
           topAudienceCity.add(toBeSorted[i]['city']);
         }
-      } catch(e) {
+      } catch (e) {
         throw Exception(e.toString());
       }
       try {
-        HttpClientResponse response = await getInsightFromAPI(influencer.instagramUserId!, influencer.facebookAccessToken!);
+        HttpClientResponse response = await getInsightFromAPI(
+            influencer.instagramUserId!, influencer.facebookAccessToken!);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         List<dynamic> data = res["data"];
@@ -134,7 +139,7 @@ class InfluencerRepository {
         List<dynamic> reachValue = reach["values"];
         previousReach = reachValue.first["value"];
         fourWeekReach = reachValue.last["value"];
-      } catch(e) {
+      } catch (e) {
         throw Exception(e.toString());
       }
     } catch (e) {
@@ -150,7 +155,8 @@ class InfluencerRepository {
     return influencer;
   }
 
-  Future<HttpClientResponse> getUserFromAPI(String instagramUserId, String facebookAccessToken) async {
+  Future<HttpClientResponse> getUserFromAPI(
+      String instagramUserId, String facebookAccessToken) async {
     final HttpClient httpClient = HttpClient();
     Map<String, String> queryParameters = {
       'fields': 'followers_count',
@@ -158,18 +164,19 @@ class InfluencerRepository {
     };
     HttpClientResponse response;
     try {
-      HttpClientRequest request = await httpClient.getUrl(Uri.https('graph.facebook.com', '/v16.0/$instagramUserId', queryParameters));
+      HttpClientRequest request = await httpClient.getUrl(Uri.https(
+          'graph.facebook.com', '/v16.0/$instagramUserId', queryParameters));
       response = await request.close();
-    } catch(e) {
+    } catch (e) {
       throw Exception(e);
     } finally {
       httpClient.close();
     }
     return response;
-
   }
 
-  Future<HttpClientResponse> getAudienceFromAPI(String instagramUserId, String facebookAccessToken) async {
+  Future<HttpClientResponse> getAudienceFromAPI(
+      String instagramUserId, String facebookAccessToken) async {
     final HttpClient httpClient = HttpClient();
     Map<String, String> queryParameters = {
       'metric': 'audience_city',
@@ -178,9 +185,12 @@ class InfluencerRepository {
     };
     HttpClientResponse response;
     try {
-      HttpClientRequest request = await httpClient.getUrl(Uri.https('graph.facebook.com', '/v16.0/$instagramUserId/insights', queryParameters));
+      HttpClientRequest request = await httpClient.getUrl(Uri.https(
+          'graph.facebook.com',
+          '/v16.0/$instagramUserId/insights',
+          queryParameters));
       response = await request.close();
-    } catch(e) {
+    } catch (e) {
       throw Exception(e.toString());
     } finally {
       httpClient.close();
@@ -188,7 +198,8 @@ class InfluencerRepository {
     return response;
   }
 
-  Future<HttpClientResponse> getInsightFromAPI(String instagramUserId, String facebookAccessToken) async {
+  Future<HttpClientResponse> getInsightFromAPI(
+      String instagramUserId, String facebookAccessToken) async {
     final HttpClient httpClient = HttpClient();
     DateTime now = DateTime.now();
     DateTime fourWeeksAgo = now.subtract(const Duration(days: 28));
@@ -204,42 +215,16 @@ class InfluencerRepository {
     log('since: $since, until: $until');
     HttpClientResponse response;
     try {
-      HttpClientRequest request = await httpClient.getUrl(Uri.https('graph.facebook.com', '/v16.0/$instagramUserId/insights', queryParameters));
+      HttpClientRequest request = await httpClient.getUrl(Uri.https(
+          'graph.facebook.com',
+          '/v16.0/$instagramUserId/insights',
+          queryParameters));
       response = await request.close();
-    } catch(e) {
+    } catch (e) {
       throw Exception(e);
     } finally {
       httpClient.close();
     }
     return response;
-  }
-
-  Future<String> uploadInfluencerImage(String influencerId, XFile img) async {
-    // var img;
-    // try {
-    //   final ImageSource media = ImageSource.gallery;
-    //   img = await ImagePicker().pickImage(source: media);
-    //   if (img == null) return "";
-    // } catch (e) {
-    //   throw Exception(e.toString());
-    // }
-    String finalImagePath = 'influencers/$influencerId/${img.name}';
-    File file = File(img.path);
-    try {
-      final storageRef = FirebaseStorage.instance.ref();
-      final fileRef = storageRef
-          .child(finalImagePath); // defining image path in firebase storage
-      UploadTask uploadTask = fileRef.putFile(file);
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadURL = await snapshot.ref.getDownloadURL();
-      await FirebaseFirestore.instance
-          .collection('influencers')
-          .doc(influencerId)
-          .update({'avatar_url': downloadURL});
-      return downloadURL;
-    } on FirebaseException catch (e) {
-      log(e.toString());
-    }
-    return "";
   }
 }

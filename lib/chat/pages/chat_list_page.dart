@@ -2,9 +2,6 @@ import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/chat/repository/chat_repository.dart';
 import 'package:fluence_for_influencer/chat/widgets/chat_row.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatListPage extends StatefulWidget {
@@ -31,7 +28,7 @@ class _ChatListPageState extends State<ChatListPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
-          title: const Text('List Chat'),
+          title: const Text('Chats'),
         ),
         body: BlocProvider(
             create: (context) => chatBloc,
@@ -41,10 +38,8 @@ class _ChatListPageState extends State<ChatListPage> {
               },
               builder: (context, state) {
                 if (state is ChatListLoading) {
-                  return const SafeArea(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
                 if (state is ChatListLoaded) {
@@ -57,14 +52,15 @@ class _ChatListPageState extends State<ChatListPage> {
                                 itemCount: snapshot.data.docs.length,
                                 itemBuilder: (context, index) {
                                   return ChatRow(
-                                    chatId: snapshot.data.docs[index].id,
-                                    umkmId: snapshot.data.docs[index]
-                                        ['umkm_id'],
-                                    influencerId: snapshot.data.docs[index]
-                                        ['influencer_id'],
-                                    recentMessage: snapshot.data.docs[index]
-                                        ['recent_message'],
-                                  );
+                                      chatId: snapshot.data.docs[index].id,
+                                      umkmId: snapshot.data.docs[index]
+                                          ['umkm_id'],
+                                      influencerId: snapshot.data.docs[index]
+                                          ['influencer_id'],
+                                      recentMessage: snapshot.data.docs[index]
+                                          ['recent_message'],
+                                      timestamp: snapshot.data.docs[index]
+                                          ['updated_at']);
                                 },
                               )
                             : _loadingAnimationCircular();
@@ -76,10 +72,8 @@ class _ChatListPageState extends State<ChatListPage> {
   }
 
   Widget _loadingAnimationCircular() {
-    return const SafeArea(
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 }

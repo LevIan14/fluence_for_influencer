@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/pages/agreement_detail_page.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
+import 'package:fluence_for_influencer/agreement/widget/agreement_row.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,9 @@ class _AgreementListPageState extends State<AgreementListPage> {
             listener: (context, state) {},
             builder: (context, state) {
               if (state is AgreementLoading) {
-                return const CircularProgressIndicator();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
               if (state is AgreementListLoaded) {
                 return StreamBuilder(
@@ -43,27 +46,22 @@ class _AgreementListPageState extends State<AgreementListPage> {
                         ? ListView.builder(
                             itemCount: snapshot.data.docs.length,
                             itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  nextScreen(
-                                      context,
-                                      AgreementDetailPage(
-                                          agreementId:
-                                              snapshot.data.docs[index].id));
-                                },
-                                child: ListTile(
-                                  title: Text(snapshot.data.docs[index]
-                                      ['influencer_id']),
-                                  subtitle: Text(snapshot.data.docs[index]
-                                      ['influencer_agreement']),
-                                ),
-                              );
+                              return AgreementRow(
+                                  agreementId: snapshot.data.docs[index].id,
+                                  negotiationId: snapshot.data.docs[index]
+                                      ['negotiation_id']);
                             })
-                        : Container();
+                        : _loadingAnimationCircular();
                   },
                 );
               }
               return Container();
             }));
+  }
+
+  Widget _loadingAnimationCircular() {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
   }
 }

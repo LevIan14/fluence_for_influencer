@@ -14,3 +14,8 @@ void navigateAsFirstScreen(context, page) {
   Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => page), (route) => false);
 }
+
+dynamic nextScreenAndGetValue(context, page) {
+  final result = Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  return result;
+}

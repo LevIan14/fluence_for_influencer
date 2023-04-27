@@ -8,7 +8,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
   Contoh ada di influencer_upload_portfolio.dart, di method createDialog
 */
 
-Widget showALertDialog(BuildContext context, Text dialogTitle, Text dialogContent,
+Widget showAlertDialog(BuildContext context, Text dialogTitle, Text dialogContent,
                     TextButton primaryButton, TextButton? secondaryButton) {
 
   List<Widget> actionsButton = [primaryButton];
