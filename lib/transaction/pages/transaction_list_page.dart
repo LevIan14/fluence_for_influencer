@@ -47,6 +47,8 @@ class _TransactionListPageState extends State<TransactionListPage> {
                           itemBuilder: (context, index) {
                             return TransactionListRow(
                                 transactionId: snapshot.data.docs[index].id,
+                                agreementId: snapshot.data.docs[index]
+                                    ['agreement_id'],
                                 influencerId: snapshot.data.docs[index]
                                     ['influencer_id'],
                                 negotiationId: snapshot.data.docs[index]

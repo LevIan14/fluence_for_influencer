@@ -35,3 +35,11 @@ class InfluencerProfileImageUploaded extends InfluencerState {
   List<Object?> get props => [profileImageURL];
 }
 
+class GetInfluencerReviewOnCurrentTransactionSuccess extends InfluencerState {
+  final dynamic review;
+
+  GetInfluencerReviewOnCurrentTransactionSuccess(this.review);
+
+  @override
+  List<Object?> get props => [review];
+}

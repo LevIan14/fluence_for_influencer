@@ -55,9 +55,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
 
     transactionBloc =
         TransactionBloc(transactionRepository: transactionRepository);
-
     agreementBloc = AgreementBloc(agreementRepository: agreementRepository);
-    // agreementBloc.add(GetAgreementDetail(widget.agreementId));
   }
 
   @override
@@ -106,7 +104,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                         transactionBloc
                             .add(CreateNewTransaction(newTransaction));
                       } else {
-                        navigateAsFirstScreen(context, const MainPage(index: 0));
+                        navigateAsFirstScreen(
+                            context, const MainPage(index: 0));
                       }
                     }
                     if (state is AgreementLoaded) {
@@ -150,6 +149,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                       nextScreen(
                                           context,
                                           NegotiationDetailPage(
+                                              influencerId:
+                                                  state.agreement.influencerId,
                                               negotiationId: state
                                                   .agreement.negotiationId));
                                     },

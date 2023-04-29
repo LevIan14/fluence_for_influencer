@@ -39,7 +39,7 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {
             if (state is TransactionProcessSuccess) {
-              navigateAsFirstScreen(context, const MainPage());
+              navigateAsFirstScreen(context, const MainPage(index: 0));
             }
           },
           builder: (context, state) {

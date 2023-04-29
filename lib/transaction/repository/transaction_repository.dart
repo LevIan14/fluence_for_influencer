@@ -41,6 +41,8 @@ class TransactionRepository {
             OrderTransactionProgress(
                 contentProgress, reviewContent, uploadProgress, reviewUpload);
 
+        Timestamp createdAt = snapshot.get("created_at");
+
         OrderTransaction orderTransaction = OrderTransaction(
             snapshot.id,
             snapshot.get("influencer_id"),
@@ -49,7 +51,8 @@ class TransactionRepository {
             snapshot.get("negotiation_id"),
             snapshot.get("review_id"),
             snapshot.get("transaction_status"),
-            orderTransactionProgress);
+            orderTransactionProgress,
+            createdAt.toDate());
 
         return orderTransaction;
       }

@@ -9,6 +9,7 @@ class OrderTransaction {
   final String reviewId;
   final String transactionStatus;
   final OrderTransactionProgress orderProgress;
+  final DateTime createdAt;
 
   OrderTransaction(
       this.id,
@@ -18,5 +19,6 @@ class OrderTransaction {
       this.negotiationId,
       this.reviewId,
       this.transactionStatus,
-      this.orderProgress);
+      this.orderProgress,
+      this.createdAt);
 }

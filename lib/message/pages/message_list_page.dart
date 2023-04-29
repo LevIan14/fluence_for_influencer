@@ -192,6 +192,7 @@ class _MessageListPageState extends State<MessageListPage> {
                                             DateUtil.hMMFormat(dateTime);
 
                                         return MessageTile(
+                                            influencerId: widget.influencerId,
                                             negotiationId: negotiationId,
                                             message: snapshot.data.docs[index]
                                                 ['message'],

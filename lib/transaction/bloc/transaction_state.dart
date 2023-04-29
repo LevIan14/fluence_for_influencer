@@ -37,3 +37,11 @@ class TransactionError extends TransactionState {
   @override
   List<Object?> get props => [error];
 }
+
+class ReviewedTransactionLoaded extends TransactionState {
+  final OrderTransaction transaction;
+  ReviewedTransactionLoaded(this.transaction);
+
+  @override
+  List<Object> get props => [transaction];
+}

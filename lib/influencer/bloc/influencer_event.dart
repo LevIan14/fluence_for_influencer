@@ -31,3 +31,10 @@ class UpdateInfluencerProfileSettings extends InfluencerEvent {
   @override
   List<Object> get props => [influencer];
 }
+
+class GetInfluencerReviewOnCurrentTransaction extends InfluencerEvent {
+  final String influencerId;
+  final String reviewId;
+
+  GetInfluencerReviewOnCurrentTransaction(this.influencerId, this.reviewId);
+}

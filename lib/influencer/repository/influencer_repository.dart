@@ -12,7 +12,6 @@ import 'package:fluence_for_influencer/category/repository/category_repository.d
 import 'package:image_picker/image_picker.dart';
 
 class InfluencerRepository {
-
   Future<Influencer> getInfluencerDetail(String influencerId) async {
     late final Influencer i;
     try {
@@ -29,8 +28,8 @@ class InfluencerRepository {
     return i;
   }
 
-  
-  Future<String> updateInfluencerAvatar(String influencerId, String avatarUrl, XFile img) async {
+  Future<String> updateInfluencerAvatar(
+      String influencerId, String avatarUrl, XFile img) async {
     try {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
       avatarRef.delete();
@@ -56,37 +55,37 @@ class InfluencerRepository {
     }
   }
 
-  Future<void> updateInfluencerProfileSettings(Influencer influencer, XFile? img) async {
-    if(img != null){
+  Future<void> updateInfluencerProfileSettings(
+      Influencer influencer, XFile? img) async {
+    if (img != null) {
       try {
-        await updateInfluencerAvatar(influencer.userId, influencer.avatarUrl, img);
+        await updateInfluencerAvatar(
+            influencer.userId, influencer.avatarUrl, img);
       } catch (e) {
         throw Exception(e.toString());
       }
-    } 
+    }
     try {
       List<String> categoryTypeId = [];
-      for(CategoryType category in influencer.categoryType) { 
+      for (CategoryType category in influencer.categoryType) {
         categoryTypeId.add(category.categoryTypeId);
       }
       await Constants.firebaseFirestore
-        .collection('influencers')
-        .doc(influencer.userId)
-        .update({
-          'about': influencer.about,
-          'category_type_id': categoryTypeId,
-          'fullname': influencer.fullname,
-          'gender': influencer.gender,
-          'location': influencer.location,
-          'note_agreement': influencer.noteAgreement,
-        });
+          .collection('influencers')
+          .doc(influencer.userId)
+          .update({
+        'about': influencer.about,
+        'category_type_id': categoryTypeId,
+        'fullname': influencer.fullname,
+        'gender': influencer.gender,
+        'location': influencer.location,
+        'note_agreement': influencer.noteAgreement,
+      });
     } catch (e) {
       throw Exception(e.toString());
     }
     return;
   }
-
-
 
   Future<Influencer> getInfluencerInsight(Influencer influencer) async {
     log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');
@@ -226,5 +225,26 @@ class InfluencerRepository {
       httpClient.close();
     }
     return response;
+  }
+
+  Future<dynamic> getReviewWithTransactionId(
+      String influencerId, String reviewId) async {
+    try {
+      DocumentSnapshot snapshot = await Constants.firebaseFirestore
+          .collection("influencers")
+          .doc(influencerId)
+          .collection("reviews")
+          .doc(reviewId)
+          .get();
+
+      if (snapshot.exists) {
+        return {
+          "rating": snapshot.get("rating"),
+          "review": snapshot.get("review"),
+        };
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 }

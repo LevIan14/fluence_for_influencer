@@ -12,28 +12,31 @@ part 'influencer_event.dart';
 part 'influencer_state.dart';
 
 class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
-
   final InfluencerRepository influencerRepository;
   final CategoryRepository categoryRepository;
 
-  InfluencerBloc({required this.influencerRepository, required this.categoryRepository})
+  InfluencerBloc(
+      {required this.influencerRepository, required this.categoryRepository})
       : super(InfluencerInitial()) {
     on<GetInfluencerDetail>((event, emit) async {
       try {
         emit(InfluencerLoading());
         late Influencer influencer;
-        influencer = await influencerRepository.getInfluencerDetail(event.influencerId);
-        List<CategoryType> categoryTypeList = await categoryRepository.getCategoryTypeList();
+        influencer =
+            await influencerRepository.getInfluencerDetail(event.influencerId);
+        List<CategoryType> categoryTypeList =
+            await categoryRepository.getCategoryTypeList();
         List<CategoryType> influencerCategoryList = [];
-        for(var category in influencer.categoryType) {
+        for (var category in influencer.categoryType) {
           CategoryType element = categoryTypeList
-          .firstWhere((element) => element.categoryTypeId == category);
+              .firstWhere((element) => element.categoryTypeId == category);
           influencerCategoryList.add(element);
         }
         influencer.categoryType = influencerCategoryList;
         if (influencer.instagramUserId!.isNotEmpty &&
             influencer.facebookAccessToken!.isNotEmpty) {
-          influencer = await influencerRepository.getInfluencerInsight(influencer);
+          influencer =
+              await influencerRepository.getInfluencerInsight(influencer);
         }
         emit(InfluencerLoaded(influencer));
       } catch (e) {
@@ -43,7 +46,17 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
     on<UpdateInfluencerProfileSettings>((event, emit) async {
       try {
         emit(InfluencerLoading());
-        await influencerRepository.updateInfluencerProfileSettings(event.influencer, event.img);
+        await influencerRepository.updateInfluencerProfileSettings(
+            event.influencer, event.img);
+      } catch (e) {
+        emit(InfluencerError(e.toString()));
+      }
+    });
+    on<GetInfluencerReviewOnCurrentTransaction>((event, emit) async {
+      try {
+        final dynamic review = await influencerRepository
+            .getReviewWithTransactionId(event.influencerId, event.reviewId);
+        emit(GetInfluencerReviewOnCurrentTransactionSuccess(review));
       } catch (e) {
         emit(InfluencerError(e.toString()));
       }

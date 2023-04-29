@@ -13,6 +13,7 @@ class MessageTile extends StatefulWidget {
   final bool sentByMe;
   final String negotiationId;
   final String chatId;
+  final String influencerId;
   const MessageTile(
       {Key? key,
       required this.message,
@@ -22,7 +23,8 @@ class MessageTile extends StatefulWidget {
       required this.sender,
       required this.sentByMe,
       required this.negotiationId,
-      required this.chatId})
+      required this.chatId,
+      required this.influencerId})
       : super(key: key);
 
   @override
@@ -81,6 +83,7 @@ class _MessageTileState extends State<MessageTile> {
                               negotiationId: widget.negotiationId,
                               chatId: widget.chatId,
                               sentByMe: widget.sentByMe,
+                              influencerId: widget.influencerId,
                             ));
                       },
                       child: Container(

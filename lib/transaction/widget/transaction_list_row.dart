@@ -14,13 +14,15 @@ class TransactionListRow extends StatefulWidget {
   final String influencerId;
   final String negotiationId;
   final String transactionStatus;
+  final String agreementId;
 
   const TransactionListRow(
       {Key? key,
       required this.transactionId,
       required this.influencerId,
       required this.negotiationId,
-      required this.transactionStatus})
+      required this.transactionStatus,
+      required this.agreementId})
       : super(key: key);
 
   @override
@@ -40,7 +42,9 @@ class _TransactionListRowState extends State<TransactionListRow> {
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
+    influencerBloc = InfluencerBloc(
+        influencerRepository: influencerRepository,
+        categoryRepository: categoryRepository);
     influencerBloc.add(GetInfluencerDetail(widget.influencerId));
 
     negotiationBloc =
@@ -77,6 +81,9 @@ class _TransactionListRowState extends State<TransactionListRow> {
                   nextScreen(
                       context,
                       TransactionDetailPage(
+                          negotiationId: widget.negotiationId,
+                          agreementId: widget.agreementId,
+                          influencerId: widget.influencerId,
                           transactionId: widget.transactionId));
                 },
                 child: ListTile(

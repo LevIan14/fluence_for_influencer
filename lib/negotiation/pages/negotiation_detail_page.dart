@@ -17,10 +17,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NegotiationDetailPage extends StatefulWidget {
   final String negotiationId;
+  final String influencerId;
   final String? chatId;
   final bool? sentByMe;
   const NegotiationDetailPage(
-      {Key? key, required this.negotiationId, this.chatId, this.sentByMe})
+      {Key? key,
+      required this.negotiationId,
+      required this.influencerId,
+      this.chatId,
+      this.sentByMe})
       : super(key: key);
 
   @override
@@ -29,7 +34,7 @@ class NegotiationDetailPage extends StatefulWidget {
 
 class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   String umkmId = "";
-  
+
   final CategoryRepository categoryRepository = CategoryRepository();
   final InfluencerRepository influencerRepository = InfluencerRepository();
   late final InfluencerBloc influencerBloc;
@@ -66,7 +71,9 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
+    influencerBloc = InfluencerBloc(
+        influencerRepository: influencerRepository,
+        categoryRepository: categoryRepository);
 
     agreementBloc = AgreementBloc(agreementRepository: agreementRepository);
 
