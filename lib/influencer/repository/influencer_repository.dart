@@ -80,6 +80,8 @@ class InfluencerRepository {
         'gender': influencer.gender,
         'location': influencer.location,
         'note_agreement': influencer.noteAgreement,
+        'lowest_fee': influencer.lowestFee,
+        'highest_fee': influencer.highestFee,
       });
     } catch (e) {
       throw Exception(e.toString());

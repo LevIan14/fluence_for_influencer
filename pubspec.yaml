@@ -43,8 +43,11 @@ dependencies:
   firebase_app_check: ^0.1.1+14
   json_annotation: ^4.7.0
   flutter_filter_dialog: ^1.0.4
+  geolocator: ^9.0.2
+  geocoding: ^2.1.0
+  csc_picker: ^0.2.7
 
-  # Google Sign In
+  # Google Sign In 
   firebase_auth: ^4.2.5
   google_sign_in: ^5.0.3
 

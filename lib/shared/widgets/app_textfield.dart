@@ -22,7 +22,7 @@ class AppTextfield extends StatelessWidget {
   final bool isEraseAll;
   final TextEditingController fieldController;
   final Function(String?) validator;
-  final Future<void> Function(dynamic)? onTap;
+  final Future<void> Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class AppTextfield extends StatelessWidget {
         obscureText: isObscure,
         validator: (value) => validator(value),
         onChanged: (value) {},
-        onTap: onTap != null ? () => onTap!(context) : null,
+        onTap: onTap != null ? () => onTap : null,
       ),
     ]);
   }

@@ -17,6 +17,8 @@ class Influencer {
   String location;
   String about;
   String? noteAgreement;
+  num? lowestFee;
+  num? highestFee;
 
   late String? facebookAccessToken;
   late String? instagramUserId;
@@ -43,6 +45,8 @@ class Influencer {
       this.location,
       this.avatarUrl,
       this.about,
+      this.lowestFee,
+      this.highestFee,
       this.facebookAccessToken,
       this.instagramUserId,
       this.followersCount,
@@ -65,6 +69,8 @@ class Influencer {
         json['location'],
         json['avatar_url'],
         json['about'],
+        json['lowest_fee'],
+        json['highest_fee'],
         json['facebook_access_token'],
         json['instagram_user_id'],
         json['followers_count'],

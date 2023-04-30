@@ -18,6 +18,7 @@ import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/category/bloc/category_bloc.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
+import 'package:flutter/services.dart';
 import 'widget_directing_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -25,6 +26,8 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -58,16 +61,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return value!.isEmpty ? "Location can not be null." : null;
   }
 
+  final TextEditingController _lowestFeeController = TextEditingController();
+  String? _lowestFeeValidator(String? value) {
+    if(value!.isEmpty) return null;
+    if(_highestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) > int.parse(_highestFeeController.value.text) ? 'Lowest fee can not be higher than highest fee' : null;
+  }
+
+  final TextEditingController _highestFeeController = TextEditingController();
+  String? _highestFeeValidator(String? value) {
+    if(value!.isEmpty) return null;
+    if(_lowestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) < int.parse(_lowestFeeController.value.text) ? 'Highest fee can not be lower than lowest fee' : null;
+  }
+
   final TextEditingController _aboutController = TextEditingController();
-  // String? _aboutValidator (String? value) {
-  //   return null;
-  // }
   final TextEditingController _noteAgreementController =
       TextEditingController();
-  // String? _noteAgreementValidator (String? value) {
-  //   return value!.isEmpty ? "Note agreement can not be null." : null;
-  // }
   final TextEditingController _genderController = TextEditingController();
+
+  String? _currentAddress;
+  Position? _currentPosition;
   List<CategoryType> _selectedCategory = [];
   XFile? _selectedImage;
   late ImageProvider<Object> _selectedImageWidget;
@@ -96,7 +110,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _selectedCategory = i.categoryType as List<CategoryType>;
       _aboutController.text = i.about;
       _noteAgreementController.text =
-          i.noteAgreement == null ? i.noteAgreement! : "";
+        i.noteAgreement != null ? i.noteAgreement! : "";
+      _lowestFeeController.text = 
+        i.lowestFee != null ? i.lowestFee.toString() : "";
+      _highestFeeController.text = 
+        i.highestFee != null ? i.highestFee.toString() : "";
     });
   }
 
@@ -119,7 +137,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencer.about == _aboutController.text &&
         influencer.noteAgreement == _noteAgreementController.text &&
         influencer.gender == _genderController.text &&
-        influencer.categoryType == _selectedCategory) {
+        influencer.categoryType == _selectedCategory &&
+        influencer.lowestFee == int.parse(_lowestFeeController.text) &&
+        influencer.highestFee == int.parse(_highestFeeController.text)
+      ) {
       return true;
     }
     return false;
@@ -196,6 +217,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       influencer.noteAgreement = _noteAgreementController.text;
                       influencer.gender = _genderController.text;
                       influencer.categoryType = _selectedCategory;
+                      influencer.lowestFee = int.parse(_lowestFeeController.text);
+                      influencer.highestFee = int.parse(_highestFeeController.text);
                       influencerBloc.add(UpdateInfluencerProfileSettings(
                           influencer, _selectedImage));
                       Navigator.of(context).pop();
@@ -219,7 +242,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: Container(
         constraints:
             BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-        padding: EdgeInsets.symmetric(horizontal: margin * 2),
+        padding: EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
         decoration: const BoxDecoration(color: Constants.backgroundColor),
         child: Form(
           key: _formSettingsKey,
@@ -243,7 +266,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               AppTextfield(
                   field: "Location",
                   fieldController: _locationController,
-                  validator: _locationValidator),
+                  validator: _locationValidator,
+                  isReadOnly: true,
+                  onTap: () async => await _getCurrentPosition()),
               buildCategoryTypeChips(categories),
               DirectingTextfield(
                   field: "About",
@@ -265,11 +290,75 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             field: "Note Agreement",
                             fieldController: _noteAgreementController));
                     _noteAgreementController.text = changedValue;
-                  }),
-            ],
-          ),
+                  }
+              ),
+              // AppTextfield(
+              //   field: "Fee Range", 
+              //   fieldController: _feeController, 
+              //   validator: _feeValidator
+              // ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch, 
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: const Text('Fee Range (in Rupiah)',
+                        style: TextStyle(color: Constants.primaryColor, fontSize: 15),
+                        textAlign: TextAlign.left
+                      )
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          // margin: const EdgeInsets.only(right: 15.0),
+                          constraints: BoxConstraints(
+                            minWidth: MediaQuery.of(context).size.width / 2.35
+                          ),
+                          child: TextFormField(
+                            decoration: textInputDecoration.copyWith(
+                              hintText: 'Lowest Fee',
+                              errorStyle: const TextStyle(overflow: TextOverflow.visible),
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: _lowestFeeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            validator: _lowestFeeValidator,
+                          ),
+                        ),
+                        Container(
+                          // margin: const EdgeInsets.only(left: 5.0),
+                          constraints: BoxConstraints(
+                            minWidth: MediaQuery.of(context).size.width / 2.35
+                          ),
+                          child: TextFormField(
+                            decoration: textInputDecoration.copyWith(
+                              hintText: 'Highest Fee',
+                              errorStyle: const TextStyle(overflow: TextOverflow.visible),
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: _highestFeeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            validator: _highestFeeValidator,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ]
         ),
       ),
+    )
     );
   }
 
@@ -465,6 +554,66 @@ class _EditProfilePageState extends State<EditProfilePage> {
         });
   }
 
+  _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location services are disabled. Please enable the services')));
+      return false;
+    }
+
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')));
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location permissions are permanently denied, we cannot request permissions.')));
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        // _currentAddress =
+        //     '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+        _currentAddress = place.subAdministrativeArea;
+        log(_currentAddress.toString());
+        _locationController.text = _currentAddress!;
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
   Future<bool> createWillPopDialog(context) async {
     Text dialogTitle = const Text("Discard changes?");
     Text dialogContent =
@@ -484,8 +633,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final bool resp = await showDialog(
         context: context,
         builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, discardButton, cancelButton));
+            context, dialogTitle, dialogContent, discardButton, cancelButton)
+        );
     if (!resp) return false;
     return true;
   }
+
 }
+
