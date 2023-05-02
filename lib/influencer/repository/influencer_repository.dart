@@ -29,22 +29,27 @@ class InfluencerRepository {
   }
 
   Future<String> updateInfluencerAvatar(
-      String influencerId, String avatarUrl, XFile img) async {
+      String influencerId, String avatarUrl, XFile? img) async {
     try {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
-      avatarRef.delete();
+      if(avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
     } catch (e) {
       throw Exception(e.toString());
     }
-    String finalImagePath = 'influencers/$influencerId/${img.name}';
-    File file = File(img.path);
     try {
-      final storageRef = Constants.firebaseStorage.ref();
-      final fileRef = storageRef
-          .child(finalImagePath); // defining image path in firebase storage
-      UploadTask uploadTask = fileRef.putFile(file);
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadURL = await snapshot.ref.getDownloadURL();
+      String downloadURL;
+      if(img != null) {
+        String finalImagePath = 'influencers/$influencerId/${img.name}';
+        File file = File(img.path);
+        final storageRef = Constants.firebaseStorage.ref();
+        final fileRef = storageRef
+            .child(finalImagePath); // defining image path in firebase storage
+        UploadTask uploadTask = fileRef.putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        downloadURL = await snapshot.ref.getDownloadURL();
+      } else {
+        downloadURL = 'https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab';
+      } 
       await Constants.firebaseFirestore
           .collection('influencers')
           .doc(influencerId)
@@ -57,14 +62,14 @@ class InfluencerRepository {
 
   Future<void> updateInfluencerProfileSettings(
       Influencer influencer, XFile? img) async {
-    if (img != null) {
+    // if (img != null) {
       try {
         await updateInfluencerAvatar(
             influencer.userId, influencer.avatarUrl, img);
       } catch (e) {
         throw Exception(e.toString());
       }
-    }
+    // }
     try {
       List<String> categoryTypeId = [];
       for (CategoryType category in influencer.categoryType) {

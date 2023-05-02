@@ -131,6 +131,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
+  onDeleteAvatar(){
+    setState(() {
+      _selectedImage = null;
+      _selectedImageWidget = const NetworkImage('https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab');
+    });
+  }
+
   bool allowToPop() {
     if (influencer.fullname == _nameController.text &&
         influencer.location == _locationController.text &&
@@ -139,7 +146,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencer.gender == _genderController.text &&
         influencer.categoryType == _selectedCategory &&
         influencer.lowestFee == int.parse(_lowestFeeController.text) &&
-        influencer.highestFee == int.parse(_highestFeeController.text)
+        influencer.highestFee == int.parse(_highestFeeController.text) &&
+        _selectedImage == null
       ) {
       return true;
     }
@@ -428,14 +436,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             },
                                           ),
                                           ListTile(
-                                            leading: Icon(
+                                            leading: const Icon(
                                                 Ionicons.trash_outline,
-                                                color: Colors.grey.shade600),
+                                                color: Colors.red),
                                             title: Text(
                                                 "Remove current profile picture",
-                                                style: textStyle),
+                                                style: textStyle.copyWith(color: Colors.red)),
                                             onTap: () {
-                                              // bloc untuk remove
+                                              onDeleteAvatar();
+                                              Navigator.pop(context);
                                             },
                                           ),
                                         ],
