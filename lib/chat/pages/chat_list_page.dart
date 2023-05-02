@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/chat/repository/chat_repository.dart';
 import 'package:fluence_for_influencer/chat/widgets/chat_row.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,24 +47,35 @@ class _ChatListPageState extends State<ChatListPage> {
                   return StreamBuilder(
                       stream: state.chatList,
                       builder: (context, AsyncSnapshot snapshot) {
-                        return snapshot.hasData
-                            ? ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: snapshot.data.docs.length,
-                                itemBuilder: (context, index) {
-                                  return ChatRow(
-                                      chatId: snapshot.data.docs[index].id,
-                                      umkmId: snapshot.data.docs[index]
-                                          ['umkm_id'],
-                                      influencerId: snapshot.data.docs[index]
-                                          ['influencer_id'],
-                                      recentMessage: snapshot.data.docs[index]
-                                          ['recent_message'],
-                                      timestamp: snapshot.data.docs[index]
-                                          ['updated_at']);
-                                },
-                              )
-                            : _loadingAnimationCircular();
+                        if (snapshot.hasData) {
+                          if (snapshot.data.docs.length <= 0) {
+                            return const Center(
+                              child: Text("There is no data to show",
+                                  style: TextStyle(
+                                      color: Constants.grayColor,
+                                      fontSize: 16.0,
+                                      fontStyle: FontStyle.italic)),
+                            );
+                          } else {
+                            return ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: snapshot.data.docs.length,
+                              itemBuilder: (context, index) {
+                                return ChatRow(
+                                    chatId: snapshot.data.docs[index].id,
+                                    umkmId: snapshot.data.docs[index]
+                                        ['umkm_id'],
+                                    influencerId: snapshot.data.docs[index]
+                                        ['influencer_id'],
+                                    recentMessage: snapshot.data.docs[index]
+                                        ['recent_message'],
+                                    timestamp: snapshot.data.docs[index]
+                                        ['updated_at']);
+                              },
+                            );
+                          }
+                        }
+                        return _loadingAnimationCircular();
                       });
                 }
                 return Container();

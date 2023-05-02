@@ -54,85 +54,8 @@ class _MessageListPageState extends State<MessageListPage> {
           }
         }, builder: (context, state) {
           if (state is MessageLoading) {
-            return const SafeArea(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          if (state is MessageInitial) {
-            return Scaffold(
-              appBar: AppBar(
-                elevation: 0,
-                title: Text(widget.fromUserName),
-                backgroundColor: Constants.primaryColor,
-              ),
-              body: Column(
-                children: [
-                  Expanded(child: Container()),
-                  Container(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      margin: const EdgeInsets.only(
-                          left: 16, right: 16, bottom: 10),
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Row(children: [
-                        GestureDetector(
-                          onTap: () async {
-                            String chatId = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NegotiationCreatePage(
-                                          fromUserName: widget.fromUserName,
-                                          chatId: widget.chatId,
-                                          umkmId: widget.umkmId,
-                                          influencerId: widget.influencerId,
-                                        )));
-                            setState(() {
-                              widget.chatId = chatId;
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            child: const Center(
-                                child: Icon(
-                              Icons.price_check_rounded,
-                              color: Constants.primaryColor,
-                              size: 18,
-                            )),
-                          ),
-                        ),
-                        Expanded(
-                            child: TextFormField(
-                          cursorColor: Colors.grey,
-                          maxLines: null,
-                          controller: messageController,
-                          decoration:
-                              const InputDecoration(border: InputBorder.none),
-                        )),
-                        GestureDetector(
-                          onTap: () {
-                            sendMessage(context, widget.chatId);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            child: const Center(
-                              child: Icon(
-                                Icons.send,
-                                color: Constants.primaryColor,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        )
-                      ]),
-                    ),
-                  ),
-                ],
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
 
@@ -145,134 +68,136 @@ class _MessageListPageState extends State<MessageListPage> {
                   title: Text(widget.fromUserName),
                   backgroundColor: Constants.primaryColor,
                 ),
-                body: Column(
-                  children: [
-                    StreamBuilder(
-                        stream: state.messageList,
-                        builder: (context, AsyncSnapshot snapshot) {
-                          return snapshot.hasData
-                              ? Flexible(
-                                  child: SingleChildScrollView(
-                                    reverse: true,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: snapshot.data.docs.length,
-                                      itemBuilder: (context, index) {
-                                        Timestamp timestampFromSnapshot =
-                                            snapshot.data.docs[index]
-                                                ['created_at'];
-                                        DateTime dateTime =
-                                            timestampFromSnapshot.toDate();
+                body: Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: Column(
+                    children: [
+                      StreamBuilder(
+                          stream: state.messageList,
+                          builder: (context, AsyncSnapshot snapshot) {
+                            return snapshot.hasData
+                                ? Expanded(
+                                    child: SingleChildScrollView(
+                                      reverse: true,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: snapshot.data.docs.length,
+                                        itemBuilder: (context, index) {
+                                          Timestamp timestampFromSnapshot =
+                                              snapshot.data.docs[index]
+                                                  ['created_at'];
+                                          DateTime dateTime =
+                                              timestampFromSnapshot.toDate();
 
-                                        String negotiationId = "";
+                                          String negotiationId = "";
 
-                                        try {
-                                          negotiationId = snapshot.data
-                                              .docs[index]['negotiation_id'];
-                                        } catch (e) {
-                                          negotiationId = "";
-                                        }
+                                          try {
+                                            negotiationId = snapshot.data
+                                                .docs[index]['negotiation_id'];
+                                          } catch (e) {
+                                            negotiationId = "";
+                                          }
 
-                                        var isSameDate = false;
+                                          var isSameDate = false;
 
-                                        isSameDate =
-                                            tmpDate.isSameDate(dateTime);
+                                          isSameDate =
+                                              tmpDate.isSameDate(dateTime);
 
-                                        if (!isSameDate) {
-                                          tmpDate = dateTime;
-                                        }
+                                          if (!isSameDate) {
+                                            tmpDate = dateTime;
+                                          }
 
-                                        String date =
-                                            DateUtil.dateWithDayFormat(
-                                                dateTime);
+                                          String date =
+                                              DateUtil.dateWithDayFormat(
+                                                  dateTime);
 
-                                        String timestamp =
-                                            DateUtil.hMMFormat(dateTime);
+                                          String timestamp =
+                                              DateUtil.hMMFormat(dateTime);
 
-                                        return MessageTile(
-                                            influencerId: widget.influencerId,
-                                            negotiationId: negotiationId,
-                                            message: snapshot.data.docs[index]
-                                                ['message'],
-                                            chatId: widget.chatId,
-                                            showDate: !isSameDate,
-                                            timestamp: timestamp,
-                                            date: date,
-                                            sender: snapshot.data.docs[index]
-                                                ['sender_id'],
-                                            sentByMe: Constants.firebaseAuth
-                                                    .currentUser!.uid ==
-                                                snapshot.data.docs[index]
-                                                    ['sender_id']);
-                                      },
+                                          return MessageTile(
+                                              influencerId: widget.influencerId,
+                                              negotiationId: negotiationId,
+                                              message: snapshot.data.docs[index]
+                                                  ['message'],
+                                              chatId: widget.chatId,
+                                              showDate: !isSameDate,
+                                              timestamp: timestamp,
+                                              date: date,
+                                              sender: snapshot.data.docs[index]
+                                                  ['sender_id'],
+                                              sentByMe: Constants.firebaseAuth
+                                                      .currentUser!.uid ==
+                                                  snapshot.data.docs[index]
+                                                      ['sender_id']);
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                )
-                              : const Expanded(
-                                  child: Center(
-                                      child: CircularProgressIndicator
-                                          .adaptive()));
-                        }),
-                    Container(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        margin: const EdgeInsets.only(
-                            left: 16, right: 16, bottom: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Row(children: [
-                          GestureDetector(
-                            onTap: () {
-                              nextScreen(
-                                  context,
-                                  NegotiationCreatePage(
-                                    fromUserName: widget.fromUserName,
-                                    chatId: widget.chatId,
-                                    umkmId: widget.umkmId,
-                                    influencerId: widget.influencerId,
-                                  ));
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              child: const Center(
-                                  child: Icon(
-                                Icons.price_check_rounded,
-                                color: Constants.primaryColor,
-                                size: 18,
-                              )),
-                            ),
-                          ),
-                          Expanded(
-                              child: TextFormField(
-                            cursorColor: Colors.grey,
-                            maxLines: null,
-                            controller: messageController,
-                            decoration:
-                                const InputDecoration(border: InputBorder.none),
-                          )),
-                          GestureDetector(
-                            onTap: () {
-                              sendMessage(context, widget.chatId);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(left: 8),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.send,
+                                  )
+                                : const Expanded(
+                                    child: Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive()));
+                          }),
+                      Container(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Row(children: [
+                            GestureDetector(
+                              onTap: () {
+                                nextScreen(
+                                    context,
+                                    NegotiationCreatePage(
+                                      fromUserName: widget.fromUserName,
+                                      chatId: widget.chatId,
+                                      umkmId: widget.umkmId,
+                                      influencerId: widget.influencerId,
+                                    ));
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                child: const Center(
+                                    child: Icon(
+                                  Icons.price_check_rounded,
                                   color: Constants.primaryColor,
                                   size: 18,
-                                ),
+                                )),
                               ),
                             ),
-                          )
-                        ]),
+                            Expanded(
+                                child: TextFormField(
+                              cursorColor: Colors.grey,
+                              maxLines: null,
+                              controller: messageController,
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none),
+                            )),
+                            GestureDetector(
+                              onTap: () {
+                                sendMessage(context, widget.chatId);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 8),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.send,
+                                    color: Constants.primaryColor,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ]),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ));
           }
           return Container();

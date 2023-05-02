@@ -63,16 +63,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   final TextEditingController _lowestFeeController = TextEditingController();
   String? _lowestFeeValidator(String? value) {
-    if(value!.isEmpty) return null;
-    if(_highestFeeController.value.text.isEmpty) return null;
-    return int.parse(value) > int.parse(_highestFeeController.value.text) ? 'Lowest fee can not be higher than highest fee' : null;
+    if (value!.isEmpty) return null;
+    if (_highestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) > int.parse(_highestFeeController.value.text)
+        ? 'Lowest fee can not be higher than highest fee'
+        : null;
   }
 
   final TextEditingController _highestFeeController = TextEditingController();
   String? _highestFeeValidator(String? value) {
-    if(value!.isEmpty) return null;
-    if(_lowestFeeController.value.text.isEmpty) return null;
-    return int.parse(value) < int.parse(_lowestFeeController.value.text) ? 'Highest fee can not be lower than lowest fee' : null;
+    if (value!.isEmpty) return null;
+    if (_lowestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) < int.parse(_lowestFeeController.value.text)
+        ? 'Highest fee can not be lower than lowest fee'
+        : null;
   }
 
   final TextEditingController _aboutController = TextEditingController();
@@ -110,11 +114,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _selectedCategory = i.categoryType as List<CategoryType>;
       _aboutController.text = i.about;
       _noteAgreementController.text =
-        i.noteAgreement != null ? i.noteAgreement! : "";
-      _lowestFeeController.text = 
-        i.lowestFee != null ? i.lowestFee.toString() : "";
-      _highestFeeController.text = 
-        i.highestFee != null ? i.highestFee.toString() : "";
+          i.noteAgreement != null ? i.noteAgreement! : "";
+      _lowestFeeController.text =
+          i.lowestFee != null ? i.lowestFee.toString() : "";
+      _highestFeeController.text =
+          i.highestFee != null ? i.highestFee.toString() : "";
     });
   }
 
@@ -131,10 +135,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  onDeleteAvatar(){
+  onDeleteAvatar() {
     setState(() {
       _selectedImage = null;
-      _selectedImageWidget = const NetworkImage('https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab');
+      _selectedImageWidget = const NetworkImage(
+          'https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab');
     });
   }
 
@@ -147,8 +152,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencer.categoryType == _selectedCategory &&
         influencer.lowestFee == int.parse(_lowestFeeController.text) &&
         influencer.highestFee == int.parse(_highestFeeController.text) &&
-        _selectedImage == null
-      ) {
+        _selectedImage == null) {
       return true;
     }
     return false;
@@ -225,8 +229,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       influencer.noteAgreement = _noteAgreementController.text;
                       influencer.gender = _genderController.text;
                       influencer.categoryType = _selectedCategory;
-                      influencer.lowestFee = int.parse(_lowestFeeController.text);
-                      influencer.highestFee = int.parse(_highestFeeController.text);
+                      influencer.lowestFee =
+                          int.parse(_lowestFeeController.text);
+                      influencer.highestFee =
+                          int.parse(_highestFeeController.text);
                       influencerBloc.add(UpdateInfluencerProfileSettings(
                           influencer, _selectedImage));
                       Navigator.of(context).pop();
@@ -247,127 +253,121 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget buildBody(BuildContext context) {
     double margin = 10.0;
     return SingleChildScrollView(
-      child: Container(
-        constraints:
-            BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-        padding: EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
-        decoration: const BoxDecoration(color: Constants.backgroundColor),
-        child: Form(
-          key: _formSettingsKey,
-          onChanged: () {
-            setState(() {
-              _enableSaveBtn = _formSettingsKey.currentState!.validate();
-            });
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              buildProfileAvatar(influencer),
-              AppTextfield(
-                  field: "Name",
-                  fieldController: _nameController,
-                  validator: _nameValidator),
-              DirectingTextfield(
-                  field: "Gender",
-                  fieldController: _genderController,
-                  onTap: () => showGenderModal()),
-              AppTextfield(
-                  field: "Location",
-                  fieldController: _locationController,
-                  validator: _locationValidator,
-                  isReadOnly: true,
-                  onTap: () async => await _getCurrentPosition()),
-              buildCategoryTypeChips(categories),
-              DirectingTextfield(
-                  field: "About",
-                  fieldController: _aboutController,
-                  onTap: () async {
-                    final changedValue = await nextScreenAndGetValue(
-                        context,
-                        FullTextfieldPage(
-                            field: "About", fieldController: _aboutController));
-                    _aboutController.text = changedValue;
-                  }),
-              DirectingTextfield(
-                  field: "Note Agreement",
-                  fieldController: _noteAgreementController,
-                  onTap: () async {
-                    final changedValue = await nextScreenAndGetValue(
-                        context,
-                        FullTextfieldPage(
-                            field: "Note Agreement",
-                            fieldController: _noteAgreementController));
-                    _noteAgreementController.text = changedValue;
-                  }
-              ),
-              // AppTextfield(
-              //   field: "Fee Range", 
-              //   fieldController: _feeController, 
-              //   validator: _feeValidator
-              // ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch, 
+        child: Container(
+      constraints:
+          BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+      padding: EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
+      decoration: const BoxDecoration(color: Constants.backgroundColor),
+      child: Form(
+        key: _formSettingsKey,
+        onChanged: () {
+          setState(() {
+            _enableSaveBtn = _formSettingsKey.currentState!.validate();
+          });
+        },
+        child: Column(mainAxisSize: MainAxisSize.max, children: [
+          buildProfileAvatar(influencer),
+          AppTextfield(
+              field: "Name",
+              fieldController: _nameController,
+              validator: _nameValidator),
+          DirectingTextfield(
+              field: "Gender",
+              fieldController: _genderController,
+              onTap: () => showGenderModal()),
+          AppTextfield(
+              field: "Location",
+              fieldController: _locationController,
+              validator: _locationValidator,
+              isReadOnly: true,
+              onTap: () async => await _getCurrentPosition()),
+          buildCategoryTypeChips(categories),
+          DirectingTextfield(
+              field: "About",
+              fieldController: _aboutController,
+              onTap: () async {
+                final changedValue = await nextScreenAndGetValue(
+                    context,
+                    FullTextfieldPage(
+                        field: "About", fieldController: _aboutController));
+                _aboutController.text = changedValue;
+              }),
+          DirectingTextfield(
+              field: "Note Agreement",
+              fieldController: _noteAgreementController,
+              onTap: () async {
+                final changedValue = await nextScreenAndGetValue(
+                    context,
+                    FullTextfieldPage(
+                        field: "Note Agreement",
+                        fieldController: _noteAgreementController));
+                _noteAgreementController.text = changedValue;
+              }),
+          // AppTextfield(
+          //   field: "Fee Range",
+          //   fieldController: _feeController,
+          //   validator: _feeValidator
+          // ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: const Text('Fee Range (in Rupiah)',
+                        style: TextStyle(
+                            color: Constants.primaryColor, fontSize: 15),
+                        textAlign: TextAlign.left)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: const Text('Fee Range (in Rupiah)',
-                        style: TextStyle(color: Constants.primaryColor, fontSize: 15),
-                        textAlign: TextAlign.left
-                      )
+                      // margin: const EdgeInsets.only(right: 15.0),
+                      constraints: BoxConstraints(
+                          minWidth: MediaQuery.of(context).size.width / 2.35),
+                      child: TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                          hintText: 'Lowest Fee',
+                          errorStyle:
+                              const TextStyle(overflow: TextOverflow.visible),
+                        ),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _lowestFeeController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        validator: _lowestFeeValidator,
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          // margin: const EdgeInsets.only(right: 15.0),
-                          constraints: BoxConstraints(
-                            minWidth: MediaQuery.of(context).size.width / 2.35
-                          ),
-                          child: TextFormField(
-                            decoration: textInputDecoration.copyWith(
-                              hintText: 'Lowest Fee',
-                              errorStyle: const TextStyle(overflow: TextOverflow.visible),
-                            ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            controller: _lowestFeeController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            validator: _lowestFeeValidator,
-                          ),
+                    Container(
+                      // margin: const EdgeInsets.only(left: 5.0),
+                      constraints: BoxConstraints(
+                          minWidth: MediaQuery.of(context).size.width / 2.35),
+                      child: TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                          hintText: 'Highest Fee',
+                          errorStyle:
+                              const TextStyle(overflow: TextOverflow.visible),
                         ),
-                        Container(
-                          // margin: const EdgeInsets.only(left: 5.0),
-                          constraints: BoxConstraints(
-                            minWidth: MediaQuery.of(context).size.width / 2.35
-                          ),
-                          child: TextFormField(
-                            decoration: textInputDecoration.copyWith(
-                              hintText: 'Highest Fee',
-                              errorStyle: const TextStyle(overflow: TextOverflow.visible),
-                            ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            controller: _highestFeeController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            validator: _highestFeeValidator,
-                          ),
-                        ),
-                      ],
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _highestFeeController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        validator: _highestFeeValidator,
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ]
-        ),
+              ],
+            ),
+          ),
+        ]),
       ),
-    )
-    );
+    ));
   }
 
   Widget buildProfileAvatar(Influencer influencer) {
@@ -441,7 +441,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 color: Colors.red),
                                             title: Text(
                                                 "Remove current profile picture",
-                                                style: textStyle.copyWith(color: Colors.red)),
+                                                style: textStyle.copyWith(
+                                                    color: Colors.red)),
                                             onTap: () {
                                               onDeleteAvatar();
                                               Navigator.pop(context);
@@ -642,11 +643,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final bool resp = await showDialog(
         context: context,
         builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, discardButton, cancelButton)
-        );
+            context, dialogTitle, dialogContent, discardButton, cancelButton));
     if (!resp) return false;
     return true;
   }
-
 }
-

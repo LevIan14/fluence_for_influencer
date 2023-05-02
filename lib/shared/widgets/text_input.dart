@@ -5,7 +5,6 @@ const textInputDecoration = InputDecoration(
   filled: true,
   fillColor: Constants.secondaryColor,
   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-  constraints: BoxConstraints(maxWidth: 150),
   labelStyle: TextStyle(color: Colors.black),
   // Enabled and focused
   focusedBorder: OutlineInputBorder(
