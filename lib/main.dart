@@ -1,4 +1,5 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/auth/pages/login_page.dart';
@@ -41,18 +42,26 @@ class FluenceForInfluencer extends StatelessWidget {
               colorScheme:
                   ColorScheme.fromSeed(seedColor: Constants.primaryColor),
               primaryColor: Constants.primaryColor,
-              scaffoldBackgroundColor: Colors.white),
+              scaffoldBackgroundColor: Colors.white,
+              fontFamily: 'Montserrat'),
           debugShowCheckedModeBanner: false,
           home: StreamBuilder(
-            stream: Constants.firebaseAuth.authStateChanges(),
+            stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                final bool isLoggedIn = snapshot.hasData;
-                return isLoggedIn ? const MainPage(index: 0) : const LoginPage();
+                if (snapshot.hasData) {
+                  bool isVerified = false;
+                  final bool isLoggedIn = snapshot.hasData;
+                  isVerified =
+                      Constants.firebaseAuth.currentUser!.emailVerified;
+                  return isLoggedIn && isVerified
+                      ? const MainPage(index: 0)
+                      : const LoginPage();
+                } else {
+                  return const LoginPage();
+                }
               }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return Container();
             },
           ),
         ),

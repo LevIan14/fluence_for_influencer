@@ -2,7 +2,9 @@ import 'package:fluence_for_influencer/chat/pages/chat_list_page.dart';
 import 'package:fluence_for_influencer/dashboard/pages/dashboard_page.dart';
 import 'package:fluence_for_influencer/influencer/pages/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.index}) : super(key: key);
@@ -41,15 +43,13 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTap,
         currentIndex: currentIndexPage,
-        selectedItemColor: Colors.black54,
+        selectedItemColor: Constants.primaryColor,
         unselectedItemColor: Colors.grey.withOpacity(0.5),
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+        showUnselectedLabels: true,
         elevation: 0,
         items: const [
-          BottomNavigationBarItem(label: 'List', icon: Icon(Icons.chat)),
-          BottomNavigationBarItem(
-              label: 'Negotiation', icon: Icon(Icons.settings)),
+          BottomNavigationBarItem(label: 'Home', icon: Icon(Ionicons.home)),
+          BottomNavigationBarItem(label: 'Setting', icon: Icon(Icons.settings)),
           BottomNavigationBarItem(label: 'Chat', icon: Icon(Icons.chat)),
         ],
       ),

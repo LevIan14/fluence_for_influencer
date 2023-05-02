@@ -26,3 +26,9 @@ void showSnackbar(context, color, message) {
     ),
   );
 }
+
+Widget showDialogWithCircularProgress(BuildContext context) {
+  return const Center(
+    child: CircularProgressIndicator.adaptive(),
+  );
+}

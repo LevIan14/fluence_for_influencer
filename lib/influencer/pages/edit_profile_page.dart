@@ -66,16 +66,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   final TextEditingController _lowestFeeController = TextEditingController();
   String? _lowestFeeValidator(String? value) {
-    if(value!.isEmpty) return null;
-    if(_highestFeeController.value.text.isEmpty) return null;
-    return int.parse(value) > int.parse(_highestFeeController.value.text) ? 'Lowest fee can not be higher than highest fee' : null;
+    if (value!.isEmpty) return null;
+    if (_highestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) > int.parse(_highestFeeController.value.text)
+        ? 'Lowest fee can not be higher than highest fee'
+        : null;
   }
 
   final TextEditingController _highestFeeController = TextEditingController();
   String? _highestFeeValidator(String? value) {
-    if(value!.isEmpty) return null;
-    if(_lowestFeeController.value.text.isEmpty) return null;
-    return int.parse(value) < int.parse(_lowestFeeController.value.text) ? 'Highest fee can not be lower than lowest fee' : null;
+    if (value!.isEmpty) return null;
+    if (_lowestFeeController.value.text.isEmpty) return null;
+    return int.parse(value) < int.parse(_lowestFeeController.value.text)
+        ? 'Highest fee can not be lower than lowest fee'
+        : null;
   }
 
   final TextEditingController _aboutController = TextEditingController();
@@ -115,11 +119,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _selectedCategory = i.categoryType as List<CategoryType>;
       _aboutController.text = i.about;
       _noteAgreementController.text =
-        i.noteAgreement != null ? i.noteAgreement! : "";
-      _lowestFeeController.text = 
-        i.lowestFee != null ? i.lowestFee.toString() : "";
-      _highestFeeController.text = 
-        i.highestFee != null ? i.highestFee.toString() : "";
+          i.noteAgreement != null ? i.noteAgreement! : "";
+      _lowestFeeController.text =
+          i.lowestFee != null ? i.lowestFee.toString() : "";
+      _highestFeeController.text =
+          i.highestFee != null ? i.highestFee.toString() : "";
     });
   }
 
@@ -136,7 +140,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  onDeleteAvatar(){
+  onDeleteAvatar() {
     setState(() {
       _selectedImage = XFile('');
       _selectedImageWidget = const NetworkImage('https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab');
@@ -160,8 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencer.categoryType == _selectedCategory &&
         influencer.lowestFee == int.parse(_lowestFeeController.text) &&
         influencer.highestFee == int.parse(_highestFeeController.text) &&
-        _selectedImage == null
-      ) {
+        _selectedImage == null) {
       return true;
     }
     return false;
@@ -249,8 +252,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       influencer.noteAgreement = _noteAgreementController.text;
                       influencer.gender = _genderController.text;
                       influencer.categoryType = _selectedCategory;
-                      influencer.lowestFee = int.parse(_lowestFeeController.text);
-                      influencer.highestFee = int.parse(_highestFeeController.text);
+                      influencer.lowestFee =
+                          int.parse(_lowestFeeController.text);
+                      influencer.highestFee =
+                          int.parse(_highestFeeController.text);
                       influencerBloc.add(UpdateInfluencerProfileSettings(
                           influencer, _selectedImage));
                       Navigator.of(context).pop();
@@ -386,8 +391,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ]
           ),
       ),
-    )
-    );
+    ));
   }
 
   Widget buildProfileAvatar(Influencer influencer) {
@@ -461,7 +465,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 color: Colors.red),
                                             title: Text(
                                                 "Remove current profile picture",
-                                                style: textStyle.copyWith(color: Colors.red)),
+                                                style: textStyle.copyWith(
+                                                    color: Colors.red)),
                                             onTap: () {
                                               onDeleteAvatar();
                                               Navigator.pop(context);
@@ -624,7 +629,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                       ),
                       Text('Facebook',
-                        style: TextStyle(color: Constants.navyColor, fontSize: 15),
+                        style: TextStyle(color: Constants.primaryColor, fontSize: 15),
                         textAlign: TextAlign.left
                       ),
                     ]
@@ -767,11 +772,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final bool resp = await showDialog(
         context: context,
         builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, discardButton, cancelButton)
-        );
+            context, dialogTitle, dialogContent, discardButton, cancelButton));
     if (!resp) return false;
     return true;
   }
-
 }
-

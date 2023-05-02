@@ -1,7 +1,5 @@
 import 'package:fluence_for_influencer/shared/constants.dart';
-import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
-import 'package:fluence_for_influencer/transaction/pages/transaction_detail_page.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:fluence_for_influencer/transaction/widget/transaction_list_row.dart';
 import 'package:flutter/material.dart';
@@ -41,23 +39,35 @@ class _TransactionListPageState extends State<TransactionListPage> {
               return StreamBuilder(
                 stream: state.transactionList,
                 builder: (context, snapshot) {
-                  return snapshot.hasData
-                      ? ListView.builder(
-                          itemCount: snapshot.data.docs.length,
-                          itemBuilder: (context, index) {
-                            return TransactionListRow(
-                                transactionId: snapshot.data.docs[index].id,
-                                agreementId: snapshot.data.docs[index]
-                                    ['agreement_id'],
-                                influencerId: snapshot.data.docs[index]
-                                    ['influencer_id'],
-                                negotiationId: snapshot.data.docs[index]
-                                    ['negotiation_id'],
-                                transactionStatus: snapshot.data.docs[index]
-                                    ['transaction_status']);
-                          },
-                        )
-                      : Container();
+                  if (snapshot.hasData) {
+                    if (snapshot.data.docs.length <= 0) {
+                      return const Center(
+                        child: Text("There is no data to show",
+                            style: TextStyle(
+                                color: Constants.grayColor,
+                                fontSize: 16.0,
+                                fontStyle: FontStyle.italic)),
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          return TransactionListRow(
+                            transactionId: snapshot.data.docs[index].id,
+                            agreementId: snapshot.data.docs[index]
+                                ['agreement_id'],
+                            influencerId: snapshot.data.docs[index]
+                                ['influencer_id'],
+                            negotiationId: snapshot.data.docs[index]
+                                ['negotiation_id'],
+                            transactionStatus: snapshot.data.docs[index]
+                                ['transaction_status'],
+                          );
+                        },
+                      );
+                    }
+                  }
+                  return _loadingAnimationCircular();
                 },
               );
             }

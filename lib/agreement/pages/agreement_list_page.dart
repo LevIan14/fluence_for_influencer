@@ -1,9 +1,7 @@
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
-import 'package:fluence_for_influencer/agreement/pages/agreement_detail_page.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
 import 'package:fluence_for_influencer/agreement/widget/agreement_row.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
-import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,20 +40,32 @@ class _AgreementListPageState extends State<AgreementListPage> {
                 return StreamBuilder(
                   stream: state.agreementList,
                   builder: (context, AsyncSnapshot snapshot) {
-                    return snapshot.hasData
-                        ? ListView.builder(
-                            itemCount: snapshot.data.docs.length,
-                            itemBuilder: (context, index) {
-                              return AgreementRow(
-                                  influencerId: snapshot.data.docs[index]
-                                      ['influencer_id'],
-                                  agreementStatus: snapshot.data.docs[index]
-                                      ['agreement_status'],
-                                  agreementId: snapshot.data.docs[index].id,
-                                  negotiationId: snapshot.data.docs[index]
-                                      ['negotiation_id']);
-                            })
-                        : _loadingAnimationCircular();
+                    if (snapshot.hasData) {
+                      if (snapshot.data.docs.length <= 0) {
+                        return const Center(
+                          child: Text("There is no data to show",
+                              style: TextStyle(
+                                  color: Constants.grayColor,
+                                  fontSize: 16.0,
+                                  fontStyle: FontStyle.italic)),
+                        );
+                      } else {
+                        return ListView.builder(
+                          itemCount: snapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            return AgreementRow(
+                                agreementId: snapshot.data.docs[index].id,
+                                agreementStatus: snapshot.data.docs[index]
+                                    ['agreement_status'],
+                                influencerId: snapshot.data.docs[index]
+                                    ['influencer_id'],
+                                negotiationId: snapshot.data.docs[index]
+                                    ['negotiation_id']);
+                          },
+                        );
+                      }
+                    }
+                    return _loadingAnimationCircular();
                   },
                 );
               }

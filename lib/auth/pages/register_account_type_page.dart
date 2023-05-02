@@ -1,14 +1,31 @@
 import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
-import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/auth/pages/login_page.dart';
+import 'package:fluence_for_influencer/auth/pages/verify_email_page.dart';
+import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
-import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
+import 'package:fluence_for_influencer/shared/widgets/select_type_page.dart';
+import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
+import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class RegisterAccountTypePage extends StatefulWidget {
-  const RegisterAccountTypePage({super.key});
+  final String fullName;
+  final String email;
+  final String password;
+  final String id;
+
+  const RegisterAccountTypePage(
+      {Key? key,
+      required this.fullName,
+      required this.email,
+      required this.password,
+      required this.id})
+      : super(key: key);
 
   @override
   State<RegisterAccountTypePage> createState() =>
@@ -17,20 +34,13 @@ class RegisterAccountTypePage extends StatefulWidget {
 
 class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   final _registerFormKey = GlobalKey<FormState>();
-  String selectedAccountType = "UMKM";
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
-  dynamic _nameValidator(String? value) {
-    return value!.length < 6 ? "Name must be at least 6 characters" : null;
-  }
 
-  dynamic _locationValidator(String? value) {
-    return value!.length < 6 ? "Location must be at least 6 characters" : null;
-  }
+  String? _currentAddress;
+  Position? _currentPosition;
 
-  List<String> selectedCategoryType = List.empty();
-
-  // API: get category type
+  List<CategoryType> selectedCategoryType = List.empty();
 
   @override
   void dispose() {
@@ -39,30 +49,19 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
     super.dispose();
   }
 
-  void onChangeAccountType(String accountType) {
-    setState(() {
-      selectedAccountType = accountType;
-    });
-  }
-
-  void onClickCategoryType(String categoryType) {
-    setState(() {
-      selectedCategoryType.add(categoryType);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).primaryColor),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
-            nextScreenReplace(context, const MainPage(index: 0));
+          if (state is NeedVerify) {
+            navigateAsFirstScreen(context, const VerifyEmailPage());
+            return;
           }
           if (state is AuthError) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.error)));
+            return;
           }
         },
         builder: (context, state) {
@@ -71,79 +70,11 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
               child: CircularProgressIndicator(),
             );
           }
+          if (state is GoogleLoginRequestedSuccess) {
+            return loadPage();
+          }
           if (state is UnAuthenticated) {
-            return SafeArea(
-              child: SingleChildScrollView(
-                  child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                child: Form(
-                  key: _registerFormKey,
-                  child: LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints boxConstraints) {
-                    double width = boxConstraints.maxWidth;
-                    return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          const Text(
-                            textAlign: TextAlign.center,
-                            "Welcome to Fluence!",
-                            style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Constants.primaryColor),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            textAlign: TextAlign.center,
-                            "Please choose your preferred account type.",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: Constants.grayColor),
-                          ),
-                          Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: Constants.defaultPadding),
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    Constants.defaultBorderRadiusButton,
-                                color:
-                                    Constants.secondaryColor.withOpacity(0.3),
-                              ),
-                              child: LayoutBuilder(builder:
-                                  (BuildContext context,
-                                      BoxConstraints boxConstraints) {
-                                double width = boxConstraints.maxWidth * 0.9;
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AccountTypeTab(
-                                        'UMKM',
-                                        selectedAccountType == 'UMKM',
-                                        width / 2),
-                                    AccountTypeTab(
-                                        'Influencer',
-                                        selectedAccountType == 'Influencer',
-                                        width / 2),
-                                  ],
-                                );
-                              })),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              textfieldContainer(TextInputType.text, 'Name',
-                                  _nameController, _nameValidator),
-                              textfieldContainer(TextInputType.text, 'Location',
-                                  _locationController, _locationValidator),
-                            ],
-                          )
-                        ]);
-                  }),
-                ),
-              )),
-            );
+            return loadPage();
           }
           return Container();
         },
@@ -151,83 +82,269 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
     );
   }
 
-  Widget textfieldContainer(TextInputType keyboardType, String field,
-      TextEditingController fieldController, Function(String?) validator,
-      {bool isObscure = false}) {
-    return Container(
-        margin:
-            const EdgeInsets.symmetric(vertical: Constants.defaultPadding / 2),
-        child: AppTextfield(
-            isObscure: isObscure,
-            keyboardType: keyboardType,
-            field: field,
-            fieldController: fieldController,
-            validator: validator));
-  }
-
-  Widget AccountTypeTab(String text, bool isActive, double width) {
-    BoxDecoration boxDecor = isActive == true
-        ? BoxDecoration(
-            color: Colors.white,
-            borderRadius: Constants.defaultBorderRadiusButton,
-          )
-        : BoxDecoration(
-            borderRadius: Constants.defaultBorderRadiusButton,
-          );
-    TextStyle textStyle = isActive == true
-        ? TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Constants.primaryColor.withOpacity(0.8),
-          )
-        : TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Constants.primaryColor.withOpacity(0.5));
-    return InkWell(
-      onTap: () => onChangeAccountType(text),
+  Widget loadPage() {
+    return SafeArea(
       child: Container(
-        width: width,
-        height: 40,
-        margin: const EdgeInsets.all(Constants.defaultPadding / 2.5),
-        padding: const EdgeInsets.all(Constants.defaultPadding / 2),
-        decoration: boxDecor,
-        child: Text(
-          text,
-          style: textStyle,
-          textAlign: TextAlign.center,
-        ),
+        color: Constants.backgroundColor,
+        child: Center(
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Form(
+                key: _registerFormKey,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Location",
+                                  style:
+                                      TextStyle(color: Constants.primaryColor)),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _locationController,
+                                decoration: textInputDecoration.copyWith(
+                                    hintText: "Tap icon to get your location",
+                                    suffixIcon: IconButton(
+                                        onPressed: () async {
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) =>
+                                                showDialogWithCircularProgress(
+                                                    context),
+                                          );
+                                          await _getCurrentPosition();
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(
+                                            Icons.location_on_rounded),
+                                        color: Constants.primaryColor)),
+                              )
+                            ]),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text("Category Type",
+                                      style: TextStyle(
+                                          color: Constants.primaryColor)),
+                                  GestureDetector(
+                                    child: const Icon(
+                                        Icons.arrow_forward_ios_outlined,
+                                        color: Constants.primaryColor,
+                                        size: 16),
+                                    onTap: () async {
+                                      dynamic selected = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SelectTypePage()));
+                                      setState(() {
+                                        selectedCategoryType = selected;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              selectedCategoryType.isEmpty
+                                  ? GestureDetector(
+                                      onTap: () async {
+                                        dynamic selected = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const SelectTypePage()));
+                                        setState(() {
+                                          selectedCategoryType = selected;
+                                        });
+                                      },
+                                      child: const SizedBox(
+                                        height: 50,
+                                        child: Center(
+                                            child: Text(
+                                          "Tap to choose your type",
+                                          style: TextStyle(
+                                              color: Constants.grayColor),
+                                        )),
+                                      ),
+                                    )
+                                  : buildCategoryTypeChips(
+                                      selectedCategoryType),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30))),
+                                    onPressed: () {
+                                      if (selectedCategoryType.isNotEmpty &&
+                                          _locationController.text.isNotEmpty) {
+                                        _createAccountWithEmailAndPassword(
+                                            context);
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Submit",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                    )),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                alignment: Alignment.center,
+                                child: Text.rich(TextSpan(
+                                    text: "Already have an account? ",
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: "Login now",
+                                          style: const TextStyle(
+                                              color: Constants.primaryColor,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              navigateAsFirstScreen(
+                                                  context, const LoginPage());
+                                            })
+                                    ])),
+                              )
+                            ]),
+                      ),
+                    ])),
+          ),
+        )),
       ),
     );
   }
 
-  Widget TagsContainer(
-      String field, List<String> tags, List<String> selectedTags) {
-    List<Widget> tagWidgets = [];
-    // tagWidgets.add(Tag('Food', selectedTags.contains('Food'), onClickCategoryType('Food')));
+  void _createAccountWithEmailAndPassword(BuildContext context) {
+    List<String> categoryTypeIdList = [];
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
-          child: Text(field,
-              style: TextStyle(color: Constants.primaryColor, fontSize: 15),
-              textAlign: TextAlign.left)),
-      Row(
-        children: [],
-      )
-    ]);
+    for (var element in selectedCategoryType) {
+      categoryTypeIdList.add(element.categoryTypeId);
+    }
+
+    if (widget.password.isEmpty) {
+      BlocProvider.of<AuthBloc>(context).add(GoogleLoginRegisterRequested(
+          widget.email,
+          widget.fullName,
+          _locationController.text,
+          categoryTypeIdList,
+          widget.id));
+    } else {
+      BlocProvider.of<AuthBloc>(context).add(RegisterRequested(
+          widget.email,
+          widget.password,
+          widget.fullName,
+          _locationController.text,
+          categoryTypeIdList));
+    }
   }
 
-  Widget Tag(String type, bool isActive, Function(String?) onTap) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Constants.secondaryColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Text(type,
-          style: TextStyle(color: Colors.black26, fontWeight: FontWeight.w400)),
+  Widget buildCategoryTypeChips(List<CategoryType> categories) {
+    List<Widget> widgetChips = [];
+    for (CategoryType category in categories) {
+      Widget chip = Chip(
+        padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+        backgroundColor: Constants.primaryColor.withOpacity(0.6),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            side: BorderSide(
+                width: 0.5, color: Constants.grayColor.withOpacity(0.5))),
+        elevation: 0.5,
+        label: Text(category.categoryTypeName,
+            style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.white,
+                fontWeight: FontWeight.w400)),
+      );
+      widgetChips.add(Container(
+        margin: const EdgeInsets.only(bottom: 5.0),
+        child: chip,
+      ));
+    }
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 10.0,
+      children: widgetChips,
     );
+  }
+
+  _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location services are disabled. Please enable the services')));
+      return false;
+    }
+
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')));
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location permissions are permanently denied, we cannot request permissions.')));
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        _currentAddress = place.subAdministrativeArea;
+        _locationController.text = _currentAddress!;
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
   }
 }
