@@ -30,6 +30,7 @@ class InfluencerRepository {
 
   Future<String> updateInfluencerAvatar(
       String influencerId, String avatarUrl, XFile? img) async {
+    if(img == null) return avatarUrl;
     try {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
       if(avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
@@ -38,7 +39,7 @@ class InfluencerRepository {
     }
     try {
       String downloadURL;
-      if(img != null) {
+      if(img.path != '') {
         String finalImagePath = 'influencers/$influencerId/${img.name}';
         File file = File(img.path);
         final storageRef = Constants.firebaseStorage.ref();
@@ -62,7 +63,6 @@ class InfluencerRepository {
 
   Future<void> updateInfluencerProfileSettings(
       Influencer influencer, XFile? img) async {
-    // if (img != null) {
       try {
         await updateInfluencerAvatar(
             influencer.userId, influencer.avatarUrl, img);
@@ -87,12 +87,26 @@ class InfluencerRepository {
         'note_agreement': influencer.noteAgreement,
         'lowest_fee': influencer.lowestFee,
         'highest_fee': influencer.highestFee,
+        'facebook_access_token': influencer.facebookAccessToken,
+        'instagram_user_id': influencer.instagramUserId,
       });
     } catch (e) {
       throw Exception(e.toString());
     }
     return;
   }
+
+  // Future<void> handleFacebookAccess(String influencerId,
+  //     String longLivedUserAccessToken, String instagramUserId) async {
+  //   try {
+  //     Constants.firebaseFirestore.collection('influencers').doc(influencerId).update({
+  //       'facebook_access_token': longLivedUserAccessToken,
+  //       'instagram_user_id': instagramUserId,
+  //     });
+  //   } catch (e) {
+  //     throw Exception('Facebook connection failed!');
+  //   }
+  // }
 
   Future<Influencer> getInfluencerInsight(Influencer influencer) async {
     log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
+import 'package:fluence_for_influencer/auth/repository/auth_repository.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/full_textfield_page.dart';
@@ -42,9 +44,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late final CategoryBloc categoryBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
   final CategoryRepository categoryRepository = CategoryRepository();
+  late final AuthBloc authBloc;
+  final AuthRepository authRepository = AuthRepository();
 
   String userId = FirebaseAuth.instance.currentUser!.uid;
-  bool verified = false;
   bool _enableSaveBtn = true;
 
   late Influencer influencer;
@@ -85,6 +88,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<CategoryType> _selectedCategory = [];
   XFile? _selectedImage;
   late ImageProvider<Object> _selectedImageWidget;
+  bool verified = false;
 
   @override
   void initState() {
@@ -93,6 +97,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencerRepository: influencerRepository,
         categoryRepository: categoryRepository);
     categoryBloc = CategoryBloc(categoryRepository: categoryRepository);
+    authBloc = AuthBloc(authRepository: authRepository);
     influencerBloc.add(GetInfluencerDetail(userId));
     categoryBloc.add(GetCategoryTypeListRequested());
   }
@@ -100,7 +105,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   setInfluencerData(Influencer i) {
     setState(() {
       influencer = i;
-      if (i.facebookAccessToken != null && i.instagramUserId != null) {
+      if (i.facebookAccessToken != null && i.facebookAccessToken != '' && i.instagramUserId != null && i.instagramUserId != '') {
         verified = true;
       }
       _selectedImageWidget = NetworkImage(i.avatarUrl);
@@ -133,8 +138,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   onDeleteAvatar(){
     setState(() {
-      _selectedImage = null;
+      _selectedImage = XFile('');
       _selectedImageWidget = const NetworkImage('https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab');
+    });
+  }
+
+  revokeFacebookAccess() {
+    setState(() {
+      verified = false;
+      influencer.facebookAccessToken = '';
+      influencer.instagramUserId = '';
     });
   }
 
@@ -160,6 +173,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       providers: [
         BlocProvider<InfluencerBloc>(create: (context) => influencerBloc),
         BlocProvider<CategoryBloc>(create: (context) => categoryBloc),
+        BlocProvider<AuthBloc>(create: (context) => authBloc)
       ],
       child: BlocListener<CategoryBloc, CategoryState>(
         listener: (context, state) {
@@ -167,37 +181,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
             setCategoryTypeChips(state.categoryList);
           }
         },
-        child: BlocConsumer<InfluencerBloc, InfluencerState>(
+        child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is InfluencerLoaded) {
-              setInfluencerData(state.influencer);
+            if(state is FacebookCredentialSuccess) {
+              influencer.facebookAccessToken = state.facebookAccessToken;
+              influencer.instagramUserId = state.instagramUserId;
+              setState(() {
+                verified = true;
+              });
             }
           },
-          builder: (context, state) {
-            if (state is InfluencerLoaded) {
-              return WillPopScope(
-                onWillPop: () async {
-                  if (allowToPop()) return true;
-                  return createWillPopDialog(context);
-                },
-                child: Scaffold(
-                  appBar: buildAppBar(context),
-                  body: buildBody(context),
-                ),
-              );
-            }
-            return Scaffold(
-                appBar: buildAppBar(context),
-                body: Container(
-                  decoration:
-                      const BoxDecoration(color: Constants.backgroundColor),
-                  alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.height,
-                  child: const CircularProgressIndicator(),
-                ));
-          },
+          child: BlocConsumer<InfluencerBloc, InfluencerState>(
+              listener: (context, state) {
+                if (state is InfluencerLoaded) {
+                  setInfluencerData(state.influencer);
+                }
+              },
+              builder: (context, state) {
+                if (state is InfluencerLoaded) {
+                  return WillPopScope(
+                    onWillPop: () async {
+                      if (allowToPop()) return true;
+                      return createWillPopDialog(context);
+                    },
+                    child: Scaffold(
+                      appBar: buildAppBar(context),
+                      body: buildBody(context),
+                    ),
+                  );
+                }
+                return Scaffold(
+                    appBar: buildAppBar(context),
+                    body: Container(
+                      decoration:
+                          const BoxDecoration(color: Constants.backgroundColor),
+                      alignment: Alignment.center,
+                      height: MediaQuery.of(context).size.height,
+                      child: const CircularProgressIndicator(),
+                    ));
+              },
+            )
+          )
         ),
-      ),
     );
   }
 
@@ -218,7 +243,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ? () {
                       // save
                       // buat bloc save + repository save
-                      // influencerBloc.add(UploadInfluencerProfileImage(userId, img));
                       influencer.fullname = _nameController.text;
                       influencer.location = _locationController.text;
                       influencer.about = _aboutController.text;
@@ -300,11 +324,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     _noteAgreementController.text = changedValue;
                   }
               ),
-              // AppTextfield(
-              //   field: "Fee Range", 
-              //   fieldController: _feeController, 
-              //   validator: _feeValidator
-              // ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
@@ -363,8 +382,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ],
                 ),
               ),
+              buildLinkedAccount(),
             ]
-        ),
+          ),
       ),
     )
     );
@@ -524,6 +544,111 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: widgetChips,
         ),
       ],
+    );
+  }
+
+  Widget buildLinkedAccount() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch, 
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 15.0, bottom: 10.0),
+          child: const Text('Linked Accounts',
+              style: TextStyle(color: Constants.primaryColor, fontSize: 17, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.left)
+        ),
+        GestureDetector(
+          onTap: () {
+            if(verified) {
+              showModalBottomSheet(
+                shape: const RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(15.0)),
+                ),
+                isScrollControlled: true,
+                isDismissible: true,
+                context: context, 
+                builder: (context) {
+                  TextStyle textStyle = const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 18.0,
+                    );
+                    return Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.0)),
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: Icon(Ionicons.pencil_outline, color: Colors.grey.shade600),
+                            title: Text("Reconnect to Facebook", style: textStyle),
+                            onTap: () {
+                              Navigator.pop(context);
+                              authBloc.add(FacebookCredentialRequested(influencer.userId));
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Ionicons.trash_outline, color: Colors.red),
+                            title: Text("Revoke Facebook access", style: textStyle.copyWith(color: Colors.red)),
+                            onTap: () {
+                              revokeFacebookAccess();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ]
+                      )
+                    );
+                }
+              );
+            }
+            else {
+              authBloc.add(FacebookCredentialRequested(influencer.userId));
+            }
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 10.0),
+                        child: Image(
+                          image: AssetImage('assets/facebook_logo.png'),
+                          height: 25,
+                          width: 25,
+                        ),
+                      ),
+                      Text('Facebook',
+                        style: TextStyle(color: Constants.navyColor, fontSize: 15),
+                        textAlign: TextAlign.left
+                      ),
+                    ]
+                  )
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(verified ? 'Connected' : 'Not connected', style: const TextStyle(color: Constants.grayColor, fontSize: 15.0)),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Icon(Ionicons.chevron_forward_outline, color: Constants.grayColor),
+                      ),
+                    ]
+                  )
+                ),
+              ],
+            )
+          ),
+        ),
+
+      ]
     );
   }
 

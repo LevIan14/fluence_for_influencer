@@ -38,3 +38,12 @@ class GetInfluencerReviewOnCurrentTransaction extends InfluencerEvent {
 
   GetInfluencerReviewOnCurrentTransaction(this.influencerId, this.reviewId);
 }
+
+class InfluencerFacebookAccess extends InfluencerEvent {
+  final String influencerId;
+  final String longLivedUserAccessToken;
+  final String instagramUserId;
+
+  InfluencerFacebookAccess(this.influencerId, this.longLivedUserAccessToken, this.instagramUserId);
+}
+

@@ -26,16 +26,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key, required this.influencerId});
+class InfluencerProfilePage extends StatefulWidget {
+  const InfluencerProfilePage({super.key, required this.influencerId});
 
   final String influencerId;
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<InfluencerProfilePage> createState() => _InfluencerProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
+class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     with SingleTickerProviderStateMixin {
   late final InfluencerBloc influencerBloc;
   final InfluencerRepository influencerRepository = InfluencerRepository();
@@ -59,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage>
   setInfluencerData(Influencer i) {
     setState(() {
       influencer = i;
-      if (i.facebookAccessToken != null && i.instagramUserId != null) {
+      if (i.facebookAccessToken != null && i.facebookAccessToken != '' && i.instagramUserId != null && i.instagramUserId != '') {
         print('${i.facebookAccessToken} ${i.instagramUserId}');
         verified = true;
       }

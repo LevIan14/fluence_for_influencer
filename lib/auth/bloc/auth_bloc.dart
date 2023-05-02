@@ -43,17 +43,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(UnAuthenticated());
       }
     }));
-
-    on<FacebookLoginRequested>(((event, emit) async {
+    on<FacebookCredentialRequested>(((event, emit) async {
       emit(Loading());
       try {
-        await authRepository.loginWithFacebook();
-        emit(Authenticated());
+        Map<String, dynamic>? res = await authRepository.connectToFacebook(event.influencerId);
+        if(res != null){
+          emit(FacebookCredentialSuccess(res['id'], res['facebook_access_token'], res['instagram_user_id']));
+        } 
+        else {
+          emit(FacebookCredentialRejected());
+        } 
       } catch (e) {
-        emit(AuthError(e.toString()));
-        emit(UnAuthenticated());
+        emit(FacebookCredentialError(e.toString()));
+        emit(FacebookCredentialRejected());
       }
     }));
+
+    // on<FacebookLoginRequested>(((event, emit) async {
+    //   emit(Loading());
+    //   try {
+    //     await authRepository.loginWithFacebook();
+    //     emit(Authenticated());
+    //   } catch (e) {
+    //     emit(AuthError(e.toString()));
+    //     emit(UnAuthenticated());
+    //   }
+    // }));
 
     on<LogoutRequested>((event, emit) async {
       emit(Loading());

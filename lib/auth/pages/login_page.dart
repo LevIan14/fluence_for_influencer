@@ -160,15 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                               height: 30,
                               width: 30,
                             )),
-                        IconButton(
-                            onPressed: () {
-                              _authenticateWithFacebook(context);
-                            },
-                            icon: const Image(
-                              image: AssetImage('assets/facebook_logo.png'),
-                              height: 30,
-                              width: 30,
-                            )),
                         Container(
                           alignment: Alignment.center,
                           child: Text.rich(TextSpan(
@@ -212,12 +203,6 @@ class _LoginPageState extends State<LoginPage> {
   void _authenticateWithGoogle(context) {
     BlocProvider.of<AuthBloc>(context).add(
       GoogleLoginRequested(),
-    );
-  }
-
-  void _authenticateWithFacebook(context) {
-    BlocProvider.of<AuthBloc>(context).add(
-      FacebookLoginRequested(),
     );
   }
 }

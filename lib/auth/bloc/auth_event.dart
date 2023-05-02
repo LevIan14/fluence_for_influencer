@@ -21,6 +21,10 @@ class RegisterRequested extends AuthEvent {
 
 class GoogleLoginRequested extends AuthEvent {}
 
-class FacebookLoginRequested extends AuthEvent {}
+class FacebookCredentialRequested extends AuthEvent {
+  final String influencerId;
+
+  FacebookCredentialRequested(this.influencerId);
+}
 
 class LogoutRequested extends AuthEvent {}

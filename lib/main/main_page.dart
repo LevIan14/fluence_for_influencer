@@ -16,7 +16,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List pages = [
     const DashboardPage(),
-    ProfilePage(influencerId: FirebaseAuth.instance.currentUser!.uid),
+    InfluencerProfilePage(influencerId: FirebaseAuth.instance.currentUser!.uid),
     // const InfluencerSettingPage(),
     const ChatListPage()
   ];

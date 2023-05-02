@@ -61,6 +61,13 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         emit(InfluencerError(e.toString()));
       }
     });
+    // on<InfluencerFacebookAccess>((event, emit) async {
+    //   try { 
+    //     await influencerRepository.handleFacebookAccess(event.influencerId, event.longLivedUserAccessToken, event.instagramUserId);
+    //   } catch(e) {
+    //     emit(InfluencerError(e.toString()));
+    //   }
+    // });
     // on<UploadInfluencerProfileImage>((event, emit) async {
     //   try {
     //     emit(InfluencerLoading());
