@@ -197,16 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                                       height: 30,
                                       width: 30,
                                     )),
-                                IconButton(
-                                    onPressed: () {
-                                      _authenticateWithFacebook(context);
-                                    },
-                                    icon: const Image(
-                                      image: AssetImage(
-                                          'assets/facebook_logo.png'),
-                                      height: 30,
-                                      width: 30,
-                                    )),
                               ],
                             ),
                             const SizedBox(height: 12),
