@@ -8,6 +8,7 @@ class AgreementRepository {
       return Constants.firebaseFirestore
           .collection("agreements")
           .where("influencer_id", isEqualTo: influencerId)
+          .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
       throw Exception(e.toString());
@@ -56,6 +57,19 @@ class AgreementRepository {
           .collection("agreements")
           .doc(agreementId)
           .update({"umkm_agreement_status": "ACCEPTED"});
+
+      DocumentSnapshot snapshot = await Constants.firebaseFirestore
+          .collection("agreements")
+          .doc(agreementId)
+          .get();
+
+      if (snapshot.get('umkm_agreement_status') == 'ACCEPTED' &&
+          snapshot.get('influencer_agreement_status') == 'ACCEPTED') {
+        await Constants.firebaseFirestore
+            .collection("agreements")
+            .doc(agreementId)
+            .update({"agreement_status": "DONE"});
+      }
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -66,7 +80,7 @@ class AgreementRepository {
       await Constants.firebaseFirestore
           .collection("agreements")
           .doc(agreementId)
-          .update({"umkm_agreement_status": "ACCEPTED"});
+          .update({"umkm_agreement_status": "NEED REVISION"});
     } catch (e) {
       throw Exception(e.toString());
     }

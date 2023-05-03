@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _notesController,
+                      decoration: textInputDecoration,
                       maxLines: null,
                     )
                   ],

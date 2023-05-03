@@ -265,7 +265,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                               ),
                                             ),
                                             const SizedBox(height: 8),
-                                            Row(
+                                            Wrap(
                                               children: [
                                                 Container(
                                                   margin: const EdgeInsets.only(
@@ -337,7 +337,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                               ),
                                             ),
                                             const SizedBox(height: 8),
-                                            Row(
+                                            Wrap(
                                               children: [
                                                 Container(
                                                   margin: const EdgeInsets.only(
@@ -384,9 +384,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                               onPressed: state.agreement.umkmAgreementStatus ==
                                       "ON REVIEW"
                                   ? () {
-                                      if (_formKey.currentState!.validate()) {
-                                        acceptAgreement();
-                                      }
+                                      acceptAgreement();
                                     }
                                   : null,
                               child: const Text("Accept")),

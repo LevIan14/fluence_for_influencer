@@ -65,7 +65,6 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   final TextEditingController _projectDescController = TextEditingController();
 
   late Map<String, DateTime> projectDuration;
-  bool readOnlyAllField = false;
 
   late Umkm umkmProfile;
   late Influencer influencerProfile;
@@ -182,9 +181,6 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
           child: BlocBuilder<NegotiationBloc, NegotiationState>(
             builder: (context, state) {
               if (state is NegotiationLoaded) {
-                readOnlyAllField =
-                    state.negotiationDetails.negotiationStatus != "PENDING";
-
                 _projectTitleController.text =
                     state.negotiationDetails.projectTitle;
                 _projectDescController.text =
@@ -242,7 +238,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
-                                readOnly: readOnlyAllField,
+                                readOnly: true,
                                 controller: _projectTitleController,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
@@ -263,30 +259,8 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
-                                readOnly: readOnlyAllField,
+                                readOnly: true,
                                 controller: _projectDurationController,
-                                onTap: () async {
-                                  DateTimeRange? newDateRange =
-                                      await showDateRangePicker(
-                                          context: context,
-                                          firstDate:
-                                              DateTime(DateTime.now().year),
-                                          lastDate: DateTime(2100));
-                                  if (newDateRange != null) {
-                                    String startDate =
-                                        DateUtil.dateWithDayFormat(
-                                            newDateRange.start);
-                                    String endDate = DateUtil.dateWithDayFormat(
-                                        newDateRange.end);
-
-                                    projectDuration = {
-                                      "start": newDateRange.start,
-                                      "end": newDateRange.end
-                                    };
-                                    _projectDurationController.text =
-                                        "$startDate - $endDate";
-                                  }
-                                },
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 validator: _projectDurationValidator,
@@ -305,7 +279,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                                       TextStyle(color: Constants.primaryColor)),
                               const SizedBox(height: 8),
                               TextFormField(
-                                readOnly: readOnlyAllField,
+                                readOnly: true,
                                 controller: _projectPriceController,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
@@ -325,7 +299,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
-                              readOnly: readOnlyAllField,
+                              readOnly: true,
                               controller: _projectDescController,
                               maxLines: null,
                               decoration: textInputDecoration,

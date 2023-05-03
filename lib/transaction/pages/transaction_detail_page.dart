@@ -1,5 +1,7 @@
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/model/agreement.dart';
+import 'package:fluence_for_influencer/agreement/pages/influencer_agreement_page.dart';
+import 'package:fluence_for_influencer/agreement/pages/umkm_agreement_page.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
@@ -135,13 +137,16 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                               Text(DateUtil.dateWithDayFormat(
                                   state.transaction.createdAt)),
                               Chip(
-                                backgroundColor:
-                                    state.transaction.transactionStatus ==
-                                            'DONE'
-                                        ? Colors.green[300]
+                                backgroundColor: state
+                                            .transaction.transactionStatus ==
+                                        'DONE'
+                                    ? Colors.green[300]
+                                    : state.transaction.transactionStatus ==
+                                            'PENDING'
+                                        ? Colors.yellow[300]
                                         : state.transaction.transactionStatus ==
-                                                'PENDING'
-                                            ? Colors.yellow[300]
+                                                'CANCELED'
+                                            ? Colors.red[300]
                                             : Colors.blue[300],
                                 label: Text(state.transaction.transactionStatus,
                                     style: const TextStyle(fontSize: 12)),
@@ -237,61 +242,83 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       const Text("Agreement Information"),
-                                      Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: const [
-                                                  Text('UMKM Agreement'),
-                                                  Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                    size: 12,
-                                                  )
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                agreement.umkmAgreement!,
-                                                overflow: TextOverflow.ellipsis,
-                                              )
-                                            ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          nextScreen(
+                                              context,
+                                              UmkmAgreementPage(
+                                                  agreementId:
+                                                      widget.agreementId));
+                                        },
+                                        child: Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: const [
+                                                    Text('UMKM Agreement'),
+                                                    Icon(
+                                                      Icons
+                                                          .arrow_forward_ios_rounded,
+                                                      size: 12,
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  agreement.umkmAgreement!,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                      Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: const [
-                                                  Text('Influencer Agreement'),
-                                                  Icon(
-                                                    Icons
-                                                        .arrow_forward_ios_outlined,
-                                                    size: 12,
-                                                  )
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                agreement.influencerAgreement!,
-                                                overflow: TextOverflow.ellipsis,
-                                              )
-                                            ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          nextScreen(
+                                              context,
+                                              InfluencerAgreementPage(
+                                                  agreementId:
+                                                      widget.agreementId));
+                                        },
+                                        child: Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: const [
+                                                    Text(
+                                                        'Influencer Agreement'),
+                                                    Icon(
+                                                      Icons
+                                                          .arrow_forward_ios_outlined,
+                                                      size: 12,
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  agreement
+                                                      .influencerAgreement!,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       )
@@ -385,19 +412,23 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                 ),
                               ],
                             )
-                          : ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Constants.primaryColor,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30))),
-                              onPressed: () {
-                                nextScreen(
-                                    context,
-                                    TransactionProgressPage(
-                                        transactionId: state.transaction.id));
-                              },
-                              child: const Text("Check Progress")));
+                          : state.transaction.transactionStatus == 'CANCELED'
+                              ? const Padding(padding: EdgeInsets.zero)
+                              : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Constants.primaryColor,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                  onPressed: () {
+                                    nextScreen(
+                                        context,
+                                        TransactionProgressPage(
+                                            transactionId:
+                                                state.transaction.id));
+                                  },
+                                  child: const Text("Check Progress")));
                 }
                 return Container();
               },

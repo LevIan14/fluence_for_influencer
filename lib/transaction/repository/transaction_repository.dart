@@ -66,6 +66,7 @@ class TransactionRepository {
       return Constants.firebaseFirestore
           .collection("transactions")
           .where("influencer_id", isEqualTo: influencerId)
+          .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
       throw Exception(e.toString());

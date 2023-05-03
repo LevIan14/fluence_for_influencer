@@ -104,7 +104,9 @@ class _TransactionListRowState extends State<TransactionListRow> {
                         ? Colors.green[300]
                         : widget.transactionStatus == "PENDING"
                             ? Colors.yellow[300]
-                            : Colors.blue[300],
+                            : widget.transactionStatus == 'CANCELED'
+                                ? Colors.red[300]
+                                : Colors.blue[300],
                   ),
                 ),
               );

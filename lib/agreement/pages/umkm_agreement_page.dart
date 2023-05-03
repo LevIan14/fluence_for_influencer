@@ -135,8 +135,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                 listener: (context, state) {},
                 builder: (context, state) {
                   if (state is AgreementLoaded) {
-                    return state.agreement.influencerAgreementStatus ==
-                            "ON REVIEW"
+                    return state.agreement.umkmAgreementStatus == "ON REVIEW"
                         ? Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
