@@ -14,18 +14,21 @@ class MessageTile extends StatefulWidget {
   final String negotiationId;
   final String chatId;
   final String influencerId;
-  const MessageTile(
-      {Key? key,
-      required this.message,
-      required this.showDate,
-      required this.timestamp,
-      required this.date,
-      required this.sender,
-      required this.sentByMe,
-      required this.negotiationId,
-      required this.chatId,
-      required this.influencerId})
-      : super(key: key);
+  final String umkmId;
+
+  const MessageTile({
+    Key? key,
+    required this.message,
+    required this.showDate,
+    required this.timestamp,
+    required this.date,
+    required this.sender,
+    required this.sentByMe,
+    required this.negotiationId,
+    required this.chatId,
+    required this.influencerId,
+    required this.umkmId,
+  }) : super(key: key);
 
   @override
   State<MessageTile> createState() => _MessageTileState();
@@ -80,6 +83,7 @@ class _MessageTileState extends State<MessageTile> {
                         nextScreen(
                             context,
                             NegotiationDetailPage(
+                              umkmId: widget.umkmId,
                               negotiationId: widget.negotiationId,
                               chatId: widget.chatId,
                               sentByMe: widget.sentByMe,

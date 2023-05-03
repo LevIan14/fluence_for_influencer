@@ -41,7 +41,7 @@ class NegotiationRepository {
       await Constants.firebaseFirestore
           .collection("negotiation")
           .doc(negotiationId)
-          .update({"negotiation_status": "ACCEPTED"});
+          .update({"negotiation_status": "DONE"});
     } catch (e) {
       throw Exception(e.toString());
     }

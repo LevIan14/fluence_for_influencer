@@ -23,14 +23,16 @@ class TransactionDetailPage extends StatefulWidget {
   final String negotiationId;
   final String agreementId;
   final String influencerId;
+  final String umkmId;
 
-  const TransactionDetailPage(
-      {Key? key,
-      required this.transactionId,
-      required this.negotiationId,
-      required this.agreementId,
-      required this.influencerId})
-      : super(key: key);
+  const TransactionDetailPage({
+    Key? key,
+    required this.transactionId,
+    required this.negotiationId,
+    required this.agreementId,
+    required this.influencerId,
+    required this.umkmId,
+  }) : super(key: key);
 
   @override
   State<TransactionDetailPage> createState() => TransactionDetailPageState();
@@ -160,6 +162,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                             nextScreen(
                                                 context,
                                                 NegotiationDetailPage(
+                                                    umkmId: widget.umkmId,
                                                     negotiationId:
                                                         widget.negotiationId,
                                                     influencerId:

@@ -34,7 +34,6 @@ class Influencer {
   late List<Portfolio>? portfolio;
   late List<Review>? review;
 
-
   Influencer(
       this.userId,
       this.portfolio,
@@ -75,8 +74,8 @@ class Influencer {
         json['about'],
         json['lowest_fee'],
         json['highest_fee'],
-        json['facebook_access_token'],
-        json['instagram_user_id'],
+        json['facebook_access_token'] ?? "",
+        json['instagram_user_id'] ?? "",
         json['followers_count'],
         json['top_audience_city'],
         json['four_week_reach'],

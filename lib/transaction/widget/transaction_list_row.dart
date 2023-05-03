@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TransactionListRow extends StatefulWidget {
   final String transactionId;
   final String influencerId;
+  final String umkmId;
   final String negotiationId;
   final String transactionStatus;
   final String agreementId;
@@ -20,6 +21,7 @@ class TransactionListRow extends StatefulWidget {
       {Key? key,
       required this.transactionId,
       required this.influencerId,
+      required this.umkmId,
       required this.negotiationId,
       required this.transactionStatus,
       required this.agreementId})
@@ -81,6 +83,7 @@ class _TransactionListRowState extends State<TransactionListRow> {
                   nextScreen(
                       context,
                       TransactionDetailPage(
+                          umkmId: widget.umkmId,
                           negotiationId: widget.negotiationId,
                           agreementId: widget.agreementId,
                           influencerId: widget.influencerId,

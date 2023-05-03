@@ -1,14 +1,20 @@
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/umkm/model/umkm.dart';
 
 class UmkmRepository {
-  Future<dynamic> getUmkmDetail(String umkmId) async {
+  Future<Umkm> getUmkmDetail(String umkmId) async {
+    late Umkm u;
     try {
-      return await Constants.firebaseFirestore
+      await Constants.firebaseFirestore
           .collection("umkm")
           .doc(umkmId)
-          .get();
+          .get()
+          .then((value) {
+        u = Umkm.fromJson(value.id, value.data()!);
+      });
     } catch (e) {
       throw Exception(e.toString());
     }
+    return u;
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const primaryColor = Color.fromRGBO(18, 44, 52, 1);
-  static const secondaryColor = Color.fromARGB(90, 250, 206, 216);
+  static const secondaryColor = Color.fromRGBO(176, 188, 190, 0.463);
   static const grayColor = Color.fromRGBO(177, 177, 177, 1);
   static const maroonColor = Color(0xFFA20021);
   static const creamColor = Color.fromRGBO(245, 243, 187, 1);

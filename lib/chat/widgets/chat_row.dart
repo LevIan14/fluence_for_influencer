@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/message/pages/message_list_page.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
@@ -30,29 +31,31 @@ class ChatRow extends StatefulWidget {
 class ChatRowState extends State<ChatRow> {
   late final UmkmBloc umkmBloc;
   final UmkmRepository umkmRepository = UmkmRepository();
+  final CategoryRepository categoryRepository = CategoryRepository();
 
   @override
   void initState() {
     super.initState();
-    umkmBloc = UmkmBloc(umkmRepository: umkmRepository);
+    umkmBloc = UmkmBloc(
+        umkmRepository: umkmRepository, categoryRepository: categoryRepository);
   }
 
   @override
   Widget build(BuildContext context) {
-    umkmBloc.add(GetUmkmNameAndImage(widget.umkmId));
+    umkmBloc.add(GetUmkmDetail(widget.umkmId));
 
     return BlocProvider(
       create: (context) => umkmBloc,
       child: BlocConsumer<UmkmBloc, UmkmState>(
         listener: (context, state) {},
         builder: (context, state) {
-          if (state is UmkmNameLoaded) {
+          if (state is UmkmLoaded) {
             return GestureDetector(
               onTap: () {
                 nextScreen(
                     context,
                     MessageListPage(
-                      fromUserName: state.umkmName,
+                      fromUserName: state.umkm.fullname,
                       chatId: widget.chatId,
                       umkmId: widget.umkmId,
                       influencerId: widget.influencerId,
@@ -60,9 +63,9 @@ class ChatRowState extends State<ChatRow> {
               },
               child: ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(state.profileImageUmkmUrl),
+                    backgroundImage: NetworkImage(state.umkm.avatarUrl),
                   ),
-                  title: Text(state.umkmName),
+                  title: Text(state.umkm.fullname),
                   trailing: DateUtil.isToday(widget.timestamp.toDate())
                       ? const Text("Today")
                       : DateUtil.isYesterday(widget.timestamp.toDate())

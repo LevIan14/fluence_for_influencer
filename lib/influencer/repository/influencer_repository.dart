@@ -30,16 +30,16 @@ class InfluencerRepository {
 
   Future<String> updateInfluencerAvatar(
       String influencerId, String avatarUrl, XFile? img) async {
-    if(img == null) return avatarUrl;
+    if (img == null) return avatarUrl;
     try {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
-      if(avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
+      if (avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
     } catch (e) {
       throw Exception(e.toString());
     }
     try {
       String downloadURL;
-      if(img.path != '') {
+      if (img.path != '') {
         String finalImagePath = 'influencers/$influencerId/${img.name}';
         File file = File(img.path);
         final storageRef = Constants.firebaseStorage.ref();
@@ -49,8 +49,9 @@ class InfluencerRepository {
         TaskSnapshot snapshot = await uploadTask;
         downloadURL = await snapshot.ref.getDownloadURL();
       } else {
-        downloadURL = 'https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab';
-      } 
+        downloadURL =
+            'https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab';
+      }
       await Constants.firebaseFirestore
           .collection('influencers')
           .doc(influencerId)
@@ -63,12 +64,12 @@ class InfluencerRepository {
 
   Future<void> updateInfluencerProfileSettings(
       Influencer influencer, XFile? img) async {
-      try {
-        await updateInfluencerAvatar(
-            influencer.userId, influencer.avatarUrl, img);
-      } catch (e) {
-        throw Exception(e.toString());
-      }
+    try {
+      await updateInfluencerAvatar(
+          influencer.userId, influencer.avatarUrl, img);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
     // }
     try {
       List<String> categoryTypeId = [];

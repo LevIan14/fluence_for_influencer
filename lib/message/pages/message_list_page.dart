@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/message/bloc/message_bloc.dart';
 import 'package:fluence_for_influencer/message/repository/message_repository.dart';
 import 'package:fluence_for_influencer/message/widgets/message_tile.dart';
-import 'package:fluence_for_influencer/negotiation/pages/negotiation_create_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
-import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,6 +116,7 @@ class _MessageListPageState extends State<MessageListPage> {
                                               DateUtil.hMMFormat(dateTime);
 
                                           return MessageTile(
+                                              umkmId: widget.umkmId,
                                               influencerId: widget.influencerId,
                                               negotiationId: negotiationId,
                                               message: snapshot.data.docs[index]
@@ -149,27 +148,6 @@ class _MessageListPageState extends State<MessageListPage> {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(30)),
                           child: Row(children: [
-                            GestureDetector(
-                              onTap: () {
-                                nextScreen(
-                                    context,
-                                    NegotiationCreatePage(
-                                      fromUserName: widget.fromUserName,
-                                      chatId: widget.chatId,
-                                      umkmId: widget.umkmId,
-                                      influencerId: widget.influencerId,
-                                    ));
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 8),
-                                child: const Center(
-                                    child: Icon(
-                                  Icons.price_check_rounded,
-                                  color: Constants.primaryColor,
-                                  size: 18,
-                                )),
-                              ),
-                            ),
                             Expanded(
                                 child: TextFormField(
                               cursorColor: Colors.grey,

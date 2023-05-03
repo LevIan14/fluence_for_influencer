@@ -7,17 +7,15 @@ abstract class UmkmState extends Equatable {
 
 class UmkmInitial extends UmkmState {}
 
-class UmkmNameLoading extends UmkmState {}
-
-class UmkmNameLoaded extends UmkmState {
-  final String umkmName;
-  final String profileImageUmkmUrl;
-
-  UmkmNameLoaded(this.umkmName, this.profileImageUmkmUrl);
+class UmkmLoaded extends UmkmState {
+  final Umkm umkm;
+  UmkmLoaded(this.umkm);
 
   @override
-  List<Object> get props => [umkmName, profileImageUmkmUrl];
+  List<Object?> get props => [];
 }
+
+class UmkmLoading extends UmkmState {}
 
 class UmkmError extends UmkmState {
   final String error;

@@ -53,6 +53,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                         itemCount: snapshot.data.docs.length,
                         itemBuilder: (context, index) {
                           return TransactionListRow(
+                            umkmId: snapshot.data.docs[index]['umkm_id'],
                             transactionId: snapshot.data.docs[index].id,
                             agreementId: snapshot.data.docs[index]
                                 ['agreement_id'],

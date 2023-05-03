@@ -14,6 +14,7 @@ class AgreementRow extends StatefulWidget {
   final String agreementId;
   final String negotiationId;
   final String influencerId;
+  final String umkmId;
   final String agreementStatus;
 
   const AgreementRow(
@@ -21,6 +22,7 @@ class AgreementRow extends StatefulWidget {
       required this.agreementId,
       required this.negotiationId,
       required this.influencerId,
+      required this.umkmId,
       required this.agreementStatus})
       : super(key: key);
 
@@ -79,6 +81,7 @@ class _AgreementRowState extends State<AgreementRow> {
                   nextScreen(
                       context,
                       AgreementDetailPage(
+                        umkmId: widget.umkmId,
                         agreementId: widget.agreementId,
                         negotiationId: widget.negotiationId,
                       ));

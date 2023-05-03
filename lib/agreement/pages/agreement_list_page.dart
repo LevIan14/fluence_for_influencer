@@ -54,6 +54,7 @@ class _AgreementListPageState extends State<AgreementListPage> {
                           itemCount: snapshot.data.docs.length,
                           itemBuilder: (context, index) {
                             return AgreementRow(
+                                umkmId: snapshot.data.docs[index]['umkm_id'],
                                 agreementId: snapshot.data.docs[index].id,
                                 agreementStatus: snapshot.data.docs[index]
                                     ['agreement_status'],

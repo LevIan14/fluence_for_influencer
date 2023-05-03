@@ -17,10 +17,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AgreementDetailPage extends StatefulWidget {
   final String agreementId;
   final String negotiationId;
+  final String umkmId;
 
-  const AgreementDetailPage(
-      {Key? key, required this.agreementId, required this.negotiationId})
-      : super(key: key);
+  const AgreementDetailPage({
+    Key? key,
+    required this.agreementId,
+    required this.negotiationId,
+    required this.umkmId,
+  }) : super(key: key);
 
   @override
   State<AgreementDetailPage> createState() => _AgreementDetailPageState();
@@ -149,6 +153,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                       nextScreen(
                                           context,
                                           NegotiationDetailPage(
+                                              umkmId: widget.umkmId,
                                               influencerId:
                                                   state.agreement.influencerId,
                                               negotiationId: state
