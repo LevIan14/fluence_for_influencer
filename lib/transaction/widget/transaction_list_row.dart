@@ -90,18 +90,26 @@ class _TransactionListRowState extends State<TransactionListRow> {
                           transactionId: widget.transactionId));
                 },
                 child: ListTile(
-                  title: Text(state.negotiationDetails.projectTitle),
+                  title: Text(
+                    "$influencerName - ${state.negotiationDetails.projectTitle}",
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   subtitle: Text(
                     "${DateUtil.dateWithDayFormat(state.negotiationDetails.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(state.negotiationDetails.projectDuration['end']!)}",
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: Text(influencerName),
+                  trailing: Chip(
+                    label: Text(widget.transactionStatus),
+                    backgroundColor: widget.transactionStatus == "DONE"
+                        ? Colors.green[300]
+                        : widget.transactionStatus == "PENDING"
+                            ? Colors.yellow[300]
+                            : Colors.blue[300],
+                  ),
                 ),
               );
             }
-            return Container(
-              child: Text(state.toString()),
-            );
+            return Container();
           }),
         ));
   }

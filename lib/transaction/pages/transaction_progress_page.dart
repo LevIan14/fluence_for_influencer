@@ -1,3 +1,4 @@
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
@@ -39,20 +40,22 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
     return BlocProvider(
       create: (context) => transactionBloc,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Project Progress")),
+        appBar: AppBar(
+          title: const Text("Project Progress"),
+          backgroundColor: Constants.primaryColor,
+        ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {},
           builder: (context, state) {
             if (state is TransactionLoaded) {
               checkProgress(state.transaction);
 
-              return Container(
-                  child: Stepper(
-                      currentStep: currentStep,
-                      controlsBuilder: (context, details) {
-                        return Container();
-                      },
-                      steps: [
+              return Stepper(
+                  currentStep: currentStep,
+                  controlsBuilder: (context, details) {
+                    return Container();
+                  },
+                  steps: [
                     Step(
                         title: const Text("Content Progress"),
                         isActive: currentStep == 0,
@@ -62,13 +65,18 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                             ? StepState.complete
                             : StepState.indexed,
                         content: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primaryColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
                             nextScreen(
                                 context,
                                 ContentProgressPage(
                                     transactionId: widget.transactionId));
                           },
-                          child: Text("Update Status"),
+                          child: const Text("Update Status"),
                         )),
                     Step(
                       isActive: currentStep == 1,
@@ -79,6 +87,11 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                           : StepState.indexed,
                       title: const Text("Review Content"),
                       content: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primaryColor,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30))),
                         onPressed: () {
                           nextScreen(
                               context,
@@ -97,6 +110,11 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                           : StepState.indexed,
                       title: const Text("Upload Progress"),
                       content: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primaryColor,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30))),
                         onPressed: () {
                           nextScreen(
                               context,
@@ -115,18 +133,23 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                             : StepState.indexed,
                         title: const Text("Review Upload"),
                         content: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primaryColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
                             nextScreen(
                                 context,
                                 ReviewUploadPage(
                                     transactionId: widget.transactionId));
                           },
-                          child: Text("Update Status"),
+                          child: const Text("Update Status"),
                         )),
                     const Step(
                         title: Text("Done Review"),
                         content: Text("Done Review Page"))
-                  ]));
+                  ]);
             }
             return Container();
           },

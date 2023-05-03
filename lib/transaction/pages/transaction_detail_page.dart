@@ -8,6 +8,7 @@ import 'package:fluence_for_influencer/negotiation/bloc/negotiation_bloc.dart';
 import 'package:fluence_for_influencer/negotiation/model/negotiation.dart';
 import 'package:fluence_for_influencer/negotiation/pages/negotiation_detail_page.dart';
 import 'package:fluence_for_influencer/negotiation/repository/negotiation_repository.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
@@ -111,7 +112,10 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
             ),
           ],
           child: Scaffold(
-            appBar: AppBar(title: const Text("Transaction Detail")),
+            appBar: AppBar(
+              title: const Text("Transaction Detail"),
+              backgroundColor: Constants.primaryColor,
+            ),
             body: BlocBuilder<TransactionBloc, TransactionState>(
               builder: (context, state) {
                 if (state is TransactionLoading) {
@@ -131,6 +135,14 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                               Text(DateUtil.dateWithDayFormat(
                                   state.transaction.createdAt)),
                               Chip(
+                                backgroundColor:
+                                    state.transaction.transactionStatus ==
+                                            'DONE'
+                                        ? Colors.green[300]
+                                        : state.transaction.transactionStatus ==
+                                                'PENDING'
+                                            ? Colors.yellow[300]
+                                            : Colors.blue[300],
                                 label: Text(state.transaction.transactionStatus,
                                     style: const TextStyle(fontSize: 12)),
                               )
@@ -308,6 +320,14 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                     ? SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Constants.primaryColor,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30))),
                                             onPressed: () {
                                               nextScreen(
                                                   context,
@@ -323,6 +343,14 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                     : SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Constants.primaryColor,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30))),
                                             onPressed: () {
                                               nextScreen(
                                                   context,
@@ -340,6 +368,11 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30))),
                                       onPressed: () {
                                         nextScreen(
                                             context,
@@ -353,6 +386,11 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                               ],
                             )
                           : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.primaryColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
                               onPressed: () {
                                 nextScreen(
                                     context,

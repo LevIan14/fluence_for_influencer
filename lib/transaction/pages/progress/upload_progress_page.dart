@@ -1,4 +1,5 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -33,7 +34,10 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
     return BlocProvider(
       create: (context) => transactionBloc,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Upload Progress")),
+        appBar: AppBar(
+          title: const Text("Upload Progress"),
+          backgroundColor: Constants.primaryColor,
+        ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {
             if (state is TransactionProcessSuccess) {
@@ -79,6 +83,11 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primaryColor,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30))),
                         onPressed: () {
                           transactionBloc.add(UpdateStatusUploadProgress(
                               widget.transactionId,
@@ -91,6 +100,10 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                   SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
                             transactionBloc.add(SaveNotesUploadProgress(
                                 widget.transactionId,

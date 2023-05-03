@@ -7,6 +7,7 @@ class Agreement {
   final String umkmAgreementStatus;
   final String? influencerAgreement;
   final String influencerAgreementStatus;
+  final DateTime createdAt;
 
   Agreement(
       this.agreementId,
@@ -16,5 +17,6 @@ class Agreement {
       this.umkmAgreement,
       this.umkmAgreementStatus,
       this.influencerAgreement,
-      this.influencerAgreementStatus);
+      this.influencerAgreementStatus,
+      this.createdAt);
 }

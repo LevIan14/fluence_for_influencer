@@ -24,11 +24,8 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         late Influencer influencer;
         influencer =
             await influencerRepository.getInfluencerDetail(event.influencerId);
-        print(influencer);
-        print('lolos 1');
         List<CategoryType> categoryTypeList =
             await categoryRepository.getCategoryTypeList();
-        print('lolos 2');
 
         List<CategoryType> influencerCategoryList = [];
         for (var category in influencer.categoryType) {
@@ -41,9 +38,7 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
             influencer.facebookAccessToken!.isNotEmpty) {
           influencer =
               await influencerRepository.getInfluencerInsight(influencer);
-          print('lolos 3');
         }
-        print('selesai');
 
         emit(InfluencerLoaded(influencer));
       } catch (e) {

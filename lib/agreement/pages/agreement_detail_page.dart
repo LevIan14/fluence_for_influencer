@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/pages/influencer_agreement_page.dart';
 import 'package:fluence_for_influencer/agreement/pages/umkm_agreement_page.dart';
@@ -7,7 +8,9 @@ import 'package:fluence_for_influencer/negotiation/bloc/negotiation_bloc.dart';
 import 'package:fluence_for_influencer/negotiation/model/negotiation.dart';
 import 'package:fluence_for_influencer/negotiation/pages/negotiation_detail_page.dart';
 import 'package:fluence_for_influencer/negotiation/repository/negotiation_repository.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -71,7 +74,10 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
           BlocProvider(create: (context) => negotiationBloc)
         ],
         child: Scaffold(
-          appBar: AppBar(title: const Text('Agreement Detail')),
+          appBar: AppBar(
+            title: const Text('Agreement Detail'),
+            backgroundColor: Constants.primaryColor,
+          ),
           body: MultiBlocListener(
               listeners: [
                 BlocListener<AgreementBloc, AgreementState>(
@@ -95,7 +101,10 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                               "influencer_note": "",
                               "umkm_note": ""
                             },
-                            "upload_progress": {"status": "PENDING"},
+                            "upload_progress": {
+                              "status": "PENDING",
+                              "influencer_note": ""
+                            },
                             "review_upload": {
                               "status": "PENDING",
                               "influencer_note": "",
@@ -103,7 +112,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                             }
                           },
                           "agreement_id": widget.agreementId,
-                          "review_id": ""
+                          "review_id": "",
+                          "created_at": Timestamp.now()
                         };
                         transactionBloc
                             .add(CreateNewTransaction(newTransaction));
@@ -139,287 +149,250 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
               ],
               child: BlocBuilder<AgreementBloc, AgreementState>(
                 builder: (context, state) {
+                  if (state is AgreementLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
                   if (state is AgreementLoaded) {
                     return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(16),
                         child: SingleChildScrollView(
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      nextScreen(
-                                          context,
-                                          NegotiationDetailPage(
-                                              umkmId: widget.umkmId,
-                                              influencerId:
-                                                  state.agreement.influencerId,
-                                              negotiationId: state
-                                                  .agreement.negotiationId));
-                                    },
-                                    child: Card(
-                                        child: Padding(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(DateUtil.dateWithDayFormat(
+                                    state.agreement.createdAt)),
+                                GestureDetector(
+                                  onTap: () {
+                                    nextScreen(
+                                        context,
+                                        NegotiationDetailPage(
+                                            umkmId: widget.umkmId,
+                                            influencerId:
+                                                state.agreement.influencerId,
+                                            negotiationId:
+                                                state.agreement.negotiationId));
+                                  },
+                                  child: Card(
+                                      child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(negotiation.projectTitle),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                    "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 4),
+                                            child: const Divider()),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text('Project Price'),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(CurrencyFormat.convertToIDR(
+                                                negotiation.projectPrice))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    nextScreen(
+                                        context,
+                                        UmkmAgreementPage(
+                                            agreementId: widget.agreementId));
+                                  },
+                                  child: Card(
+                                    child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    negotiation.projectTitle,
-                                                  ),
-                                                  Text(
-                                                      "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
-                                                ],
-                                              ),
-                                              Text(negotiation.projectPrice
-                                                  .toString()),
-                                            ],
-                                          ),
-                                          Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 8),
-                                              child: const Divider()),
-                                          Text(negotiation.projectDesc!),
-                                        ],
-                                      ),
-                                    )),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      nextScreen(
-                                          context,
-                                          UmkmAgreementPage(
-                                              agreementId: widget.agreementId));
-                                    },
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    const Text(
-                                                        "UMKM Agreement"),
-                                                    Chip(
-                                                        backgroundColor: state
-                                                                    .agreement
-                                                                    .umkmAgreementStatus ==
-                                                                "ACCEPTED"
-                                                            ? Colors.green[300]
-                                                            : state.agreement
-                                                                        .umkmAgreementStatus ==
-                                                                    "ON REVIEW"
-                                                                ? Colors
-                                                                    .blue[300]
-                                                                : Colors.yellow[
-                                                                    300],
-                                                        labelStyle:
-                                                            const TextStyle(
-                                                                fontSize: 10),
-                                                        label: Text(state
-                                                            .agreement
-                                                            .umkmAgreementStatus))
-                                                  ]),
-                                              // TextFormField(
-                                              //   readOnly: true,
-                                              //   controller:
-                                              //       _umkmAgreementController,
-                                              //   maxLines: null,
-                                              // ),
-                                              Text(
-                                                state.agreement.umkmAgreement!,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 4),
-                                                    child: const Icon(
-                                                      Icons
-                                                          .info_outline_rounded,
-                                                      color: Colors.grey,
-                                                      size: 12,
-                                                    ),
-                                                  ),
-                                                  const Text(
-                                                    "Contact organization to fill the note agreement!",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey),
-                                                  )
-                                                ],
-                                              )
-                                            ]),
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      nextScreen(
-                                          context,
-                                          InfluencerAgreementPage(
-                                              agreementId: widget.agreementId));
-                                    },
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  const Text(
-                                                      "Influencer Agreement"),
+                                                  const Text("UMKM Agreement"),
                                                   Chip(
-                                                    backgroundColor: state
-                                                                .agreement
-                                                                .influencerAgreementStatus ==
-                                                            "ACCEPTED"
-                                                        ? Colors.green[300]
-                                                        : state.agreement
-                                                                    .influencerAgreementStatus ==
-                                                                "ON REVIEW"
-                                                            ? Colors.blue[300]
-                                                            : Colors
-                                                                .yellow[300],
-                                                    labelStyle: const TextStyle(
-                                                        fontSize: 10),
-                                                    label: Text(state.agreement
-                                                        .influencerAgreementStatus),
-                                                  )
-                                                ],
+                                                      backgroundColor: state
+                                                                  .agreement
+                                                                  .umkmAgreementStatus ==
+                                                              "ACCEPTED"
+                                                          ? Colors.green[300]
+                                                          : state.agreement
+                                                                      .umkmAgreementStatus ==
+                                                                  "ON REVIEW"
+                                                              ? Colors.blue[300]
+                                                              : Colors
+                                                                  .yellow[300],
+                                                      labelStyle:
+                                                          const TextStyle(
+                                                              fontSize: 10),
+                                                      label: Text(state
+                                                          .agreement
+                                                          .umkmAgreementStatus))
+                                                ]),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
+                                              child: Text(
+                                                state.agreement.umkmAgreement!,
                                               ),
-                                              Text(
-                                                state.agreement
-                                                    .influencerAgreement!,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              // TextFormField(
-                                              //   controller:
-                                              //       _influencerAgreementController,
-                                              //   validator: (value) =>
-                                              //       value!.isEmpty
-                                              //           ? "Required"
-                                              //           : null,
-                                              //   autovalidateMode:
-                                              //       AutovalidateMode
-                                              //           .onUserInteraction,
-                                              //   enabled: state.agreement
-                                              //           .influencerAgreementStatus !=
-                                              //       "ACCEPTED",
-                                              //   maxLines: null,
-                                              //   decoration: InputDecoration(
-                                              //       suffixIcon:
-                                              //           isInfluencerAgreementEmpty
-                                              //               ? null
-                                              //               : GestureDetector(
-                                              //                   child: const Icon(
-                                              //                       Icons
-                                              //                           .check_rounded),
-                                              //                   onTap: () {
-                                              //                     if (_influencerAgreementController
-                                              //                         .text
-                                              //                         .isNotEmpty) {
-                                              //                       submitInfluencerNoteAgreement(
-                                              //                           _influencerAgreementController
-                                              //                               .text);
-                                              //                     }
-                                              //                   },
-                                              //                 )),
-                                              //   onChanged: (value) {
-                                              //     setState(() => value.isEmpty
-                                              //         ? isInfluencerAgreementEmpty =
-                                              //             true
-                                              //         : isInfluencerAgreementEmpty =
-                                              //             false);
-                                              //   },
-                                              // ),
-                                              const SizedBox(height: 8),
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 4),
-                                                    child: const Icon(
-                                                      Icons
-                                                          .info_outline_rounded,
-                                                      color: Colors.grey,
-                                                      size: 12,
-                                                    ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      right: 4),
+                                                  child: const Icon(
+                                                    Icons.info_outline_rounded,
+                                                    color: Colors.grey,
+                                                    size: 12,
                                                   ),
-                                                  const Text(
-                                                    "Fill your note agreement to continue your order process",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey),
-                                                  )
-                                                ],
-                                              )
-                                            ]),
-                                      ),
+                                                ),
+                                                const Text(
+                                                  "Contact organization to fill the note agreement!",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey),
+                                                )
+                                              ],
+                                            )
+                                          ]),
                                     ),
                                   ),
-                                ]),
-                          ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    nextScreen(
+                                        context,
+                                        InfluencerAgreementPage(
+                                            agreementId: widget.agreementId));
+                                  },
+                                  child: Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                const Text(
+                                                    "Influencer Agreement"),
+                                                Chip(
+                                                  backgroundColor: state
+                                                              .agreement
+                                                              .influencerAgreementStatus ==
+                                                          "ACCEPTED"
+                                                      ? Colors.green[300]
+                                                      : state.agreement
+                                                                  .influencerAgreementStatus ==
+                                                              "ON REVIEW"
+                                                          ? Colors.blue[300]
+                                                          : Colors.yellow[300],
+                                                  labelStyle: const TextStyle(
+                                                      fontSize: 10),
+                                                  label: Text(state.agreement
+                                                      .influencerAgreementStatus),
+                                                )
+                                              ],
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12),
+                                              child: Text(
+                                                state.agreement
+                                                    .influencerAgreement!,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      right: 4),
+                                                  child: const Icon(
+                                                    Icons.info_outline_rounded,
+                                                    color: Colors.grey,
+                                                    size: 12,
+                                                  ),
+                                                ),
+                                                const Text(
+                                                  "Fill your note agreement to continue your order process",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey),
+                                                )
+                                              ],
+                                            )
+                                          ]),
+                                    ),
+                                  ),
+                                ),
+                              ]),
                         ));
                   }
-                  return Text(state.toString());
+                  return Container();
                 },
               )),
           bottomNavigationBar: BlocBuilder<AgreementBloc, AgreementState>(
             builder: (context, state) {
               if (state is AgreementLoaded) {
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          onPressed:
-                              state.agreement.umkmAgreementStatus == "ON REVIEW"
+                return state.agreement.umkmAgreementStatus != 'ACCEPTED' &&
+                        state.agreement.influencerAgreementStatus != 'ACCEPTED'
+                    ? Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.primaryColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              onPressed: state.agreement.umkmAgreementStatus ==
+                                      "ON REVIEW"
                                   ? () {
                                       if (_formKey.currentState!.validate()) {
                                         acceptAgreement();
                                       }
                                     }
                                   : null,
-                          child: const Text("Accept")),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Cancel"),
-                      ),
-                    )
-                  ]),
-                );
+                              child: const Text("Accept")),
+                        ),
+                      )
+                    : const Padding(padding: EdgeInsets.zero);
               }
               return Container();
             },

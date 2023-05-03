@@ -22,16 +22,17 @@ class AgreementRepository {
           .get();
 
       if (snapshot.exists) {
+        Timestamp createdAt = snapshot.get('created_at');
         Agreement agreement = Agreement(
-          snapshot.id,
-          snapshot.get('influencer_id'),
-          snapshot.get('umkm_id'),
-          snapshot.get('negotiation_id'),
-          snapshot.get('umkm_agreement'),
-          snapshot.get('umkm_agreement_status'),
-          snapshot.get('influencer_agreement'),
-          snapshot.get('influencer_agreement_status'),
-        );
+            snapshot.id,
+            snapshot.get('influencer_id'),
+            snapshot.get('umkm_id'),
+            snapshot.get('negotiation_id'),
+            snapshot.get('umkm_agreement'),
+            snapshot.get('umkm_agreement_status'),
+            snapshot.get('influencer_agreement'),
+            snapshot.get('influencer_agreement_status'),
+            createdAt.toDate());
         return agreement;
       }
     } catch (e) {

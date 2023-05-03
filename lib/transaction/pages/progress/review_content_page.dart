@@ -1,5 +1,7 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,10 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
     return BlocProvider(
       create: (context) => transactionBloc,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Review Content")),
+        appBar: AppBar(
+          title: const Text("Review Content"),
+          backgroundColor: Constants.primaryColor,
+        ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {
             if (state is TransactionProcessSuccess) {
@@ -63,6 +68,7 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                     const SizedBox(height: 8),
                     TextFormField(
                       maxLines: null,
+                      decoration: textInputDecoration,
                       controller: _contentNoteController,
                       validator: (value) =>
                           value!.isEmpty ? "Insert content note" : null,
@@ -72,6 +78,7 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                     const Text("Review Note"),
                     const SizedBox(height: 8),
                     TextFormField(
+                      decoration: textInputDecoration,
                       readOnly: true,
                       maxLines: null,
                       controller: _reviewNoteController,
@@ -94,6 +101,12 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                         SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Constants.primaryColor,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
                                 onPressed: () {
                                   if (_contentNoteController.text.isNotEmpty) {
                                     transactionBloc.add(
@@ -108,6 +121,10 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
                               onPressed: () {
                                 transactionBloc.add(SaveNotesReviewContent(
                                     widget.transactionId,

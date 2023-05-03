@@ -1,5 +1,7 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +37,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Content Progress"),
+          backgroundColor: Constants.primaryColor,
         ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {
@@ -60,7 +63,10 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                           const Text("Notes"),
                           const SizedBox(height: 8),
                           TextField(
-                              controller: _notesController, maxLines: null)
+                            controller: _notesController,
+                            maxLines: null,
+                            decoration: textInputDecoration,
+                          )
                         ]),
                   ));
             }
@@ -79,6 +85,11 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primaryColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
                             transactionBloc.add(UpdateStatusContentProgress(
                                 widget.transactionId,
@@ -91,6 +102,10 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                     SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
                               transactionBloc.add(SaveNotesContentProgress(
                                   widget.transactionId,
