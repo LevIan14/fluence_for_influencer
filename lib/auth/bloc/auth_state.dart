@@ -15,6 +15,8 @@ class ForgotPasswordRequestSuccess extends AuthState {}
 
 class Authenticated extends AuthState {}
 
+class ChangePasswordSuccess extends AuthState {}
+
 class UnAuthenticated extends AuthState {}
 
 class AuthError extends AuthState {
@@ -42,10 +44,12 @@ class FacebookCredentialSuccess extends AuthState {
   final String? facebookAccessToken;
   final String? instagramUserId;
 
-  FacebookCredentialSuccess(this.influencerId, this.facebookAccessToken, this.instagramUserId);
+  FacebookCredentialSuccess(
+      this.influencerId, this.facebookAccessToken, this.instagramUserId);
 
   @override
-  List<Object?> get props => [influencerId, facebookAccessToken, instagramUserId];
+  List<Object?> get props =>
+      [influencerId, facebookAccessToken, instagramUserId];
 }
 
 class FacebookCredentialError extends AuthState {
@@ -61,4 +65,3 @@ class FacebookCredentialRejected extends AuthState {
   @override
   List<Object?> get props => [];
 }
-

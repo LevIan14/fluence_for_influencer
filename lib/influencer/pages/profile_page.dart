@@ -3,6 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
+import 'package:fluence_for_influencer/auth/pages/change_password_page.dart';
+import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
@@ -43,7 +46,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   late final PortfolioBloc portfolioBloc;
   final PortfolioRepository portfolioRepository = PortfolioRepository();
   final CategoryRepository categoryRepository = CategoryRepository();
-  
+
   int currentTab = 0;
   bool verified = false;
 
@@ -51,7 +54,9 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   void initState() {
     super.initState();
     String influencerId = widget.influencerId;
-    influencerBloc = InfluencerBloc(influencerRepository: influencerRepository, categoryRepository: categoryRepository);
+    influencerBloc = InfluencerBloc(
+        influencerRepository: influencerRepository,
+        categoryRepository: categoryRepository);
     portfolioBloc = PortfolioBloc(portfolioRepository: portfolioRepository);
     influencerBloc.add(GetInfluencerDetail(influencerId));
   }
@@ -59,21 +64,24 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   setInfluencerData(Influencer i) {
     setState(() {
       influencer = i;
-      if (i.facebookAccessToken != null && i.facebookAccessToken != '' && i.instagramUserId != null && i.instagramUserId != '') {
+      if (i.facebookAccessToken != null &&
+          i.facebookAccessToken != '' &&
+          i.instagramUserId != null &&
+          i.instagramUserId != '') {
         print('${i.facebookAccessToken} ${i.instagramUserId}');
         verified = true;
       }
     });
   }
-  
-  setInfluencerPortfolioList(List<Portfolio> updatedPortfolioList){
+
+  setInfluencerPortfolioList(List<Portfolio> updatedPortfolioList) {
     setState(() {
       influencer.portfolio = updatedPortfolioList;
     });
   }
 
   onChangeTab(tab) {
-    if(tab == 1) {
+    if (tab == 1) {
       // Tab PORTFOLIO
       portfolioBloc.add(GetInfluencerPortfolioList(influencer.userId));
     }
@@ -102,32 +110,35 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
         builder: (context, state) {
           if (state is InfluencerLoaded) {
             return Scaffold(
-                appBar: buildAppBar(context),
-                body: buildBody(context),
-                floatingActionButton: currentTab == 1 ? FloatingActionButton(
-                  backgroundColor: const Color.fromARGB(255, 255, 234, 240),
-                  onPressed: () async {
-                    XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
-                    if(img == null) return;
-                    navigateToUploadPortfolio(img);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(.1),
-                          blurRadius: 15.0,
-                          spreadRadius: 0.0,
-                          offset: const Offset(
-                            0.0,
-                            5.0,
-                          )),
-                    ]),
-                    child: const Icon(Ionicons.add_outline,
-                        color: Constants.primaryColor),
-                  ),
-                  // const Text("Contact", style: TextSty
-                  //le(color: Colors.white))
-                ) : null,
+              appBar: buildAppBar(context),
+              body: buildBody(context),
+              floatingActionButton: currentTab == 1
+                  ? FloatingActionButton(
+                      backgroundColor: const Color.fromARGB(255, 255, 234, 240),
+                      onPressed: () async {
+                        XFile? img = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
+                        if (img == null) return;
+                        navigateToUploadPortfolio(img);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(.1),
+                              blurRadius: 15.0,
+                              spreadRadius: 0.0,
+                              offset: const Offset(
+                                0.0,
+                                5.0,
+                              )),
+                        ]),
+                        child: const Icon(Ionicons.add_outline,
+                            color: Constants.primaryColor),
+                      ),
+                      // const Text("Contact", style: TextSty
+                      //le(color: Colors.white))
+                    )
+                  : null,
             );
           }
           return Scaffold(
@@ -187,15 +198,18 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                               color: Colors.grey.shade600),
                           title: Text("Change Password", style: textStyle),
                           onTap: () {
-                            // nextScreen(context, const EditProfilePage());
+                            Navigator.pop(context);
+                            nextScreen(context, const ChangePasswordPage());
                           },
                         ),
                         ListTile(
                           leading: const Icon(Ionicons.log_out_outline,
                               color: Colors.red),
-                          title: Text("Logout", style: textStyle.copyWith(color: Colors.red)),
+                          title: Text("Logout",
+                              style: textStyle.copyWith(color: Colors.red)),
                           onTap: () {
-                            // nextScreen(context, const EditProfilePage());
+                            Navigator.pop(context);
+                            context.read<AuthBloc>().add(LogoutRequested());
                           },
                         )
                       ],
@@ -230,38 +244,40 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
 
   Widget buildProfilePageHeader() {
     double margin = 10.0;
-    Widget verifiedWidget = verified ? Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.only(left: margin / 2),
-      child: const Image(
-        image: AssetImage('assets/verified.png'),
-        height: 28,
-        width: 28,
-      ),
-    ) : Container();
-    Widget followersCountWidget = verified ? 
-      Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Container(
-        // decoration: BoxDecoration(color: Constants.primaryColor),
-          margin: EdgeInsets.only(right: margin / 2),
-          child: Text("${influencer.followersCount} Followers",
-              style: const TextStyle(
-                  color: Constants.primaryColor,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 18.0)),
-        ),
-        Container(
-          margin: EdgeInsets.only(right: margin / 2),
-          child: const Text("·",
-              style: TextStyle(
-                color: Color.fromARGB(129, 162, 0, 32),
-                fontSize: 20.0,
-              ))),
-          ],
-      )
-    : Container();
+    Widget verifiedWidget = verified
+        ? Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(left: margin / 2),
+            child: const Image(
+              image: AssetImage('assets/verified.png'),
+              height: 28,
+              width: 28,
+            ),
+          )
+        : Container();
+    Widget followersCountWidget = verified
+        ? Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                // decoration: BoxDecoration(color: Constants.primaryColor),
+                margin: EdgeInsets.only(right: margin / 2),
+                child: Text("${influencer.followersCount} Followers",
+                    style: const TextStyle(
+                        color: Constants.primaryColor,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18.0)),
+              ),
+              Container(
+                  margin: EdgeInsets.only(right: margin / 2),
+                  child: const Text("·",
+                      style: TextStyle(
+                        color: Color.fromARGB(129, 162, 0, 32),
+                        fontSize: 20.0,
+                      ))),
+            ],
+          )
+        : Container();
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -272,23 +288,23 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppProfileAvatar(verticalMargin: margin, parentWidth: parentWidth, avatarUrl: influencer.avatarUrl),
+              AppProfileAvatar(
+                  verticalMargin: margin,
+                  parentWidth: parentWidth,
+                  avatarUrl: influencer.avatarUrl),
               Container(
-                margin: EdgeInsets.symmetric(vertical: margin),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(influencer.fullname,
-                        style: const TextStyle(
-                            color: Constants.primaryColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 23.0)
-                    ),
-                    verifiedWidget,
-                  ]
-                )
-              ),
+                  margin: EdgeInsets.symmetric(vertical: margin),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(influencer.fullname,
+                            style: const TextStyle(
+                                color: Constants.primaryColor,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 23.0)),
+                        verifiedWidget,
+                      ])),
               Container(
                 margin: EdgeInsets.only(bottom: margin),
                 height: 20.0,
@@ -307,8 +323,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                                   color: Color.fromARGB(129, 162, 0, 32),
                                   size: 18.0),
                               Container(
-                                  margin:
-                                      EdgeInsets.only(left: margin / 3),
+                                  margin: EdgeInsets.only(left: margin / 3),
                                   child: Text(influencer.location,
                                       style: const TextStyle(
                                           color:
@@ -328,9 +343,21 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        ProfileMenuButton(title: 'Description', tab: 0, active: currentTab == 0, onTapMenu: onChangeTab),
-        ProfileMenuButton(title: 'Portofolio', tab: 1, active: currentTab == 1, onTapMenu: onChangeTab),
-        ProfileMenuButton(title: 'Reviews', tab: 2, active: currentTab == 2, onTapMenu: onChangeTab),
+        ProfileMenuButton(
+            title: 'Description',
+            tab: 0,
+            active: currentTab == 0,
+            onTapMenu: onChangeTab),
+        ProfileMenuButton(
+            title: 'Portofolio',
+            tab: 1,
+            active: currentTab == 1,
+            onTapMenu: onChangeTab),
+        ProfileMenuButton(
+            title: 'Reviews',
+            tab: 2,
+            active: currentTab == 2,
+            onTapMenu: onChangeTab),
       ],
     );
   }
@@ -339,7 +366,11 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     Widget emptyContent = Container(
       padding: EdgeInsets.symmetric(vertical: 10.0),
       alignment: Alignment.center,
-      child: const Text("There is no data to show.", style: TextStyle(color: Constants.grayColor, fontSize: 16.0, fontStyle: FontStyle.italic)),
+      child: const Text("There is no data to show.",
+          style: TextStyle(
+              color: Constants.grayColor,
+              fontSize: 16.0,
+              fontStyle: FontStyle.italic)),
     );
     double margin = 15.0;
     if (currentTab == 0) {
@@ -349,7 +380,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
       return buildPortfolioWidget(margin);
     } else if (currentTab == 2) {
       return buildReviewWidget(margin);
-      // if review == null, 
+      // if review == null,
       //  rawWidgets.add(emptyContent);
     }
     return Container();
@@ -360,22 +391,23 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     List<Widget> widgets = [
       ProfileMenuContent(title: 'About', content: influencer.about),
     ];
-    if(verified) widgets.add(ProfileMenuInsights(title: 'Instagram Metrics', influencer: influencer));
-    for(var widget in widgets){
-      finalWidgets.add(
-        Container(
-          margin: EdgeInsets.only(bottom: margin),
-          child: widget,
-        )
-      );
+    if (verified) {
+      widgets.add(ProfileMenuInsights(
+          title: 'Instagram Metrics', influencer: influencer));
+    }
+    for (var widget in widgets) {
+      finalWidgets.add(Container(
+        margin: EdgeInsets.only(bottom: margin),
+        child: widget,
+      ));
     }
     return Container(
       // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
       margin: EdgeInsets.symmetric(vertical: margin),
-      child: Column(            
-        mainAxisSize: MainAxisSize.max,                                                                                                                      
+      child: Column(
+        // mainAxisSize: MainAxisSize.max,
         children: finalWidgets,
-      )
+      ),
     );
   }
 
@@ -383,36 +415,40 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     List<Widget> portfolioWidget = [];
     return BlocConsumer<PortfolioBloc, PortfolioState>(
       listener: (context, state) {
-        if(state is InfluencerPortfolioUploaded || state is InfluencerPortfolioUpdated || state is InfluencerPortfolioDeleted){
+        if (state is InfluencerPortfolioUploaded ||
+            state is InfluencerPortfolioUpdated ||
+            state is InfluencerPortfolioDeleted) {
           portfolioBloc.add(GetInfluencerPortfolioList(influencer.userId));
         }
-        if(state is InfluencerPortfoliosLoaded){
+        if (state is InfluencerPortfoliosLoaded) {
           setInfluencerPortfolioList(state.portfolioList);
         }
       },
       builder: (context, state) {
-        if(state is InfluencerPortfoliosLoaded) {
-          if(state.portfolioList.isNotEmpty) {
-            for(var portfolio in state.portfolioList){
-              portfolioWidget.add(
-                Container(
-                  margin: EdgeInsets.only(bottom: margin),
-                  child: InfluencerPortfolio(portfolio: portfolio, portfolioBloc: portfolioBloc),
-                )
-              );
+        if (state is InfluencerPortfoliosLoaded) {
+          if (state.portfolioList.isNotEmpty) {
+            for (var portfolio in state.portfolioList) {
+              portfolioWidget.add(Container(
+                margin: EdgeInsets.only(bottom: margin),
+                child: InfluencerPortfolio(
+                    portfolio: portfolio, portfolioBloc: portfolioBloc),
+              ));
             }
             return Container(
-              margin: EdgeInsets.symmetric(vertical: margin),
-              child: Column(            
-                mainAxisSize: MainAxisSize.max,                                                                                                                      
-                children: portfolioWidget,
-              )
-            );
+                margin: EdgeInsets.symmetric(vertical: margin),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: portfolioWidget,
+                ));
           }
           return Container(
             padding: EdgeInsets.symmetric(vertical: 10.0),
             alignment: Alignment.center,
-            child: const Text("There is no data to show.", style: TextStyle(color: Constants.grayColor, fontSize: 16.0, fontStyle: FontStyle.italic)),
+            child: const Text("There is no data to show.",
+                style: TextStyle(
+                    color: Constants.grayColor,
+                    fontSize: 16.0,
+                    fontStyle: FontStyle.italic)),
           );
         }
         return Container(
@@ -426,60 +462,54 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
 
   Widget buildReviewWidget(double margin) {
     String content =
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum.";
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum.";
     List<Widget> finalWidgets = [];
     List<Widget> widgets = [
-      ProfileMenuContent(title: 'Good!', content: content),      
+      ProfileMenuContent(title: 'Good!', content: content),
     ];
-    for(var widget in widgets){
-      finalWidgets.add(
-        Container(
-          margin: EdgeInsets.only(bottom: margin),
-          child: widget,
-        )
-      );
+    for (var widget in widgets) {
+      finalWidgets.add(Container(
+        margin: EdgeInsets.only(bottom: margin),
+        child: widget,
+      ));
     }
     return Container(
-      // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-      margin: EdgeInsets.symmetric(vertical: margin),
-      child: Column(            
-        mainAxisSize: MainAxisSize.max,                                                                                                                      
-        children: finalWidgets,
-      )
-    );
+        // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+        margin: EdgeInsets.symmetric(vertical: margin),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: finalWidgets,
+        ));
   }
-
-
 }
-  // Widget ProfileAvatar(double verticalMargin, double parentWidth) {
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(vertical: verticalMargin),
-  //     child:
-  //         // FutureBuilder(
-  //         // future: _avatar,
-  //         // builder: (context, snapshot) {
-  //         //   if(snapshot.connectionState == ConnectionState.done){
-  //         // return
-  //         Container(
-  //       width: parentWidth * 0.3,
-  //       height: parentWidth * 0.3,
-  //       child: CircleAvatar(
-  //         radius: 14,
-  //         backgroundImage: NetworkImage(
-  //           widget.influencer.avatarUrl,
-  //         ),
-  //       ),
-  //     ),
-      // }
-      //   if(snapshot.connectionState == ConnectionState.waiting){
-      //     return Container(
-      //       width: parentWidth * 0.15,
-      //       height: parentWidth * 0.15,
-      //       child: CircularProgressIndicator(),
-      //     );
-      //   }
-      //   return Container();
-      // },
-  //   );
-  // 
-
+// Widget ProfileAvatar(double verticalMargin, double parentWidth) {
+//   return Container(
+//     margin: EdgeInsets.symmetric(vertical: verticalMargin),
+//     child:
+//         // FutureBuilder(
+//         // future: _avatar,
+//         // builder: (context, snapshot) {
+//         //   if(snapshot.connectionState == ConnectionState.done){
+//         // return
+//         Container(
+//       width: parentWidth * 0.3,
+//       height: parentWidth * 0.3,
+//       child: CircleAvatar(
+//         radius: 14,
+//         backgroundImage: NetworkImage(
+//           widget.influencer.avatarUrl,
+//         ),
+//       ),
+//     ),
+// }
+//   if(snapshot.connectionState == ConnectionState.waiting){
+//     return Container(
+//       width: parentWidth * 0.15,
+//       height: parentWidth * 0.15,
+//       child: CircularProgressIndicator(),
+//     );
+//   }
+//   return Container();
+// },
+//   );
+//

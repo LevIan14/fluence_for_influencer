@@ -23,6 +23,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 
 import 'widget_directing_textfield.dart';
 
@@ -283,7 +284,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _enableSaveBtn = _formSettingsKey.currentState!.validate();
             });
           },
-          child: Column(children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             buildProfileAvatar(influencer),
             AppTextfield(
                 field: "Name",
@@ -293,12 +295,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 field: "Gender",
                 fieldController: _genderController,
                 onTap: () => showGenderModal()),
-            AppTextfield(
-                field: "Location",
-                fieldController: _locationController,
-                validator: _locationValidator,
-                isReadOnly: true,
-                onTap: () async => await _getCurrentPosition()),
+            const SizedBox(height: 16),
+            const Text('Location'),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _locationController,
+              validator: _locationValidator,
+              decoration: textInputDecoration.copyWith(
+                  suffixIcon: IconButton(
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) =>
+                              showDialogWithCircularProgress(context),
+                        );
+                        await _getCurrentPosition();
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.location_on_rounded))),
+            ),
+            const SizedBox(height: 16),
+
+            // AppTextfield(
+            //     field: "Location",
+            //     fieldController: _locationController,
+            //     validator: _locationValidator,
+            //     isReadOnly: true,
+            //     onTap: () async => await _getCurrentPosition()),
             buildCategoryTypeChips(categories),
             DirectingTextfield(
                 field: "About",
@@ -715,10 +739,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
       setState(() {
-        // _currentAddress =
-        //     '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
         _currentAddress = place.subAdministrativeArea;
-        log(_currentAddress.toString());
         _locationController.text = _currentAddress!;
       });
     }).catchError((e) {
@@ -734,6 +755,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: Text("Discard changes"),
       onPressed: () {
         Navigator.pop(context, true);
+        Navigator.pop(context);
       },
     );
     TextButton cancelButton = TextButton(

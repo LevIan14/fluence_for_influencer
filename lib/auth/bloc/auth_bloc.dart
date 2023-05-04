@@ -31,6 +31,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<ChangePasswordRequested>((event, emit) async {
+      try {
+        await authRepository.changePassword(
+            event.oldPassword, event.newPassword);
+        emit(ChangePasswordSuccess());
+      } catch (e) {
+        emit(AuthError(e.toString()));
+        emit(Authenticated());
+      }
+    });
+
     on<VerifyEmailReqested>((event, emit) async {
       try {
         await authRepository.sendEmailVerification();
@@ -72,13 +83,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<FacebookCredentialRequested>(((event, emit) async {
       emit(Loading());
       try {
-        Map<String, dynamic>? res = await authRepository.connectToFacebook(event.influencerId);
-        if(res != null){
-          emit(FacebookCredentialSuccess(res['id'], res['facebook_access_token'], res['instagram_user_id']));
-        } 
-        else {
+        Map<String, dynamic>? res =
+            await authRepository.connectToFacebook(event.influencerId);
+        if (res != null) {
+          emit(FacebookCredentialSuccess(res['id'],
+              res['facebook_access_token'], res['instagram_user_id']));
+        } else {
           emit(FacebookCredentialRejected());
-        } 
+        }
       } catch (e) {
         emit(FacebookCredentialError(e.toString()));
         emit(FacebookCredentialRejected());

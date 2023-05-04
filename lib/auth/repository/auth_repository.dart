@@ -39,6 +39,24 @@ class AuthRepository {
     }
   }
 
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      await Constants.firebaseAuth.signInWithEmailAndPassword(
+          email: Constants.firebaseAuth.currentUser!.email!,
+          password: oldPassword);
+
+      await Constants.firebaseAuth.currentUser!.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('No user found for that email');
+      } else if (e.code == 'wrong-password') {
+        throw Exception('Wrong password provided for that user');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> sendEmailVerification() async {
     try {
       return Constants.firebaseAuth.currentUser!.sendEmailVerification();
@@ -195,7 +213,11 @@ class AuthRepository {
                   res["instagram_business_account"]["id"];
               // connectingInfluencerWithFacebook(
               //     influencerId, longLivedUserAccessToken, instagramUserId);
-              return {'id': influencerId, 'facebook_access_token': longLivedUserAccessToken, 'instagram_user_id': instagramUserId};
+              return {
+                'id': influencerId,
+                'facebook_access_token': longLivedUserAccessToken,
+                'instagram_user_id': instagramUserId
+              };
             } catch (e) {
               log(e.toString());
             } finally {}

@@ -23,6 +23,12 @@ class RegisterRequested extends AuthEvent {
       this.categoryList);
 }
 
+class ChangePasswordRequested extends AuthEvent {
+  final String oldPassword;
+  final String newPassword;
+  ChangePasswordRequested(this.oldPassword, this.newPassword);
+}
+
 class GoogleLoginRegisterRequested extends AuthEvent {
   final String email;
   final String fullname;
