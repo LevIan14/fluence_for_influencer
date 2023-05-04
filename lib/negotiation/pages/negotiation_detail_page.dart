@@ -146,8 +146,11 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                 if (state is AcceptNegotiationSuccess) {
                   final newAgreement = {
                     "influencer_agreement": influencerProfile.noteAgreement,
+                    "influencer_agreement_draft":
+                        influencerProfile.noteAgreement,
                     "influencer_agreement_status": "PENDING",
                     "umkm_agreement": umkmProfile.noteAgreement,
+                    "umkm_agreement_draft": umkmProfile.noteAgreement,
                     "umkm_agreement_status": "PENDING",
                     "influencer_id": widget.influencerId,
                     "umkm_id": widget.umkmId,

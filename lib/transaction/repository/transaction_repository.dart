@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
-import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction_progress.dart';
 import 'package:fluence_for_influencer/transaction/model/progress/content_progress.dart';
@@ -24,7 +23,9 @@ class TransactionRepository {
         ReviewContent reviewContent = ReviewContent(
           snapshot.get("progress")['review_content']['status'],
           snapshot.get("progress")['review_content']['influencer_note'],
+          snapshot.get("progress")['review_content']['influencer_note_draft'],
           snapshot.get("progress")['review_content']['umkm_note'],
+          snapshot.get("progress")['review_content']['umkm_note_draft'],
         );
 
         UploadProgress uploadProgress = UploadProgress(
@@ -34,7 +35,9 @@ class TransactionRepository {
         ReviewUpload reviewUpload = ReviewUpload(
           snapshot.get("progress")['review_upload']['status'],
           snapshot.get("progress")['review_upload']['influencer_note'],
+          snapshot.get("progress")['review_upload']['influencer_note_draft'],
           snapshot.get("progress")['review_upload']['umkm_note'],
+          snapshot.get("progress")['review_upload']['umkm_note_draft'],
         );
 
         OrderTransactionProgress orderTransactionProgress =
@@ -101,7 +104,9 @@ class TransactionRepository {
           "review_content": {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note": influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft": orderTransactionProgress.reviewContent.umkmNote,
           },
           "upload_progress": {
             "influencer_note":
@@ -112,7 +117,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewUpload.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -139,7 +148,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note":
                 orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewContent.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note":
@@ -150,7 +163,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewUpload.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -179,7 +196,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note":
                 orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewContent.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note": influencerNote,
@@ -188,7 +209,10 @@ class TransactionRepository {
           "review_upload": {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note": influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -216,7 +240,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note":
                 orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewContent.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note": influencerNote,
@@ -226,7 +254,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewUpload.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -254,7 +286,10 @@ class TransactionRepository {
           "review_content": {
             "status": status,
             "influencer_note": influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note":
@@ -265,7 +300,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewUpload.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -291,8 +330,12 @@ class TransactionRepository {
           },
           "review_content": {
             "status": orderTransactionProgress.reviewContent.status,
-            "influencer_note": influencerNote,
+            "influencer_note":
+                orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft
           },
           "upload_progress": {
             "influencer_note":
@@ -303,7 +346,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewUpload.status,
             "influencer_note":
                 orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewUpload.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -332,7 +379,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note":
                 orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewContent.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note":
@@ -342,7 +393,10 @@ class TransactionRepository {
           "review_upload": {
             "status": status,
             "influencer_note": influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
@@ -370,7 +424,11 @@ class TransactionRepository {
             "status": orderTransactionProgress.reviewContent.status,
             "influencer_note":
                 orderTransactionProgress.reviewContent.influencerNote,
+            "influencer_note_draft":
+                orderTransactionProgress.reviewContent.influencerNoteDraft,
             "umkm_note": orderTransactionProgress.reviewContent.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewContent.umkmNoteDraft,
           },
           "upload_progress": {
             "influencer_note":
@@ -379,8 +437,12 @@ class TransactionRepository {
           },
           "review_upload": {
             "status": orderTransactionProgress.reviewUpload.status,
-            "influencer_note": influencerNote,
+            "influencer_note":
+                orderTransactionProgress.reviewUpload.influencerNote,
+            "influencer_note_draft": influencerNote,
             "umkm_note": orderTransactionProgress.reviewUpload.umkmNote,
+            "umkm_note_draft":
+                orderTransactionProgress.reviewUpload.umkmNoteDraft,
           },
         }
       });
