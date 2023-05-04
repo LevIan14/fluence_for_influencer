@@ -99,7 +99,9 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                             "review_content": {
                               "status": "PENDING",
                               "influencer_note": "",
-                              "umkm_note": ""
+                              "influencer_note_draft": "",
+                              "umkm_note": "",
+                              "umkm_note_draft": "",
                             },
                             "upload_progress": {
                               "status": "PENDING",
@@ -108,7 +110,9 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                             "review_upload": {
                               "status": "PENDING",
                               "influencer_note": "",
-                              "umkm_note": ""
+                              "influencer_note_draft": "",
+                              "umkm_note": "",
+                              "umkm_note_draft": "",
                             }
                           },
                           "agreement_id": widget.agreementId,

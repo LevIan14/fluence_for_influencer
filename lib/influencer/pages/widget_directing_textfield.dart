@@ -7,7 +7,11 @@ import 'package:ionicons/ionicons.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 
 class DirectingTextfield extends StatelessWidget {
-  const DirectingTextfield({super.key, required this.field, required this.fieldController, required this.onTap});
+  const DirectingTextfield(
+      {super.key,
+      required this.field,
+      required this.fieldController,
+      required this.onTap});
 
   final String field;
   final TextEditingController fieldController;
@@ -17,7 +21,7 @@ class DirectingTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     InputDecoration inputDecoration = textInputDecoration;
     ThemeData theme = Theme.of(context);
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
           child: Text(field,
@@ -26,8 +30,8 @@ class DirectingTextfield extends StatelessWidget {
               textAlign: TextAlign.left)),
       TextFormField(
         decoration: inputDecoration.copyWith(
-          suffixIcon: const Icon(Ionicons.chevron_forward_outline, color: Constants.grayColor)
-        ),
+            suffixIcon: const Icon(Ionicons.chevron_forward_outline,
+                color: Constants.grayColor)),
         readOnly: true,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: fieldController,
