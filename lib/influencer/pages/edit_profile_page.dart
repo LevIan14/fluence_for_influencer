@@ -47,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _enableSaveBtn = true;
 
   late Influencer influencer;
-  late final List<dynamic> categories;
+  late final List<CategoryType> categories;
   final List<String> genders = ['Male', 'Female', 'Unknown'];
 
   final TextEditingController _nameController = TextEditingController();
@@ -181,6 +181,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: BlocListener<CategoryBloc, CategoryState>(
           listener: (context, state) {
             if (state is CategoryLoaded) {
+              print('this is category');
+              print(state.toString());
               setCategoryTypeChips(state.categoryList);
             }
           },
@@ -196,11 +198,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
               },
               child: BlocConsumer<InfluencerBloc, InfluencerState>(
                 listener: (context, state) {
+                  print("helo there");
+                  print(state.toString());
+                  print(_selectedCategory);
+
                   if (state is InfluencerLoaded) {
                     setInfluencerData(state.influencer);
                   }
                 },
                 builder: (context, state) {
+                  if (state is InfluencerLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  print(">>>>");
+                  print(state.toString());
+                  print(_selectedCategory);
                   if (state is InfluencerLoaded) {
                     return WillPopScope(
                       onWillPop: () async {
@@ -496,9 +510,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  Widget buildCategoryTypeChips(List<dynamic> categories) {
+  Widget buildCategoryTypeChips(List<CategoryType> categories) {
     List<Widget> widgetChips = [];
-    for (var category in categories) {
+    for (CategoryType category in categories) {
       bool selected = _selectedCategory
           .any((element) => element.categoryTypeId == category.categoryTypeId);
       Widget chip = FilterChip(
@@ -524,10 +538,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
           selected: selected,
           onSelected: (bool value) {
             setState(() {
-              if (!_selectedCategory.contains(category)) {
+              if (value) {
                 _selectedCategory.add(category);
               } else {
-                _selectedCategory.remove(category);
+                _selectedCategory.removeWhere(
+                  (element) =>
+                      element.categoryTypeId == category.categoryTypeId,
+                );
               }
             });
           });

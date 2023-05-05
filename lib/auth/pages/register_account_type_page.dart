@@ -34,7 +34,8 @@ class RegisterAccountTypePage extends StatefulWidget {
 
 class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   final _registerFormKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _bankAccountController = TextEditingController();
+  final _genderController = TextEditingController();
   final _locationController = TextEditingController();
 
   String? _currentAddress;
@@ -44,7 +45,8 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _bankAccountController.dispose();
+    _genderController.dispose();
     _locationController.dispose();
     super.dispose();
   }
@@ -101,12 +103,47 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const Text('Bank Account'),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _bankAccountController,
+                                decoration: textInputDecoration,
+                                validator: (value) => value!.isEmpty
+                                    ? "Insert your bank account"
+                                    : null,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                              ),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                  onTap: () {},
+                                  child: const Text('Why we need this data')),
+                              const SizedBox(height: 16),
+                              const Text('Gender'),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _genderController,
+                                decoration: textInputDecoration,
+                                validator: (value) => value!.isEmpty
+                                    ? "Choose your gender"
+                                    : null,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                onTap: () {
+                                  // bottom sheet modal
+                                },
+                              ),
                               const Text("Location",
                                   style:
                                       TextStyle(color: Constants.primaryColor)),
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: _locationController,
+                                validator: (value) => value!.isEmpty
+                                    ? "Insert your location"
+                                    : null,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
                                 decoration: textInputDecoration.copyWith(
                                     hintText: "Tap icon to get your location",
                                     suffixIcon: IconButton(
