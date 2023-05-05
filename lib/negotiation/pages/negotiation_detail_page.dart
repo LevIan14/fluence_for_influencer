@@ -13,6 +13,7 @@ import 'package:fluence_for_influencer/negotiation/repository/negotiation_reposi
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/umkm/bloc/umkm_bloc.dart';
 import 'package:fluence_for_influencer/umkm/model/umkm.dart';
@@ -336,7 +337,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
-                              acceptNegotiation();
+                              acceptDialog(context);
                             },
                             child: const Text("Accept")),
                       ),
@@ -347,7 +348,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
-                              rejectNegotiation();
+                              rejectDialog(context);
                             },
                             child: const Text(
                               "Reject",
@@ -378,6 +379,59 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
       _projectDurationController.text = "$startDate - $endDate";
     }
   }
+
+  Future<bool> acceptDialog(context) async {
+    Text dialogTitle = const Text("Accept Negotiation");
+    Text dialogContent =
+        const Text("Are you sure to accept negotiation?");
+    TextButton primaryButton = TextButton(
+      child: Text("Accept"),
+      onPressed: () {
+        acceptNegotiation();
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
+  }
+
+   Future<bool> rejectDialog(context) async {
+    Text dialogTitle = const Text("Reject Negotiation");
+    Text dialogContent =
+        const Text("Are you sure to reject negotiation?");
+    TextButton primaryButton = TextButton(
+      child: Text("Reject"),
+      onPressed: () {
+        rejectNegotiation();
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
+  }
+
 
   void acceptNegotiation() {
     umkmBloc.add(GetUmkmDetail(widget.umkmId));

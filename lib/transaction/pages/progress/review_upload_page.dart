@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -109,12 +110,7 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
                                             BorderRadius.circular(30))),
                                 onPressed: () {
                                   if (_contentNoteController.text.isNotEmpty) {
-                                    transactionBloc.add(
-                                        UpdateStatusReviewUpload(
-                                            widget.transactionId,
-                                            _contentNoteController.text,
-                                            "ON REVIEW",
-                                            state.transaction.orderProgress));
+                                    updateDialog(context, state.transaction);
                                   }
                                 },
                                 child: const Text("Update Status"))),
@@ -142,5 +138,36 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> updateDialog(context, transaction) async {
+    Text dialogTitle = const Text("Update Status");
+    Text dialogContent =
+        const Text("Are you sure to update status?");
+    TextButton primaryButton = TextButton(
+      child: Text("Yes"),
+      onPressed: () {
+       transactionBloc.add(
+        UpdateStatusReviewUpload(
+            widget.transactionId,
+            _contentNoteController.text,
+            "ON REVIEW",
+            transaction.orderProgress));
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
   }
 }

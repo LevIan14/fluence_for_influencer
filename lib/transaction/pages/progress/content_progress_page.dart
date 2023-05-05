@@ -1,6 +1,7 @@
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -91,11 +92,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
-                            transactionBloc.add(UpdateStatusContentProgress(
-                                widget.transactionId,
-                                _notesController.text,
-                                "DONE",
-                                state.transaction.orderProgress));
+                            updateDialog(context, state.transaction);
                           },
                           child: const Text("Update Status")),
                     ),
@@ -107,10 +104,10 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
-                              transactionBloc.add(SaveNotesContentProgress(
-                                  widget.transactionId,
-                                  _notesController.text,
-                                  state.transaction.orderProgress));
+                              // transactionBloc.add(SaveNotesContentProgress(
+                              //     widget.transactionId,
+                              //     _notesController.text,
+                              //     state.transaction.orderProgress));
                             },
                             child: const Text("Save Notes"))),
                   ],
@@ -123,4 +120,36 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
       ),
     );
   }
+
+  Future<bool> updateDialog(context, transaction) async {
+    Text dialogTitle = const Text("Update Status");
+    Text dialogContent =
+        const Text("Are you sure to update status?");
+    TextButton primaryButton = TextButton(
+      child: Text("Yes"),
+      onPressed: () {
+        transactionBloc.add(UpdateStatusContentProgress(
+                                widget.transactionId,
+                                _notesController.text,
+                                "DONE",
+                                transaction.orderProgress));
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
+  }
+
+
 }

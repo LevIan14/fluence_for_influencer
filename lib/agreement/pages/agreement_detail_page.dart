@@ -16,6 +16,7 @@ import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 
 class AgreementDetailPage extends StatefulWidget {
   final String agreementId;
@@ -388,7 +389,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                               onPressed: state.agreement.umkmAgreementStatus ==
                                       "ON REVIEW"
                                   ? () {
-                                      acceptAgreement();
+                                      acceptDialog(context);
                                     }
                                   : null,
                               child: const Text("Accept")),
@@ -402,10 +403,36 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
         ));
   }
 
-  void submitInfluencerNoteAgreement(String influencerAgreement) {
-    agreementBloc.add(
-        UpdateInfluencerAgreement(widget.agreementId, influencerAgreement));
+  // void submitInfluencerNoteAgreement(String influencerAgreement) {
+  //   agreementBloc.add(
+  //       UpdateInfluencerAgreement(widget.agreementId, influencerAgreement));
+  // }
+
+  Future<bool> acceptDialog(context) async {
+    Text dialogTitle = const Text("Accept Agreement");
+    Text dialogContent =
+        const Text("Are you sure to accept agreement?");
+    TextButton primaryButton = TextButton(
+      child: Text("Accept"),
+      onPressed: () {
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
   }
+
 
   void acceptAgreement() {
     agreementBloc.add(AcceptAgreement(widget.agreementId));

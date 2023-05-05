@@ -6,6 +6,7 @@ import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 
 class InfluencerAgreementPage extends StatefulWidget {
   final String agreementId;
@@ -103,8 +104,7 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                submitInfluencerNoteAgreement(
-                                    _influencerAgreementController.text);
+                                submitDialog(context, _influencerAgreementController.text);
                               }
                             },
                             child: const Text("Submit"),
@@ -136,6 +136,33 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
       ),
     );
   }
+
+  Future<bool> submitDialog(context, umkmAgreement) async {
+    Text dialogTitle = const Text("Submit Changes");
+    Text dialogContent =
+        const Text("Are you sure to submit changes?");
+    TextButton primaryButton = TextButton(
+      child: Text("Submit"),
+      onPressed: () {
+        submitInfluencerNoteAgreement(umkmAgreement);
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(
+            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
+        );
+    if (!resp) return false;
+    return true;
+  }
+
 
   void submitInfluencerNoteAgreement(String umkmAgreement) {
     agreementBloc
