@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(label: 'Beranda', icon: Icon(Ionicons.home)),
           BottomNavigationBarItem(
               label: 'Pengaturan', icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(label: 'Pesan', icon: Icon(Icons.chat)),
+          BottomNavigationBarItem(label: 'Pesan', icon: Icon(Ionicons.chatbox)),
         ],
       ),
     );

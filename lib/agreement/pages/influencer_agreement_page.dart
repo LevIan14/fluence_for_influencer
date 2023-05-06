@@ -40,7 +40,7 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
       create: (context) => agreementBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Influencer Agreement"),
+          title: const Text("Persetujuan Influencer"),
           backgroundColor: Constants.primaryColor,
         ),
         body: Padding(
@@ -54,14 +54,14 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
             builder: (context, state) {
               if (state is AgreementLoaded) {
                 _influencerAgreementController.text =
-                    state.agreement.influencerAgreement!;
+                    state.agreement.influencerAgreementDraft!;
                 return Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Notes",
+                        "Catatan Persetujuan",
                         style: TextStyle(color: Constants.primaryColor),
                       ),
                       const SizedBox(height: 8),
@@ -69,9 +69,11 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
                         decoration: textInputDecoration,
                         controller: _influencerAgreementController,
                         readOnly: state.agreement.influencerAgreementStatus ==
-                            "ACCEPTED",
+                                "ACCEPTED" ||
+                            state.agreement.influencerAgreementStatus ==
+                                'ON REVIEW',
                         validator: (value) => value!.isEmpty
-                            ? "Insert influencer agreement"
+                            ? "Masukkan catatan persetujuan"
                             : null,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         maxLines: null,
@@ -104,10 +106,11 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                submitDialog(context, _influencerAgreementController.text);
+                                submitDialog(context,
+                                    _influencerAgreementController.text);
                               }
                             },
-                            child: const Text("Submit"),
+                            child: const Text("Kirim"),
                           ),
                         ),
                         SizedBox(
@@ -123,7 +126,7 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
                                     _influencerAgreementController.text);
                               }
                             },
-                            child: const Text("Save Note"),
+                            child: const Text("Simpan"),
                           ),
                         ),
                       ]),
@@ -138,31 +141,29 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
   }
 
   Future<bool> submitDialog(context, umkmAgreement) async {
-    Text dialogTitle = const Text("Submit Changes");
+    Text dialogTitle = const Text("Kirim Persetujuan");
     Text dialogContent =
-        const Text("Are you sure to submit changes?");
+        const Text("Apakah Anda yakin untuk mengirim catatan persetujuan?");
     TextButton primaryButton = TextButton(
-      child: Text("Submit"),
+      child: const Text("Kirim"),
       onPressed: () {
         submitInfluencerNoteAgreement(umkmAgreement);
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
-
 
   void submitInfluencerNoteAgreement(String umkmAgreement) {
     agreementBloc

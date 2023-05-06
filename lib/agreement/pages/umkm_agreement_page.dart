@@ -96,7 +96,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
           ],
           child: Scaffold(
               appBar: AppBar(
-                title: const Text("UMKM Agreement"),
+                title: const Text("Persetujuan UMKM"),
                 backgroundColor: Constants.primaryColor,
               ),
               body: Padding(
@@ -115,7 +115,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Notes",
+                            "Catatan Persetujuan",
                             style: TextStyle(color: Constants.primaryColor),
                           ),
                           const SizedBox(height: 8),
@@ -156,7 +156,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                                         agreementBloc.add(AcceptAgreement(
                                             widget.agreementId));
                                       },
-                                      child: const Text("Accept"),
+                                      child: const Text("Terima"),
                                     ),
                                   ),
                                   SizedBox(
@@ -171,7 +171,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                                         agreementBloc.add(NeedRevisionAgreement(
                                             widget.agreementId));
                                       },
-                                      child: const Text("Need Revision"),
+                                      child: const Text("Butuh Revisi"),
                                     ),
                                   ),
                                 ]),
@@ -185,31 +185,29 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
   }
 
   Future<bool> saveDialog(context) async {
-    Text dialogTitle = const Text("Accept Agreement");
+    Text dialogTitle = const Text("Terima Persetujuan");
     Text dialogContent =
-        const Text("Are you sure to accept agreement?");
+        const Text("Apakah Anda yakin untuk menerima persetujuan?");
     TextButton primaryButton = TextButton(
-      child: Text("Accept"),
+      child: const Text("Terima"),
       onPressed: () {
         acceptAgreement();
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
-
 
   void acceptAgreement() {
     agreementBloc.add(AcceptAgreement(widget.agreementId));

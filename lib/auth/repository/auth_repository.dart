@@ -46,7 +46,7 @@ class AuthRepository {
         return false;
       } else {
         DocumentSnapshot snapshot = await Constants.firebaseFirestore
-            .collection('umkm')
+            .collection('influencers')
             .doc(user.uid)
             .get();
         if (snapshot.exists) {

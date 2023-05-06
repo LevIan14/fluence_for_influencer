@@ -59,6 +59,7 @@ class _FluenceAppState extends State<FluenceForInfluencer> {
               }
             },
             builder: (context, state) {
+              print(state.toString());
               if (state is Authenticated) {
                 return const MainPage(index: 0);
               }

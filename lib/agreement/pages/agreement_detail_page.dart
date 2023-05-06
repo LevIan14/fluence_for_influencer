@@ -210,7 +210,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            const Text('Project Price'),
+                                            const Text('Kesepakatan Harga'),
                                             const SizedBox(
                                               height: 8,
                                             ),
@@ -241,7 +241,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  const Text("UMKM Agreement"),
+                                                  const Text(
+                                                      "Persetujuan UMKM"),
                                                   Chip(
                                                       backgroundColor: state
                                                                   .agreement
@@ -252,8 +253,13 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                                       .umkmAgreementStatus ==
                                                                   "ON REVIEW"
                                                               ? Colors.blue[300]
-                                                              : Colors
-                                                                  .yellow[300],
+                                                              : state.agreement
+                                                                          .umkmAgreementStatus ==
+                                                                      'NEED REVISION'
+                                                                  ? Colors.orange[
+                                                                      300]
+                                                                  : Colors.yellow[
+                                                                      300],
                                                       labelStyle:
                                                           const TextStyle(
                                                               fontSize: 10),
@@ -282,7 +288,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                   ),
                                                 ),
                                                 const Text(
-                                                  "Contact organization to fill the note agreement!",
+                                                  "Kontak perusahaan untuk mengisi persetujuan",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey),
@@ -313,7 +319,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                       .spaceBetween,
                                               children: [
                                                 const Text(
-                                                    "Influencer Agreement"),
+                                                    "Persetujuan Influencer"),
                                                 Chip(
                                                   backgroundColor: state
                                                               .agreement
@@ -324,7 +330,13 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                                   .influencerAgreementStatus ==
                                                               "ON REVIEW"
                                                           ? Colors.blue[300]
-                                                          : Colors.yellow[300],
+                                                          : state.agreement
+                                                                      .influencerAgreementStatus ==
+                                                                  'NEED REVISION'
+                                                              ? Colors
+                                                                  .orange[300]
+                                                              : Colors
+                                                                  .yellow[300],
                                                   labelStyle: const TextStyle(
                                                       fontSize: 10),
                                                   label: Text(state.agreement
@@ -338,7 +350,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                       vertical: 12),
                                               child: Text(
                                                 state.agreement
-                                                    .influencerAgreement!,
+                                                    .influencerAgreementDraft!,
                                               ),
                                             ),
                                             const SizedBox(height: 8),
@@ -354,7 +366,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                                   ),
                                                 ),
                                                 const Text(
-                                                  "Fill your note agreement to continue your order process",
+                                                  "Isi persetujuan untuk melanjutkan proses pemesanan",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey),
@@ -392,7 +404,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                       acceptDialog(context);
                                     }
                                   : null,
-                              child: const Text("Accept")),
+                              child: const Text("Terima Persetujuan UMKM")),
                         ),
                       )
                     : const Padding(padding: EdgeInsets.zero);
@@ -403,22 +415,19 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
         ));
   }
 
-  // void submitInfluencerNoteAgreement(String influencerAgreement) {
-  //   agreementBloc.add(
-  //       UpdateInfluencerAgreement(widget.agreementId, influencerAgreement));
-  // }
-
   Future<bool> acceptDialog(context) async {
-    Text dialogTitle = const Text("Accept Agreement");
-    Text dialogContent = const Text("Are you sure to accept agreement?");
+    Text dialogTitle = const Text("Terima Persetujuan");
+    Text dialogContent =
+        const Text("Apakah Anda yakin untuk menerima persetujuan?");
     TextButton primaryButton = TextButton(
-      child: Text("Accept"),
+      child: const Text("Terima"),
       onPressed: () {
+        acceptAgreement();
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },

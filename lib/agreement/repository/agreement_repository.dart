@@ -30,8 +30,10 @@ class AgreementRepository {
             snapshot.get('umkm_id'),
             snapshot.get('negotiation_id'),
             snapshot.get('umkm_agreement'),
+            snapshot.get('umkm_agreement_draft'),
             snapshot.get('umkm_agreement_status'),
             snapshot.get('influencer_agreement'),
+            snapshot.get('influencer_agreement_draft'),
             snapshot.get('influencer_agreement_status'),
             createdAt.toDate());
         return agreement;
@@ -94,6 +96,7 @@ class AgreementRepository {
           .doc(agreementId)
           .update({
         "influencer_agreement": influencerAgreement,
+        "influencer_agreement_draft": influencerAgreement,
         "influencer_agreement_status": "ON REVIEW",
         "agreement_status": "ON PROCESS"
       });
@@ -109,7 +112,7 @@ class AgreementRepository {
           .collection("agreements")
           .doc(agreementId)
           .update({
-        "influencer_agreement": influencerAgreement,
+        "influencer_agreement_draft": influencerAgreement,
       });
     } catch (e) {
       throw Exception(e.toString());

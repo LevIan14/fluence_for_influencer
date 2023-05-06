@@ -67,9 +67,9 @@ class ChatRowState extends State<ChatRow> {
                   ),
                   title: Text(state.umkm.fullname),
                   trailing: DateUtil.isToday(widget.timestamp.toDate())
-                      ? const Text("Today")
+                      ? const Text("Hari Ini")
                       : DateUtil.isYesterday(widget.timestamp.toDate())
-                          ? const Text("Yesterday")
+                          ? const Text("Kemarin")
                           : Text(DateUtil.dateWithSlashFormat(
                               widget.timestamp.toDate())),
                   subtitle: Text(
