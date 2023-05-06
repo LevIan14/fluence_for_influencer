@@ -246,14 +246,16 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                                                           selectedCategoryType,
                                                     )));
                                     setState(() {
-                                      if (selected.last.categoryTypeName
-                                              .isNotEmpty &&
-                                          selected
-                                              .last.categoryTypeId.isEmpty) {
-                                        othersCategoryType = selected.last;
-                                      } else {
-                                        othersCategoryType =
-                                            CategoryType("", "");
+                                      if (selected.isNotEmpty) {
+                                        if (selected.last.categoryTypeName
+                                                .isNotEmpty &&
+                                            selected
+                                                .last.categoryTypeId.isEmpty) {
+                                          othersCategoryType = selected.last;
+                                        } else {
+                                          othersCategoryType =
+                                              CategoryType("", "");
+                                        }
                                       }
                                       selectedCategoryType = selected;
                                     });

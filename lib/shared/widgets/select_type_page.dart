@@ -85,18 +85,21 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30))),
             onPressed: () {
-              if (_otherCategoryController.text.isNotEmpty && othersSelected) {
+              if (othersSelected && _otherCategoryController.text.isNotEmpty) {
                 CategoryType others =
                     CategoryType("", _otherCategoryController.text);
-                if (_selectedCategory.last.categoryTypeId.isEmpty &&
-                    _selectedCategory.last.categoryTypeName.isNotEmpty) {
-                  _selectedCategory.last = others;
+                if (_selectedCategory.isNotEmpty) {
+                  if (_selectedCategory.last.categoryTypeId.isEmpty &&
+                      _selectedCategory.last.categoryTypeName.isNotEmpty) {
+                    _selectedCategory.last = others;
+                  } else {
+                    _selectedCategory.add(others);
+                  }
                 } else {
                   _selectedCategory.add(others);
                 }
                 Navigator.pop(context, _selectedCategory);
-              } else if (_otherCategoryController.text.isEmpty &&
-                  !othersSelected) {
+              } else if (!othersSelected) {
                 Navigator.pop(context, _selectedCategory);
               }
             },

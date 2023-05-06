@@ -139,7 +139,9 @@ class AuthRepository {
         "bank_account": bankAccount,
         "bank_account_name": bankAccountName,
         "bank_account_number": bankAccountNumber,
-        "gender": gender
+        "gender": gender,
+        "highest_fee": 0,
+        "lowes_fee": 0
       };
 
       firebaseFirestore
@@ -221,7 +223,9 @@ class AuthRepository {
         "bank_account": bankAccount,
         "bank_account_name": bankAccountName,
         "bank_account_number": bankAccountNumber,
-        "gender": gender
+        "gender": gender,
+        "highest_fee": 0,
+        "lowest_fee": 0
       };
 
       await firebaseFirestore
