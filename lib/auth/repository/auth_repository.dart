@@ -208,7 +208,7 @@ class AuthRepository {
       String customCategory,
       String id) async {
     try {
-      final dataUmkm = {
+      final dataInfluencer = {
         "avatar_url":
             "https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab",
         "fullname": fullname,
@@ -224,7 +224,10 @@ class AuthRepository {
         "gender": gender
       };
 
-      await firebaseFirestore.collection("umkm").doc(id).set(dataUmkm);
+      await firebaseFirestore
+          .collection("influencers")
+          .doc(id)
+          .set(dataInfluencer);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         throw Exception('Password terlalu lemah');
