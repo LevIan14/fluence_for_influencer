@@ -187,7 +187,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                         ListTile(
                           leading: Icon(Ionicons.pencil,
                               color: Colors.grey.shade600),
-                          title: Text("Edit Profile", style: textStyle),
+                          title: Text("Ubah Profil", style: textStyle),
                           onTap: () {
                             Navigator.pop(context);
                             nextScreen(context, const EditProfilePage());
@@ -196,7 +196,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                         ListTile(
                           leading: Icon(Ionicons.key_outline,
                               color: Colors.grey.shade600),
-                          title: Text("Change Password", style: textStyle),
+                          title: Text("Ganti Password", style: textStyle),
                           onTap: () {
                             Navigator.pop(context);
                             nextScreen(context, const ChangePasswordPage());
@@ -205,7 +205,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                         ListTile(
                           leading: const Icon(Ionicons.log_out_outline,
                               color: Colors.red),
-                          title: Text("Logout",
+                          title: Text("Keluar",
                               style: textStyle.copyWith(color: Colors.red)),
                           onTap: () {
                             Navigator.pop(context);
@@ -366,7 +366,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     Widget emptyContent = Container(
       padding: EdgeInsets.symmetric(vertical: 10.0),
       alignment: Alignment.center,
-      child: const Text("There is no data to show.",
+      child: const Text(Constants.emptyListMessage,
           style: TextStyle(
               color: Constants.grayColor,
               fontSize: 16.0,
@@ -444,7 +444,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
           return Container(
             padding: EdgeInsets.symmetric(vertical: 10.0),
             alignment: Alignment.center,
-            child: const Text("There is no data to show.",
+            child: const Text(Constants.emptyListMessage,
                 style: TextStyle(
                     color: Constants.grayColor,
                     fontSize: 16.0,

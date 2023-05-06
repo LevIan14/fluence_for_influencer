@@ -44,12 +44,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   backgroundColor: Colors.green[300],
                 ));
               }
-              if (state is AuthError) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red[300],
-                ));
-              }
             },
             builder: (context, state) {
               return Form(

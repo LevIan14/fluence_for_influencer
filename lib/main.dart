@@ -1,6 +1,7 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
+import 'package:fluence_for_influencer/auth/pages/verify_email_page.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:fluence_for_influencer/auth/repository/auth_repository.dart';
@@ -19,25 +20,28 @@ void main() async {
   runApp(const FluenceForInfluencer());
 }
 
-class FluenceForInfluencer extends StatelessWidget {
+class FluenceForInfluencer extends StatefulWidget {
   const FluenceForInfluencer({super.key});
+
+  @override
+  State<FluenceForInfluencer> createState() => _FluenceAppState();
+}
+
+class _FluenceAppState extends State<FluenceForInfluencer> {
+  late final AuthBloc authBloc;
+  final AuthRepository authRepository = AuthRepository();
+  @override
+  void initState() {
+    super.initState();
+    authBloc = AuthBloc(authRepository: authRepository);
+    authBloc.add(CheckIsUserLoggedIn());
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        RepositoryProvider<AuthRepository>(
-          create: (context) => AuthRepository(),
-        )
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AuthBloc(
-                authRepository: RepositoryProvider.of<AuthRepository>(context)),
-          )
-        ],
-        child: MaterialApp(
+      providers: [BlocProvider(create: (context) => authBloc)],
+      child: MaterialApp(
           theme: ThemeData(
               colorScheme:
                   ColorScheme.fromSeed(seedColor: Constants.primaryColor),
@@ -45,27 +49,25 @@ class FluenceForInfluencer extends StatelessWidget {
               scaffoldBackgroundColor: Colors.white,
               fontFamily: 'Montserrat'),
           debugShowCheckedModeBanner: false,
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                if (snapshot.hasData) {
-                  bool isVerified = false;
-                  final bool isLoggedIn = snapshot.hasData;
-                  isVerified =
-                      Constants.firebaseAuth.currentUser!.emailVerified;
-                  return isLoggedIn && isVerified
-                      ? const MainPage(index: 0)
-                      : const LoginPage();
-                } else {
-                  return const LoginPage();
-                }
+          home: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthError) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red[300],
+                ));
               }
-              return Container();
             },
-          ),
-        ),
-      ),
+            builder: (context, state) {
+              if (state is Authenticated) {
+                return const MainPage(index: 0);
+              }
+              if (state is NeedVerify) {
+                return const VerifyEmailPage();
+              }
+              return const LoginPage();
+            },
+          )),
     );
   }
 }

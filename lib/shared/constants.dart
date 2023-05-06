@@ -12,6 +12,10 @@ class Constants {
   // static const backgroundColor = Color.fromRGBO(253, 240, 242, 0.247);
   static const backgroundColor = Color.fromRGBO(253, 240, 242, 0.74);
 
+  static const String genericErrorException =
+      "Terjadi kesalahan, silahkan coba kembali";
+  static const String emptyListMessage = "Tidak ada data";
+
   static const defaultPadding = 20.0;
 
   static const defaultPaddingIcon =

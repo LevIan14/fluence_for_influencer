@@ -38,12 +38,14 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
-            nextScreenReplace(context, const MainPage(index: 0));
-          }
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+          if (state is EmailUnused) {
+            nextScreen(
+                context,
+                RegisterAccountTypePage(
+                    fullName: _fullnameController.text,
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    id: ""));
           }
         },
         builder: (context, state) {
@@ -54,236 +56,208 @@ class _RegisterPageState extends State<RegisterPage> {
           }
           if (state is UnAuthenticated) {
             return SafeArea(
-              child: Container(
-                color: Constants.backgroundColor,
-                child: Center(
-                  child: SingleChildScrollView(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Form(
-                      key: _registerFormKey,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            const Text(
-                              textAlign: TextAlign.center,
-                              "Register",
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Constants.primaryColor),
-                            ),
-                            const SizedBox(height: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "Full Name",
-                                          style: TextStyle(
-                                              color: Constants.primaryColor),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        TextFormField(
-                                            controller: _fullnameController,
-                                            validator: (value) {
-                                              return value!.isEmpty
-                                                  ? "Please enter your name"
-                                                  : null;
-                                            },
-                                            autovalidateMode: AutovalidateMode
-                                                .onUserInteraction,
-                                            decoration:
-                                                textInputDecoration.copyWith(
-                                              prefixIcon: const Icon(
-                                                Icons.person_rounded,
-                                                color: Constants.primaryColor,
-                                              ),
-                                            ))
-                                      ]),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Email",
-                                            style: TextStyle(
-                                                color: Constants.primaryColor)),
-                                        const SizedBox(height: 8),
-                                        TextFormField(
-                                            controller: _emailController,
-                                            keyboardType:
-                                                TextInputType.emailAddress,
-                                            autovalidateMode: AutovalidateMode
-                                                .onUserInteraction,
-                                            validator: (value) {
-                                              return RegExp(
-                                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                                      .hasMatch(value!)
-                                                  ? null
-                                                  : "Please enter a valid email";
-                                            },
-                                            decoration:
-                                                textInputDecoration.copyWith(
-                                                    prefixIcon: const Icon(
-                                              Icons.email,
-                                              color: Constants.primaryColor,
-                                            )))
-                                      ]),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Password",
-                                            style: TextStyle(
-                                                color: Constants.primaryColor)),
-                                        const SizedBox(height: 8),
-                                        TextFormField(
-                                          decoration:
-                                              textInputDecoration.copyWith(
-                                            prefixIcon: const Icon(Icons.lock,
-                                                color: Constants.primaryColor),
-                                          ),
-                                          autovalidateMode: AutovalidateMode
-                                              .onUserInteraction,
-                                          controller: _passwordController,
-                                          keyboardType: TextInputType.text,
-                                          obscureText: true,
+              child: Center(
+                child: SingleChildScrollView(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: _registerFormKey,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          const Text(
+                            textAlign: TextAlign.center,
+                            "Daftar",
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Constants.primaryColor),
+                          ),
+                          const SizedBox(height: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Nama",
+                                        style: TextStyle(
+                                            color: Constants.primaryColor),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      TextFormField(
+                                          controller: _fullnameController,
                                           validator: (value) {
-                                            return value!.length < 6
-                                                ? "Password must be at least 6 characters"
+                                            return value!.isEmpty
+                                                ? "Masukkan nama"
                                                 : null;
                                           },
-                                          onChanged: (value) {},
-                                        )
-                                      ]),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Confirm Password",
-                                            style: TextStyle(
-                                                color: Constants.primaryColor)),
-                                        const SizedBox(height: 8),
-                                        TextFormField(
-                                          decoration:
-                                              textInputDecoration.copyWith(
-                                            prefixIcon: const Icon(Icons.lock,
-                                                color: Constants.primaryColor),
-                                          ),
                                           autovalidateMode: AutovalidateMode
                                               .onUserInteraction,
-                                          controller:
-                                              _confirmPasswordController,
-                                          keyboardType: TextInputType.text,
-                                          obscureText: true,
+                                          decoration:
+                                              textInputDecoration.copyWith(
+                                            prefixIcon: const Icon(
+                                              Icons.person_rounded,
+                                              color: Constants.primaryColor,
+                                            ),
+                                          ))
+                                    ]),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text("Email",
+                                          style: TextStyle(
+                                              color: Constants.primaryColor)),
+                                      const SizedBox(height: 8),
+                                      TextFormField(
+                                          controller: _emailController,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          autovalidateMode: AutovalidateMode
+                                              .onUserInteraction,
                                           validator: (value) {
-                                            if (value!.length < 6) {
-                                              return "Password must be at least 6 characters";
-                                            } else if (value !=
-                                                _passwordController.text) {
-                                              return "Password not match";
-                                            } else {
-                                              return null;
-                                            }
+                                            return RegExp(
+                                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                                    .hasMatch(value!)
+                                                ? null
+                                                : "Masukkan email dengan format yang benar";
                                           },
-                                        )
-                                      ]),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30))),
-                                  onPressed: () {
-                                    // _createAccountWithEmailAndPassword(context);
-                                    if (_registerFormKey.currentState!
-                                        .validate()) {
-                                      nextScreen(
-                                          context,
-                                          RegisterAccountTypePage(
-                                              fullName:
-                                                  _fullnameController.text,
-                                              email: _emailController.text,
-                                              password:
-                                                  _passwordController.text,
-                                              id: ""));
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Next",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  )),
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              alignment: Alignment.center,
-                              child: Text.rich(TextSpan(
-                                  text: "Already have an account? ",
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: "Login now",
-                                        style: const TextStyle(
+                                          decoration:
+                                              textInputDecoration.copyWith(
+                                                  prefixIcon: const Icon(
+                                            Icons.email,
                                             color: Constants.primaryColor,
-                                            decoration:
-                                                TextDecoration.underline),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            navigateAsFirstScreen(
-                                                context, const LoginPage());
-                                          })
-                                  ])),
-                            )
-                          ]),
-                    ),
-                  )),
-                ),
+                                          )))
+                                    ]),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text("Password",
+                                          style: TextStyle(
+                                              color: Constants.primaryColor)),
+                                      const SizedBox(height: 8),
+                                      TextFormField(
+                                        decoration:
+                                            textInputDecoration.copyWith(
+                                          prefixIcon: const Icon(Icons.lock,
+                                              color: Constants.primaryColor),
+                                        ),
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
+                                        controller: _passwordController,
+                                        keyboardType: TextInputType.text,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          return value!.length < 6
+                                              ? "Panjang password setidaknya 6 karakter"
+                                              : null;
+                                        },
+                                        onChanged: (value) {},
+                                      )
+                                    ]),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text("Konfirmasi Password",
+                                          style: TextStyle(
+                                              color: Constants.primaryColor)),
+                                      const SizedBox(height: 8),
+                                      TextFormField(
+                                        decoration:
+                                            textInputDecoration.copyWith(
+                                          prefixIcon: const Icon(Icons.lock,
+                                              color: Constants.primaryColor),
+                                        ),
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
+                                        controller: _confirmPasswordController,
+                                        keyboardType: TextInputType.text,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          if (value!.length < 6) {
+                                            return "Panjang password setidaknya 6 karakter";
+                                          } else if (value !=
+                                              _passwordController.text) {
+                                            return "Password tidak sama";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      )
+                                    ]),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
+                                onPressed: () {
+                                  // _createAccountWithEmailAndPassword(context);
+                                  if (_registerFormKey.currentState!
+                                      .validate()) {
+                                    context.read<AuthBloc>().add(
+                                        CheckEmailIsUsed(
+                                            _emailController.text));
+                                  }
+                                },
+                                child: const Text(
+                                  "Lanjut",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                )),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            alignment: Alignment.center,
+                            child: Text.rich(TextSpan(
+                                text: "Sudah memiliki akun? ",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 14),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: "Masuk disini",
+                                      style: const TextStyle(
+                                          color: Constants.maroonColor,
+                                          decoration: TextDecoration.underline),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          navigateAsFirstScreen(
+                                              context, const LoginPage());
+                                        })
+                                ])),
+                          )
+                        ]),
+                  ),
+                )),
               ),
             );
           }
           return Container();
         },
       ),
-    );
-  }
-
-  // void _createAccountWithEmailAndPassword(BuildContext context) {
-  //   if (_registerFormKey.currentState!.validate()) {
-  //     BlocProvider.of<AuthBloc>(context).add(
-  //       RegisterRequested(
-  //         _emailController.text,
-  //         _passwordController.text,
-  //       ),
-  //     );
-  //   }
-  // }
-
-  void _authenticateWithGoogle(context) {
-    BlocProvider.of<AuthBloc>(context).add(
-      GoogleLoginRequested(),
     );
   }
 }

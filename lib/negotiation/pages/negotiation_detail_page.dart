@@ -71,15 +71,15 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   late Influencer influencerProfile;
 
   String? _projectTitleValidator(String? value) {
-    return value!.isEmpty ? "Insert project title" : null;
+    return value!.isEmpty ? "Masukkan judul" : null;
   }
 
   String? _projectDurationValidator(String? value) {
-    return value!.isEmpty ? "Insert range date" : null;
+    return value!.isEmpty ? "Pilih durasi" : null;
   }
 
   String? _projectPriceValidator(String? value) {
-    return value!.isEmpty ? "Insert negotiation amount" : null;
+    return value!.isEmpty ? "Masukkan harga yang ditawarkan" : null;
   }
 
   @override
@@ -109,7 +109,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Details Negotiation'),
+          title: const Text('Detail Negosiasi'),
           elevation: 0,
           backgroundColor: Constants.primaryColor,
         ),
@@ -138,7 +138,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                       widget.chatId!,
                       Constants.firebaseAuth.currentUser!.uid,
                       widget.negotiationId,
-                      'Negotiation Accepted!'));
+                      'Negosiasi telah diterima'));
                 }
               },
             ),
@@ -169,7 +169,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                       widget.chatId!,
                       Constants.firebaseAuth.currentUser!.uid,
                       widget.negotiationId,
-                      'Negotiation Rejected!'));
+                      'Negosiasi ditolak'));
                   // navigateAsFirstScreen(context, const MainPage());
                 }
               },
@@ -177,7 +177,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<MessageBloc, MessageState>(
               listener: (context, state) {
                 if (state is NewChatAndMessageCreated) {
-                  navigateAsFirstScreen(context, const MainPage(index: 0));
+                  navigateAsFirstScreen(context, const MainPage(index: 2));
                 }
               },
             )
@@ -213,7 +213,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    "Project Information",
+                                    "Informasi Negosiasi",
                                     style: TextStyle(
                                       color: Constants.primaryColor,
                                     ),
@@ -237,7 +237,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                               ),
                               const SizedBox(height: 12),
                               const Text(
-                                "Project Title",
+                                "Judul",
                                 style: TextStyle(color: Constants.primaryColor),
                               ),
                               const SizedBox(height: 8),
@@ -258,7 +258,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                "Project Duration",
+                                "Durasi",
                                 style: TextStyle(color: Constants.primaryColor),
                               ),
                               const SizedBox(height: 8),
@@ -278,7 +278,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("Project Price",
+                              const Text("Harga",
                                   style:
                                       TextStyle(color: Constants.primaryColor)),
                               const SizedBox(height: 8),
@@ -298,7 +298,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Project Description",
+                              "Deskripsi",
                               style: TextStyle(color: Constants.primaryColor),
                             ),
                             const SizedBox(height: 8),
@@ -339,7 +339,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                             onPressed: () {
                               acceptDialog(context);
                             },
-                            child: const Text("Accept")),
+                            child: const Text("Terima")),
                       ),
                       SizedBox(
                         width: double.infinity,
@@ -351,7 +351,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                               rejectDialog(context);
                             },
                             child: const Text(
-                              "Reject",
+                              "Tolak",
                               style: TextStyle(color: Constants.primaryColor),
                             )),
                       )
@@ -381,57 +381,54 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
   }
 
   Future<bool> acceptDialog(context) async {
-    Text dialogTitle = const Text("Accept Negotiation");
+    Text dialogTitle = const Text("Terima Negosiasi");
     Text dialogContent =
-        const Text("Are you sure to accept negotiation?");
+        const Text("Apakah Anda yakin untuk menerima negosiasi?");
     TextButton primaryButton = TextButton(
-      child: Text("Accept"),
+      child: const Text("Terima"),
       onPressed: () {
         acceptNegotiation();
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
 
-   Future<bool> rejectDialog(context) async {
-    Text dialogTitle = const Text("Reject Negotiation");
+  Future<bool> rejectDialog(context) async {
+    Text dialogTitle = const Text("Tolak Negosiasi");
     Text dialogContent =
-        const Text("Are you sure to reject negotiation?");
+        const Text("Apakah Anda yakin untuk menolak negosiasi?");
     TextButton primaryButton = TextButton(
-      child: Text("Reject"),
+      child: const Text("Tolak"),
       onPressed: () {
         rejectNegotiation();
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
-
 
   void acceptNegotiation() {
     umkmBloc.add(GetUmkmDetail(widget.umkmId));

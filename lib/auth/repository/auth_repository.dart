@@ -30,12 +30,49 @@ class AuthRepository {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw Exception('No user found for that email');
+        throw Exception('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {
-        throw Exception('Wrong password provided for that user');
+        throw Exception('Password salah');
       }
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> checkIsUserLoggedIn() async {
+    try {
+      User? user = Constants.firebaseAuth.currentUser;
+      if (user == null) {
+        return false;
+      } else {
+        DocumentSnapshot snapshot = await Constants.firebaseFirestore
+            .collection('umkm')
+            .doc(user.uid)
+            .get();
+        if (snapshot.exists) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> checkEmailIsUsed(String email) async {
+    try {
+      final list =
+          await Constants.firebaseAuth.fetchSignInMethodsForEmail(email);
+      if (list.isNotEmpty) {
+        throw FirebaseAuthException(code: 'email-already-in-use');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        throw Exception('Email telah digunakan');
+      }
+    } catch (e) {
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -48,9 +85,9 @@ class AuthRepository {
       await Constants.firebaseAuth.currentUser!.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw Exception('No user found for that email');
+        throw Exception('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {
-        throw Exception('Wrong password provided for that user');
+        throw Exception('Password salah');
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -73,8 +110,16 @@ class AuthRepository {
     }
   }
 
-  Future<void> registerUserWithEmailAndPassword(String email, String password,
-      String fullname, String location, List<String> categoryList) async {
+  Future<void> registerUserWithEmailAndPassword(
+      String email,
+      String password,
+      String fullname,
+      String bankAccount,
+      String bankAccountName,
+      String bankAccountNumber,
+      String gender,
+      String location,
+      List<String> categoryList) async {
     try {
       UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -84,10 +129,15 @@ class AuthRepository {
             "https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab",
         "fullname": fullname,
         "category_type_id": categoryList,
+        "custom_category": "",
         "note_agreement": "",
         "about": "",
         "email": email,
         "location": location,
+        "bank_account": bankAccount,
+        "bank_account_name": bankAccountName,
+        "bank_account_number": bankAccountNumber,
+        "gender": gender
       };
 
       firebaseFirestore
@@ -96,9 +146,9 @@ class AuthRepository {
           .set(dataInfluencer);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw Exception('The password provided is too weak');
+        throw Exception('Password terlalu lemah');
       } else if (e.code == 'email-already-in-use') {
-        throw Exception('The account already exists for that email');
+        throw Exception('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -144,8 +194,16 @@ class AuthRepository {
     }
   }
 
-  Future<void> registerUserWithGoogleLogin(String email, String fullname,
-      String location, List<String> categoryList, String id) async {
+  Future<void> registerUserWithGoogleLogin(
+      String email,
+      String fullname,
+      String location,
+      String bankAccount,
+      String bankAccountName,
+      String bankAccountNumber,
+      String gender,
+      List<String> categoryList,
+      String id) async {
     try {
       final dataUmkm = {
         "avatar_url":
@@ -153,17 +211,22 @@ class AuthRepository {
         "fullname": fullname,
         "location": location,
         "category_type_id": categoryList,
+        "custom_category": "",
         "note_agreement": "",
         "about": "",
         "email": email,
+        "bank_account": bankAccount,
+        "bank_account_name": bankAccountName,
+        "bank_account_number": bankAccountNumber,
+        "gender": gender
       };
 
       await firebaseFirestore.collection("umkm").doc(id).set(dataUmkm);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw Exception('The password provided is too weak');
+        throw Exception('Password terlalu lemah');
       } else if (e.code == 'email-already-in-use') {
-        throw Exception('The account already exists for that email');
+        throw Exception('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -304,7 +367,7 @@ class AuthRepository {
     try {
       await Constants.firebaseAuth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 

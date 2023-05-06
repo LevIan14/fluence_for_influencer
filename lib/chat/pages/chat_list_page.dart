@@ -29,7 +29,7 @@ class _ChatListPageState extends State<ChatListPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).primaryColor,
-          title: const Text('Chats'),
+          title: const Text('Pesan'),
         ),
         body: BlocProvider(
             create: (context) => chatBloc,
@@ -50,7 +50,7 @@ class _ChatListPageState extends State<ChatListPage> {
                         if (snapshot.hasData) {
                           if (snapshot.data.docs.length <= 0) {
                             return const Center(
-                              child: Text("There is no data to show",
+                              child: Text(Constants.emptyListMessage,
                                   style: TextStyle(
                                       color: Constants.grayColor,
                                       fontSize: 16.0,

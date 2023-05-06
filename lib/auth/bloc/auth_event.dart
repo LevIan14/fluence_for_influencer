@@ -16,10 +16,22 @@ class RegisterRequested extends AuthEvent {
   final String email;
   final String password;
   final String fullname;
+  final String bankAccount;
+  final String bankAccountName;
+  final String bankAccountNumber;
+  final String gender;
   final String location;
   final List<String> categoryList;
 
-  RegisterRequested(this.email, this.password, this.fullname, this.location,
+  RegisterRequested(
+      this.email,
+      this.password,
+      this.fullname,
+      this.bankAccount,
+      this.bankAccountName,
+      this.bankAccountNumber,
+      this.gender,
+      this.location,
       this.categoryList);
 }
 
@@ -29,18 +41,34 @@ class ChangePasswordRequested extends AuthEvent {
   ChangePasswordRequested(this.oldPassword, this.newPassword);
 }
 
+class CheckEmailIsUsed extends AuthEvent {
+  final String email;
+  CheckEmailIsUsed(this.email);
+}
+
+class CheckIsUserLoggedIn extends AuthEvent {}
+
 class GoogleLoginRegisterRequested extends AuthEvent {
   final String email;
   final String fullname;
   final String location;
+  final String bankAccount;
+  final String bankAccountName;
+  final String bankAccountNumber;
+  final String gender;
   final List<String> categoryList;
   final String id;
 
   GoogleLoginRegisterRequested(
-      this.email, this.fullname, this.location, this.categoryList, this.id);
-
-  @override
-  List<Object> get props => [email, fullname, location, categoryList, id];
+      this.email,
+      this.fullname,
+      this.location,
+      this.bankAccount,
+      this.bankAccountName,
+      this.bankAccountNumber,
+      this.gender,
+      this.categoryList,
+      this.id);
 }
 
 class GoogleLoginRequested extends AuthEvent {}

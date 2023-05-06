@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:fluence_for_influencer/auth/repository/auth_repository.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'auth_event.dart';
@@ -23,12 +24,40 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Authenticated());
         } else {
           emit(NeedVerify());
+        }
+      } catch (e) {
+        emit(AuthError(e.toString()));
+        emit(UnAuthenticated());
+      }
+    });
+
+    on<CheckIsUserLoggedIn>((event, emit) async {
+      try {
+        emit(Loading());
+        bool isLoggedIn = await authRepository.checkIsUserLoggedIn();
+        if (isLoggedIn && Constants.firebaseAuth.currentUser!.emailVerified) {
+          emit(Authenticated());
+        } else if (isLoggedIn &&
+            !(Constants.firebaseAuth.currentUser!.emailVerified)) {
+          emit(NeedVerify());
+        } else {
           emit(UnAuthenticated());
         }
       } catch (e) {
         emit(AuthError(e.toString()));
         emit(UnAuthenticated());
       }
+    });
+
+    on<CheckEmailIsUsed>((event, emit) async {
+      try {
+        emit(Loading());
+        await authRepository.checkEmailIsUsed(event.email);
+        emit(EmailUnused());
+      } catch (e) {
+        emit(AuthError(e.toString()));
+      }
+      emit(UnAuthenticated());
     });
 
     on<ChangePasswordRequested>((event, emit) async {
@@ -48,17 +77,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(VerifyEmailReqestSuccess());
       } catch (e) {
         emit(AuthError(e.toString()));
-        emit(UnAuthenticated());
       }
+      emit(NeedVerify());
     });
 
     on<RegisterRequested>((event, emit) async {
       emit(Loading());
       try {
-        await authRepository.registerUserWithEmailAndPassword(event.email,
-            event.password, event.fullname, event.location, event.categoryList);
+        await authRepository.registerUserWithEmailAndPassword(
+            event.email,
+            event.password,
+            event.fullname,
+            event.bankAccount,
+            event.bankAccountName,
+            event.bankAccountNumber,
+            event.gender,
+            event.location,
+            event.categoryList);
         await authRepository.sendEmailVerification();
         emit(NeedVerify());
+      } catch (e) {
+        emit(AuthError(e.toString()));
+        emit(UnAuthenticated());
+      }
+    });
+
+    on<GoogleLoginRegisterRequested>((event, emit) async {
+      emit(Loading());
+      try {
+        await authRepository.registerUserWithGoogleLogin(
+            event.email,
+            event.fullname,
+            event.bankAccount,
+            event.bankAccountName,
+            event.bankAccountNumber,
+            event.gender,
+            event.location,
+            event.categoryList,
+            event.id);
+        emit(Authenticated());
       } catch (e) {
         emit(AuthError(e.toString()));
         emit(UnAuthenticated());
@@ -104,6 +161,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         emit(AuthError(e.toString()));
       }
+      emit(UnAuthenticated());
     });
 
     on<LogoutRequested>((event, emit) async {

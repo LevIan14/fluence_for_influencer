@@ -110,17 +110,20 @@ class _MessageTileState extends State<MessageTile> {
                             color: widget.sentByMe
                                 ? Theme.of(context).primaryColor
                                 : Colors.grey[700]),
-                        child: Column(children: [
-                          Text(
-                            widget.message,
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.white),
-                          ),
-                          const Text(
-                            "Tap to see details",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          )
-                        ]),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.message,
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                              const Text(
+                                "Tekan untuk melihat detail",
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              )
+                            ]),
                       ),
                     ),
               Text(

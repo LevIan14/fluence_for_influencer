@@ -7,6 +7,8 @@ abstract class AuthState extends Equatable {
 
 class Loading extends AuthState {}
 
+class EmailUnused extends AuthState {}
+
 class NeedVerify extends AuthState {}
 
 class VerifyEmailReqestSuccess extends AuthState {}

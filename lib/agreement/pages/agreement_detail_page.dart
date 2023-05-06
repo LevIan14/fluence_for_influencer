@@ -76,7 +76,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
         ],
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Agreement Detail'),
+            title: const Text('Detail Persetujuan'),
             backgroundColor: Constants.primaryColor,
           ),
           body: MultiBlocListener(
@@ -410,8 +410,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
 
   Future<bool> acceptDialog(context) async {
     Text dialogTitle = const Text("Accept Agreement");
-    Text dialogContent =
-        const Text("Are you sure to accept agreement?");
+    Text dialogContent = const Text("Are you sure to accept agreement?");
     TextButton primaryButton = TextButton(
       child: Text("Accept"),
       onPressed: () {
@@ -426,13 +425,11 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
-
 
   void acceptAgreement() {
     agreementBloc.add(AcceptAgreement(widget.agreementId));

@@ -9,9 +9,11 @@ import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:ionicons/ionicons.dart';
 
 class RegisterAccountTypePage extends StatefulWidget {
   final String fullName;
@@ -35,6 +37,8 @@ class RegisterAccountTypePage extends StatefulWidget {
 class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   final _registerFormKey = GlobalKey<FormState>();
   final _bankAccountController = TextEditingController();
+  final _bankAccountNameController = TextEditingController();
+  final _bankAccountNumberController = TextEditingController();
   final _genderController = TextEditingController();
   final _locationController = TextEditingController();
 
@@ -42,10 +46,13 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   Position? _currentPosition;
 
   List<CategoryType> selectedCategoryType = List.empty();
+  bool checkedTermsAndService = false;
 
   @override
   void dispose() {
     _bankAccountController.dispose();
+    _bankAccountNameController.dispose();
+    _bankAccountNumberController.dispose();
     _genderController.dispose();
     _locationController.dispose();
     super.dispose();
@@ -58,11 +65,6 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
         listener: (context, state) {
           if (state is NeedVerify) {
             navigateAsFirstScreen(context, const VerifyEmailPage());
-            return;
-          }
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
             return;
           }
         },
@@ -86,192 +88,343 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
 
   Widget loadPage() {
     return SafeArea(
-      child: Container(
-        color: Constants.backgroundColor,
-        child: Center(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-            child: Form(
-                key: _registerFormKey,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Bank Account'),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _bankAccountController,
-                                decoration: textInputDecoration,
-                                validator: (value) => value!.isEmpty
-                                    ? "Insert your bank account"
-                                    : null,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                  onTap: () {},
-                                  child: const Text('Why we need this data')),
-                              const SizedBox(height: 16),
-                              const Text('Gender'),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _genderController,
-                                decoration: textInputDecoration,
-                                validator: (value) => value!.isEmpty
-                                    ? "Choose your gender"
-                                    : null,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
+      child: Center(
+          child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          child: Form(
+              key: _registerFormKey,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Akun Bank'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              onTap: () => showBankNameModalBottom(),
+                              readOnly: true,
+                              controller: _bankAccountController,
+                              decoration: textInputDecoration.copyWith(
+                                  suffixIcon: const Icon(
+                                      Ionicons.chevron_forward_outline,
+                                      color: Constants.grayColor)),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Pilih akun bank" : null,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text('Nama Pemilik Rekening'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _bankAccountNameController,
+                              decoration: textInputDecoration,
+                              validator: (value) => value!.isEmpty
+                                  ? "Masukkan nama pemilik rekening"
+                                  : null,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text('Nomor Rekening'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _bankAccountNumberController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              decoration: textInputDecoration,
+                              validator: (value) => value!.isEmpty
+                                  ? "Masukkan nomor rekening"
+                                  : null,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
                                 onTap: () {
-                                  // bottom sheet modal
+                                  showModalBottomSheet(
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(15.0)),
+                                    ),
+                                    context: context,
+                                    builder: (context) {
+                                      return const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 8),
+                                        child: Text(
+                                            "Ini digunakan untuk mengidentifikasi akun Anda saat mentransfer dana atau menyiapkan setoran langsung.\n\nHarap perhatikan bahwa Anda tidak boleh membagikan nomor rekening bank Anda dengan siapa pun yang tidak Anda percayai, karena dapat digunakan untuk menarik dana dari rekening Anda."),
+                                      );
+                                    },
+                                  );
                                 },
-                              ),
-                              const Text("Location",
-                                  style:
-                                      TextStyle(color: Constants.primaryColor)),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _locationController,
-                                validator: (value) => value!.isEmpty
-                                    ? "Insert your location"
-                                    : null,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                decoration: textInputDecoration.copyWith(
-                                    hintText: "Tap icon to get your location",
-                                    suffixIcon: IconButton(
-                                        onPressed: () async {
-                                          showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (context) =>
-                                                showDialogWithCircularProgress(
-                                                    context),
-                                          );
-                                          await _getCurrentPosition();
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: const Icon(
-                                            Icons.location_on_rounded),
+                                child: const Text(
+                                  'Mengapa kami membutuhkan data rekening?',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Constants.primaryColor,
+                                      decoration: TextDecoration.underline),
+                                )),
+                            const SizedBox(height: 16),
+                            const Text('Jenis Kelamin'),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _genderController,
+                              decoration: textInputDecoration.copyWith(
+                                  suffixIcon: const Icon(
+                                      Ionicons.chevron_forward_outline,
+                                      color: Constants.grayColor)),
+                              validator: (value) =>
+                                  value!.isEmpty ? "Pilih jenis kelamin" : null,
+                              readOnly: true,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              onTap: () => showGenderModal(),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text("Lokasi",
+                                style:
+                                    TextStyle(color: Constants.primaryColor)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _locationController,
+                              validator: (value) =>
+                                  value!.isEmpty ? "Masukkan lokasi" : null,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "Tekan ikon untuk akses lokasi",
+                                  suffixIcon: IconButton(
+                                      onPressed: () async {
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) =>
+                                              showDialogWithCircularProgress(
+                                                  context),
+                                        );
+                                        await _getCurrentPosition();
+                                        Navigator.of(context).pop();
+                                      },
+                                      icon:
+                                          const Icon(Icons.location_on_rounded),
+                                      color: Constants.primaryColor)),
+                            )
+                          ]),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text("Tipe Kategori",
+                                    style: TextStyle(
                                         color: Constants.primaryColor)),
-                              )
-                            ]),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text("Category Type",
-                                      style: TextStyle(
-                                          color: Constants.primaryColor)),
-                                  GestureDetector(
-                                    child: const Icon(
-                                        Icons.arrow_forward_ios_outlined,
-                                        color: Constants.primaryColor,
-                                        size: 16),
+                                GestureDetector(
+                                  child: const Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Constants.primaryColor,
+                                      size: 16),
+                                  onTap: () async {
+                                    dynamic selected = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SelectTypePage()));
+                                    setState(() {
+                                      selectedCategoryType = selected;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            selectedCategoryType.isEmpty
+                                ? GestureDetector(
                                     onTap: () async {
-                                      dynamic selected = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SelectTypePage()));
+                                      List<CategoryType> selected =
+                                          await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const SelectTypePage()));
                                       setState(() {
                                         selectedCategoryType = selected;
                                       });
                                     },
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              selectedCategoryType.isEmpty
-                                  ? GestureDetector(
-                                      onTap: () async {
-                                        dynamic selected = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const SelectTypePage()));
-                                        setState(() {
-                                          selectedCategoryType = selected;
-                                        });
-                                      },
-                                      child: const SizedBox(
-                                        height: 50,
-                                        child: Center(
-                                            child: Text(
-                                          "Tap to choose your type",
-                                          style: TextStyle(
-                                              color: Constants.grayColor),
-                                        )),
-                                      ),
-                                    )
-                                  : buildCategoryTypeChips(
-                                      selectedCategoryType),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30))),
-                                    onPressed: () {
-                                      if (selectedCategoryType.isNotEmpty &&
-                                          _locationController.text.isNotEmpty) {
-                                        _createAccountWithEmailAndPassword(
-                                            context);
-                                      }
-                                    },
-                                    child: const Text(
-                                      "Submit",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                    )),
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                alignment: Alignment.center,
-                                child: Text.rich(TextSpan(
-                                    text: "Already have an account? ",
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                          text: "Login now",
-                                          style: const TextStyle(
-                                              color: Constants.primaryColor,
-                                              decoration:
-                                                  TextDecoration.underline),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () {
-                                              navigateAsFirstScreen(
-                                                  context, const LoginPage());
-                                            })
-                                    ])),
-                              )
-                            ]),
-                      ),
-                    ])),
-          ),
-        )),
-      ),
+                                    child: const SizedBox(
+                                      height: 50,
+                                      child: Center(
+                                          child: Text(
+                                        "Tekan untuk memilih",
+                                        style: TextStyle(
+                                            color: Constants.grayColor),
+                                      )),
+                                    ),
+                                  )
+                                : buildCategoryTypeChips(selectedCategoryType),
+                            const SizedBox(height: 16),
+                            // CheckboxListTile(
+                            //   title: Text.rich(
+                            //       TextSpan(text: 'Saya menerima ', children: [
+                            //     TextSpan(
+                            //         text: 'Terms and Service',
+                            //         recognizer: TapGestureRecognizer()
+                            //           ..onTap = () {})
+                            //   ])),
+                            //   value: checkedTermsAndService,
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       checkedTermsAndService = value ?? false;
+                            //     });
+                            //   },
+                            //   controlAffinity: ListTileControlAffinity.leading,
+                            // ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                  onPressed: () {
+                                    bool isFilled = _registerFormKey
+                                        .currentState!
+                                        .validate();
+
+                                    if (selectedCategoryType.isEmpty ||
+                                        !isFilled) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              backgroundColor: Colors.red[300],
+                                              content: const Text(
+                                                'Pilih tipe kategori',
+                                              )));
+                                    } else {
+                                      _createAccountWithEmailAndPassword(
+                                          context);
+                                    }
+                                  },
+                                  child: const Text(
+                                    "Kirim",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  )),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Text.rich(TextSpan(
+                                  text: "Sudah memiliki akun? ",
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 14),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "Masuk disini",
+                                        style: const TextStyle(
+                                            color: Constants.maroonColor,
+                                            decoration:
+                                                TextDecoration.underline),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            navigateAsFirstScreen(
+                                                context, const LoginPage());
+                                          })
+                                  ])),
+                            )
+                          ]),
+                    ),
+                  ])),
+        ),
+      )),
     );
+  }
+
+  void showBankNameModalBottom() {
+    List<Widget> bankNameRadios = [];
+    List<String> bankList = [
+      'BCA',
+      'BRI',
+      'BNI',
+      'BTN',
+      'Bank Permata',
+      'Bank Jakarta'
+    ];
+    for (String bank in bankList) {
+      bankNameRadios.add(RadioListTile(
+          title: Text(bank,
+              style: const TextStyle(color: Colors.black87, fontSize: 18)),
+          value: bank,
+          groupValue: _bankAccountController.text,
+          onChanged: (value) {
+            _bankAccountController.text = value.toString();
+            Navigator.pop(context);
+          }));
+    }
+
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child:
+              Column(mainAxisSize: MainAxisSize.min, children: bankNameRadios),
+        );
+      },
+    );
+  }
+
+  void showGenderModal() {
+    List<String> genders = ['Pria', 'Wanita', 'Tidak Diketahui'];
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+        ),
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          TextStyle textStyle = const TextStyle(
+            color: Colors.black87,
+            fontSize: 18.0,
+          );
+          List<Widget> radios = [];
+          for (var gender in genders) {
+            radios.add(RadioListTile(
+                title: Text(gender, style: textStyle),
+                value: gender,
+                groupValue: _genderController.text,
+                onChanged: (value) {
+                  setState(() {
+                    _genderController.text = value.toString();
+                  });
+                  Navigator.pop(context);
+                }));
+          }
+          ;
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: radios,
+            ),
+          );
+        });
   }
 
   void _createAccountWithEmailAndPassword(BuildContext context) {
@@ -285,6 +438,10 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
       BlocProvider.of<AuthBloc>(context).add(GoogleLoginRegisterRequested(
           widget.email,
           widget.fullName,
+          _bankAccountController.text,
+          _bankAccountNameController.text,
+          _bankAccountNumberController.text,
+          _genderController.text,
           _locationController.text,
           categoryTypeIdList,
           widget.id));
@@ -293,6 +450,10 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
           widget.email,
           widget.password,
           widget.fullName,
+          _bankAccountController.text,
+          _bankAccountNameController.text,
+          _bankAccountNumberController.text,
+          _genderController.text,
           _locationController.text,
           categoryTypeIdList));
     }

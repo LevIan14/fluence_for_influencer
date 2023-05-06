@@ -45,12 +45,14 @@ class _MainPageState extends State<MainPage> {
         currentIndex: currentIndexPage,
         selectedItemColor: Constants.primaryColor,
         unselectedItemColor: Colors.grey.withOpacity(0.5),
-        showUnselectedLabels: true,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
         elevation: 0,
         items: const [
-          BottomNavigationBarItem(label: 'Home', icon: Icon(Ionicons.home)),
-          BottomNavigationBarItem(label: 'Setting', icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(label: 'Chat', icon: Icon(Icons.chat)),
+          BottomNavigationBarItem(label: 'Beranda', icon: Icon(Ionicons.home)),
+          BottomNavigationBarItem(
+              label: 'Pengaturan', icon: Icon(Icons.settings)),
+          BottomNavigationBarItem(label: 'Pesan', icon: Icon(Icons.chat)),
         ],
       ),
     );

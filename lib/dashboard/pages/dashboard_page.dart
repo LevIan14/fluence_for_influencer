@@ -45,10 +45,10 @@ class _DashboardPageState extends State<DashboardPage> {
               indicatorColor: Constants.primaryColor,
               tabs: [
                 Tab(
-                  text: "Agreements",
+                  text: "Persetujuan",
                 ),
                 Tab(
-                  text: "Transactions",
+                  text: "Transaksi",
                 )
               ],
             ),

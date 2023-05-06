@@ -22,66 +22,72 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is ForgotPasswordRequestSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text(
+                    'Silahkan cek email Anda untuk mengganti password'),
+                backgroundColor: Colors.green[300]));
             Navigator.of(context).pop();
-            BlocProvider.of<AuthBloc>(context).add(TriggerUnAuthenticated());
             navigateAsFirstScreen(context, const LoginPage());
+          }
+          if (state is AuthError) {
+            Navigator.of(context).pop();
           }
         },
         builder: (context, state) {
           return SafeArea(
-            child: Container(
-              color: Constants.backgroundColor,
-              child: Center(
-                  child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Insert your email"),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          decoration: textInputDecoration.copyWith(
-                              prefixIcon: const Icon(Icons.email)),
-                          keyboardType: TextInputType.emailAddress,
-                          controller: _emailController,
-                          validator: (value) {
-                            return RegExp(
-                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value!)
-                                ? null
-                                : "Please enter a valid email";
-                          }),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              if (_emailController.text.isNotEmpty) {
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => const Center(
-                                          child: CircularProgressIndicator(),
-                                        ));
-                                BlocProvider.of<AuthBloc>(context).add(
-                                    ForgotPasswordRequested(
-                                        _emailController.text));
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Constants.primaryColor,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30))),
-                            child: const Text('Submit')),
-                      )
-                    ],
-                  ),
+            child: Center(
+                child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Email"),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: textInputDecoration.copyWith(
+                            prefixIcon: const Icon(
+                          Icons.email,
+                          color: Constants.primaryColor,
+                        )),
+                        keyboardType: TextInputType.emailAddress,
+                        controller: _emailController,
+                        validator: (value) {
+                          return RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value!)
+                              ? null
+                              : "Masukkan email dengan format yang benar";
+                        }),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            if (_emailController.text.isNotEmpty) {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                        child: CircularProgressIndicator(),
+                                      ));
+                              BlocProvider.of<AuthBloc>(context).add(
+                                  ForgotPasswordRequested(
+                                      _emailController.text));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primaryColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                          child: const Text('Kirim')),
+                    )
+                  ],
                 ),
-              )),
-            ),
+              ),
+            )),
           );
         },
       ),

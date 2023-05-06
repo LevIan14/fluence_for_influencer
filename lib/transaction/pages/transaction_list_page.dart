@@ -42,7 +42,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
                   if (snapshot.hasData) {
                     if (snapshot.data.docs.length <= 0) {
                       return const Center(
-                        child: Text("There is no data to show",
+                        child: Text(Constants.emptyListMessage,
                             style: TextStyle(
                                 color: Constants.grayColor,
                                 fontSize: 16.0,
