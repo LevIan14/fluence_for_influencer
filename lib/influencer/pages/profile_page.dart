@@ -9,6 +9,7 @@ import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
 import 'package:fluence_for_influencer/chat/bloc/chat_bloc.dart';
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
+import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/portfolio/bloc/portfolio_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/edit_profile_page.dart';
 import 'package:fluence_for_influencer/portfolio/pages/upload_portfolio_page.dart';
@@ -104,59 +105,71 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
         BlocProvider<InfluencerBloc>(create: (context) => influencerBloc),
         BlocProvider<PortfolioBloc>(create: (context) => portfolioBloc),
       ],
-      child: BlocConsumer<InfluencerBloc, InfluencerState>(
-        listener: (context, state) {
-          if (state is InfluencerLoaded) {
-            setInfluencerData(state.influencer);
-          }
-        },
-        builder: (context, state) {
-          if (state is InfluencerLoaded) {
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is UnAuthenticated) {
+                navigateAsFirstScreen(context, const LoginPage());
+              }
+            },
+          )
+        ],
+        child: BlocConsumer<InfluencerBloc, InfluencerState>(
+          listener: (context, state) {
+            if (state is InfluencerLoaded) {
+              setInfluencerData(state.influencer);
+            }
+          },
+          builder: (context, state) {
+            if (state is InfluencerLoaded) {
+              return Scaffold(
+                appBar: buildAppBar(context),
+                body: buildBody(context),
+                floatingActionButton: currentTab == 1
+                    ? FloatingActionButton(
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 234, 240),
+                        onPressed: () async {
+                          XFile? img = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                          if (img == null) return;
+                          navigateToUploadPortfolio(img);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(.1),
+                                blurRadius: 15.0,
+                                spreadRadius: 0.0,
+                                offset: const Offset(
+                                  0.0,
+                                  5.0,
+                                )),
+                          ]),
+                          child: const Icon(Ionicons.add_outline,
+                              color: Constants.primaryColor),
+                        ),
+                        // const Text("Contact", style: TextSty
+                        //le(color: Colors.white))
+                      )
+                    : null,
+              );
+            }
             return Scaffold(
-              appBar: buildAppBar(context),
-              body: buildBody(context),
-              floatingActionButton: currentTab == 1
-                  ? FloatingActionButton(
-                      backgroundColor: const Color.fromARGB(255, 255, 234, 240),
-                      onPressed: () async {
-                        XFile? img = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
-                        if (img == null) return;
-                        navigateToUploadPortfolio(img);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(.1),
-                              blurRadius: 15.0,
-                              spreadRadius: 0.0,
-                              offset: const Offset(
-                                0.0,
-                                5.0,
-                              )),
-                        ]),
-                        child: const Icon(Ionicons.add_outline,
-                            color: Constants.primaryColor),
-                      ),
-                      // const Text("Contact", style: TextSty
-                      //le(color: Colors.white))
-                    )
-                  : null,
-            );
-          }
-          return Scaffold(
-              appBar: buildAppBar(context),
-              body: Container(
-                alignment: Alignment.center,
-                height: MediaQuery.of(context).size.height,
-                child: const CircularProgressIndicator(),
-              ));
-        },
+                appBar: buildAppBar(context),
+                body: Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.height,
+                  child: const CircularProgressIndicator(),
+                ));
+          },
+        ),
       ),
     );
   }
 
-  AppBar buildAppBar(context) {
+  AppBar buildAppBar(BuildContext context) {
     return AppBar(
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
@@ -412,6 +425,18 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   Widget descriptionCategoryType() {
     // influencer.categoryType.join(", ");
     double margin = 10.0;
+    List<Widget> categoryText = [];
+    for (CategoryType category in influencer.categoryType) {
+      categoryText.add(Text(category.categoryTypeName,
+          textAlign: TextAlign.left,
+          style:
+              const TextStyle(color: Constants.primaryColor, fontSize: 18.0)));
+    }
+    if (influencer.customCategory.isNotEmpty) {
+      categoryText.add(Text(influencer.customCategory,
+          textAlign: TextAlign.left,
+          style: const TextStyle(color: Constants.primaryColor, fontSize: 18)));
+    }
     return Container(
         decoration: BoxDecoration(
           borderRadius: Constants.defaultBorderRadiusButton,
@@ -434,13 +459,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var category in influencer.categoryType)
-                  Text(category.categoryTypeName,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                          color: Constants.primaryColor, fontSize: 18.0))
-              ],
+              children: categoryText,
             ),
           ],
         ));

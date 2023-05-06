@@ -39,25 +39,23 @@ class DateUtil {
   }
 
   static String dateWithDayFormat(DateTime dateTime) {
-    final weekName = _weekNames()[dateTime.weekday];
-    final date = DateFormat('yMMMMd').format(dateTime);
-    return '$date ($weekName)';
+    return DateFormat('yMMMMd', "id_ID").format(dateTime);
   }
 
   static String dateWithSlashFormat(DateTime dateTime) {
     return DateFormat("dd/MM/yyyy").format(dateTime);
   }
 
-  static List<String> _weekNames() {
-    return <String>[
-      '',
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
-      'Sun',
-    ];
-  }
+  // static List<String> _weekNames() {
+  //   return <String>[
+  //     '',
+  //     'Mon',
+  //     'Tue',
+  //     'Wed',
+  //     'Thu',
+  //     'Fri',
+  //     'Sat',
+  //     'Sun',
+  //   ];
+  // }
 }

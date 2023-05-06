@@ -58,8 +58,6 @@ class _MessageListPageState extends State<MessageListPage> {
           }
 
           if (state is MessageListLoaded) {
-            DateTime tmpDate = DateUtil.tomorrow();
-
             return Scaffold(
                 appBar: AppBar(
                   elevation: 0,
@@ -74,6 +72,8 @@ class _MessageListPageState extends State<MessageListPage> {
                       StreamBuilder(
                           stream: state.messageList,
                           builder: (context, AsyncSnapshot snapshot) {
+                            DateTime tmpDate = DateUtil.tomorrow();
+
                             return snapshot.hasData
                                 ? Expanded(
                                     child: SingleChildScrollView(

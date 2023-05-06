@@ -106,6 +106,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GoogleLoginRegisterRequested>((event, emit) async {
       emit(Loading());
       try {
+        print(event.location);
+        print(event.bankAccount);
         await authRepository.registerUserWithGoogleLogin(
             event.email,
             event.fullname,

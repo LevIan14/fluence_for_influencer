@@ -35,6 +35,8 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: ((context, state) {
+          print("!!! LOGIN listener !!!");
+          print(state.toString());
           if (state is GoogleLoginRequestedSuccess) {
             nextScreen(
                 context,
@@ -55,6 +57,8 @@ class _LoginPageState extends State<LoginPage> {
           }
         }),
         builder: (context, state) {
+          print("!!! LOGIN BUILDER !!!");
+          print(state.toString());
           if (state is Loading) {
             return const Center(child: CircularProgressIndicator());
           }

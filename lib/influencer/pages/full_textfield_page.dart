@@ -33,7 +33,7 @@ class FullTextfieldPage extends StatelessWidget {
                 // save
                 Navigator.pop(context, fieldController.text);
               },
-              child: const Text("Save",
+              child: const Text("Simpan",
                   style: TextStyle(
                       fontSize: 17.0,
                       color: Constants.primaryColor,
@@ -56,7 +56,7 @@ class FullTextfieldPage extends StatelessWidget {
           controller: fieldController,
           decoration: const InputDecoration(
             filled: false,
-            hintText: 'Type something...',
+            hintText: 'Ketik sesuatu...',
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
             constraints: BoxConstraints(maxWidth: 150),
             labelStyle: TextStyle(color: Colors.black),

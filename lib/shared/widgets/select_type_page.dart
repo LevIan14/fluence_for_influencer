@@ -100,7 +100,14 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 }
                 Navigator.pop(context, _selectedCategory);
               } else if (!othersSelected) {
-                Navigator.pop(context, _selectedCategory);
+                if (_selectedCategory.isNotEmpty) {
+                  Navigator.pop(context, _selectedCategory);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: const Text('Pilih minimal satu kategori'),
+                    backgroundColor: Colors.red[300],
+                  ));
+                }
               }
             },
             child: const Text('Kirim'),

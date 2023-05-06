@@ -161,7 +161,7 @@ class AuthRepository {
 
   Future<dynamic> loginWithGoogle() async {
     try {
-      Map<String, dynamic> userUmkm = {};
+      Map<String, dynamic> userInfluencer = {};
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
@@ -173,26 +173,26 @@ class AuthRepository {
           await firebaseAuth.signInWithCredential(credential);
 
       DocumentSnapshot snapshot = await Constants.firebaseFirestore
-          .collection("umkm")
+          .collection("influencers")
           .doc(userCredential.user!.uid)
           .get();
 
       if (snapshot.exists) {
-        userUmkm = {
+        userInfluencer = {
           "fullname": snapshot.get("fullname"),
           "email": snapshot.get("email"),
           "id": snapshot.id,
           "exist": true
         };
       } else {
-        userUmkm = {
+        userInfluencer = {
           "fullname": userCredential.user!.displayName,
           "email": userCredential.user!.email,
           "id": userCredential.user!.uid,
           "exist": false
         };
       }
-      return userUmkm;
+      return userInfluencer;
     } catch (e) {
       throw Exception(e.toString());
     }

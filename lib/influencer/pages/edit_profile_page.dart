@@ -9,6 +9,7 @@ import 'package:fluence_for_influencer/category/repository/category_repository.d
 import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
 import 'package:fluence_for_influencer/influencer/pages/full_textfield_page.dart';
 import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
+import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
@@ -293,7 +294,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           int.parse(_highestFeeController.text);
                       influencerBloc.add(UpdateInfluencerProfileSettings(
                           influencer, _selectedImage));
-                      Navigator.of(context).pop();
+                      navigateAsFirstScreen(context, const MainPage(index: 2));
                     }
                   : null,
               child: Text("Simpan",
