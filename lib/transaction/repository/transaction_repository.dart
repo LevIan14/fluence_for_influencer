@@ -48,12 +48,14 @@ class TransactionRepository {
 
         OrderTransaction orderTransaction = OrderTransaction(
             snapshot.id,
+            snapshot.get('order_id'),
             snapshot.get("influencer_id"),
             snapshot.get("umkm_id"),
             snapshot.get("agreement_id"),
             snapshot.get("negotiation_id"),
             snapshot.get("review_id"),
             snapshot.get("transaction_status"),
+            snapshot.get("cancel_reason"),
             orderTransactionProgress,
             createdAt.toDate());
 

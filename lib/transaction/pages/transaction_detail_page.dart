@@ -15,6 +15,7 @@ import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
+import 'package:fluence_for_influencer/transaction/pages/reject_page.dart';
 import 'package:fluence_for_influencer/transaction/pages/review/review_page.dart';
 import 'package:fluence_for_influencer/transaction/pages/transaction_progress_page.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -115,7 +116,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
           ],
           child: Scaffold(
             appBar: AppBar(
-              title: const Text("Transaction Detail"),
+              title: const Text("Detail Transaksi"),
               backgroundColor: Constants.primaryColor,
             ),
             body: BlocBuilder<TransactionBloc, TransactionState>(
@@ -149,183 +150,173 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                             ? Colors.red[300]
                                             : Colors.blue[300],
                                 label: Text(state.transaction.transactionStatus,
-                                    style: const TextStyle(fontSize: 12)),
+                                    style: const TextStyle(fontSize: 10)),
                               )
                             ],
                           ),
-                          const Divider(),
                           Container(
-                            margin: const EdgeInsets.symmetric(vertical: 16),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      margin: const EdgeInsets.only(bottom: 16),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: const [
-                                          Text("Detail Project"),
-                                          Text("Nama influencer")
-                                        ],
-                                      )),
-                                  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text("Project Information"),
-                                        GestureDetector(
-                                          onTap: () {
-                                            nextScreen(
-                                                context,
-                                                NegotiationDetailPage(
-                                                    umkmId: widget.umkmId,
-                                                    negotiationId:
-                                                        widget.negotiationId,
-                                                    influencerId:
-                                                        widget.influencerId));
-                                          },
-                                          child: Card(
-                                              child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(negotiation
-                                                        .projectTitle),
-                                                    const Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_outlined,
-                                                      size: 12,
-                                                    )
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                    "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
-                                                const Divider(),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        const Text(
-                                                            "Project Price"),
-                                                        Text(influencerName)
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(CurrencyFormat
-                                                        .convertToIDR(
-                                                            negotiation
-                                                                .projectPrice)),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          )),
-                                        ),
-                                      ]),
-                                  const Divider(),
-                                  Column(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              child: const Divider()),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text("Agreement Information"),
+                                      const Text("Informasi Negosiasi"),
+                                      const SizedBox(height: 8),
                                       GestureDetector(
                                         onTap: () {
                                           nextScreen(
                                               context,
-                                              UmkmAgreementPage(
-                                                  agreementId:
-                                                      widget.agreementId));
+                                              NegotiationDetailPage(
+                                                  umkmId: widget.umkmId,
+                                                  negotiationId:
+                                                      widget.negotiationId,
+                                                  influencerId:
+                                                      widget.influencerId));
                                         },
                                         child: Card(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: const [
-                                                    Text('UMKM Agreement'),
-                                                    Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_rounded,
-                                                      size: 12,
-                                                    )
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  agreement.umkmAgreement!,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )
-                                              ],
-                                            ),
+                                            child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      negotiation.projectTitle),
+                                                  const Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_outlined,
+                                                    size: 12,
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                  "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
+                                              Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(vertical: 8),
+                                                  child: const Divider()),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                          "Kesepakatan Harga"),
+                                                      Text(influencerName)
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(CurrencyFormat
+                                                      .convertToIDR(negotiation
+                                                          .projectPrice)),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                    ]),
+                                Container(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: const Divider()),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text("Informasi Persetujuan"),
+                                    const SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () {
+                                        nextScreen(
+                                            context,
+                                            UmkmAgreementPage(
+                                                agreementId:
+                                                    widget.agreementId));
+                                      },
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: const [
+                                                  Text('Persetujuan UMKM'),
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_rounded,
+                                                    size: 12,
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                agreement.umkmAgreement!,
+                                              )
+                                            ],
                                           ),
                                         ),
                                       ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          nextScreen(
-                                              context,
-                                              InfluencerAgreementPage(
-                                                  agreementId:
-                                                      widget.agreementId));
-                                        },
-                                        child: Card(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: const [
-                                                    Text(
-                                                        'Influencer Agreement'),
-                                                    Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_outlined,
-                                                      size: 12,
-                                                    )
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  agreement
-                                                      .influencerAgreement!,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )
-                                              ],
-                                            ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        nextScreen(
+                                            context,
+                                            InfluencerAgreementPage(
+                                                agreementId:
+                                                    widget.agreementId));
+                                      },
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: const [
+                                                  Text(
+                                                      'Persetujuan Influencer'),
+                                                  Icon(
+                                                    Icons
+                                                        .arrow_forward_ios_outlined,
+                                                    size: 12,
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                agreement.influencerAgreement!,
+                                              )
+                                            ],
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  )
-                                ]),
-                          ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ]),
                         ],
                       ),
                     ),
@@ -344,29 +335,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 state.transaction.reviewId.isEmpty
-                                    ? SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Constants.primaryColor,
-                                                elevation: 0,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30))),
-                                            onPressed: () {
-                                              nextScreen(
-                                                  context,
-                                                  ReviewPage(
-                                                      influencerId: state
-                                                          .transaction
-                                                          .influencerId,
-                                                      transactionId: widget
-                                                          .transactionId));
-                                            },
-                                            child: const Text("Give Review")),
-                                      )
+                                    ? const Padding(padding: EdgeInsets.zero)
                                     : SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
@@ -391,7 +360,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                                           .transaction
                                                           .reviewId));
                                             },
-                                            child: const Text("Check Review"))),
+                                            child: const Text("Lihat Review"))),
                                 SizedBox(
                                   width: double.infinity,
                                   child: OutlinedButton(
@@ -408,12 +377,27 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                                   widget.transactionId,
                                             ));
                                       },
-                                      child: const Text("Check Progress")),
+                                      child: const Text(
+                                          "Lihat Status Pengerjaan")),
                                 ),
                               ],
                             )
                           : state.transaction.transactionStatus == 'CANCELED'
-                              ? const Padding(padding: EdgeInsets.zero)
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Constants.primaryColor,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                  onPressed: () {
+                                    nextScreen(
+                                        context,
+                                        RejectPage(
+                                            reason: state
+                                                .transaction.cancelReason));
+                                  },
+                                  child: const Text('Lihat Alasan Batal'))
                               : ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Constants.primaryColor,
@@ -428,7 +412,8 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                             transactionId:
                                                 state.transaction.id));
                                   },
-                                  child: const Text("Check Progress")));
+                                  child:
+                                      const Text("Lihat Status Pengerjaan")));
                 }
                 return Container();
               },

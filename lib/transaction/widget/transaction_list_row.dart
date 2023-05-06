@@ -91,7 +91,7 @@ class _TransactionListRowState extends State<TransactionListRow> {
                 },
                 child: ListTile(
                   title: Text(
-                    "$influencerName - ${state.negotiationDetails.projectTitle}",
+                    state.negotiationDetails.projectTitle,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
@@ -99,6 +99,7 @@ class _TransactionListRowState extends State<TransactionListRow> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   trailing: Chip(
+                    labelStyle: const TextStyle(fontSize: 10),
                     label: Text(widget.transactionStatus),
                     backgroundColor: widget.transactionStatus == "DONE"
                         ? Colors.green[300]

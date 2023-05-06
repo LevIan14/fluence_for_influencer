@@ -37,7 +37,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
       create: (context) => transactionBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Content Progress"),
+          title: const Text("Pembuatan Konten"),
           backgroundColor: Constants.primaryColor,
         ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
@@ -61,7 +61,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Notes"),
+                          const Text("Catatan"),
                           const SizedBox(height: 8),
                           TextField(
                             controller: _notesController,
@@ -94,7 +94,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                           onPressed: () {
                             updateDialog(context, state.transaction);
                           },
-                          child: const Text("Update Status")),
+                          child: const Text("Ubah Status")),
                     ),
                     SizedBox(
                         width: double.infinity,
@@ -104,12 +104,12 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
-                              // transactionBloc.add(SaveNotesContentProgress(
-                              //     widget.transactionId,
-                              //     _notesController.text,
-                              //     state.transaction.orderProgress));
+                              transactionBloc.add(SaveNotesContentProgress(
+                                  widget.transactionId,
+                                  _notesController.text,
+                                  state.transaction.orderProgress));
                             },
-                            child: const Text("Save Notes"))),
+                            child: const Text("Simpan"))),
                   ],
                 ),
               );
@@ -122,34 +122,28 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
   }
 
   Future<bool> updateDialog(context, transaction) async {
-    Text dialogTitle = const Text("Update Status");
+    Text dialogTitle = const Text("Ubah Status");
     Text dialogContent =
-        const Text("Are you sure to update status?");
+        const Text("Apakah Anda yakin ingin mengubah status menjadi selesai?");
     TextButton primaryButton = TextButton(
-      child: Text("Yes"),
+      child: const Text("Ya"),
       onPressed: () {
-        transactionBloc.add(UpdateStatusContentProgress(
-                                widget.transactionId,
-                                _notesController.text,
-                                "DONE",
-                                transaction.orderProgress));
+        transactionBloc.add(UpdateStatusContentProgress(widget.transactionId,
+            _notesController.text, "DONE", transaction.orderProgress));
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
-
-
 }

@@ -17,6 +17,7 @@ import 'package:fluence_for_influencer/transaction/repository/transaction_reposi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:uuid/uuid.dart';
 
 class AgreementDetailPage extends StatefulWidget {
   final String agreementId;
@@ -44,8 +45,6 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
   late final Negotiation negotiation;
   late final NegotiationBloc negotiationBloc;
   final NegotiationRepository negotiationRepository = NegotiationRepository();
-
-  final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _umkmAgreementController =
       TextEditingController();
@@ -87,7 +86,10 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                       if (state.agreement.umkmAgreementStatus == 'ACCEPTED' &&
                           state.agreement.influencerAgreementStatus ==
                               'ACCEPTED') {
+                        Uuid uuid = const Uuid();
+
                         final newTransaction = {
+                          "order_id": uuid,
                           "negotiation_id": state.agreement.negotiationId,
                           "influencer_id": state.agreement.influencerId,
                           "umkm_id": state.agreement.umkmId,
@@ -118,6 +120,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                           },
                           "agreement_id": widget.agreementId,
                           "review_id": "",
+                          "cancel_reason": "",
                           "created_at": Timestamp.now()
                         };
                         transactionBloc

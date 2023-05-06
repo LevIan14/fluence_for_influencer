@@ -39,7 +39,7 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
       create: (context) => transactionBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Review Upload"),
+          title: const Text("Ulas Unggahan"),
           backgroundColor: Constants.primaryColor,
         ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
@@ -55,8 +55,8 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
               );
             }
             if (state is TransactionLoaded) {
-              _contentNoteController.text =
-                  state.transaction.orderProgress.reviewUpload.influencerNote;
+              _contentNoteController.text = state
+                  .transaction.orderProgress.reviewUpload.influencerNoteDraft;
               _reviewNoteController.text =
                   state.transaction.orderProgress.reviewUpload.umkmNote;
 
@@ -65,18 +65,18 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Content Note"),
+                    const Text("Catatan Unggahan"),
                     const SizedBox(height: 8),
                     TextFormField(
                       decoration: textInputDecoration,
                       maxLines: null,
                       controller: _contentNoteController,
                       validator: (value) =>
-                          value!.isEmpty ? "Insert content note" : null,
+                          value!.isEmpty ? "Masukkan catatan unggahan" : null,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                     ),
                     const SizedBox(height: 16),
-                    const Text("Review Note"),
+                    const Text("Ulasan"),
                     const SizedBox(height: 8),
                     TextFormField(
                       decoration: textInputDecoration,
@@ -113,7 +113,7 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
                                     updateDialog(context, state.transaction);
                                   }
                                 },
-                                child: const Text("Update Status"))),
+                                child: const Text("Ubah Status"))),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
@@ -127,11 +127,29 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
                                     _contentNoteController.text,
                                     state.transaction.orderProgress));
                               },
-                              child: const Text("Save Note")),
+                              child: const Text("Simpan")),
                         )
                       ]),
                     )
-                  : const Padding(padding: EdgeInsets.all(0));
+                  : state.transaction.orderProgress.reviewUpload.status ==
+                          'PENDING'
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.primaryColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              onPressed: () {
+                                transactionBloc.add(SaveNotesReviewUpload(
+                                    widget.transactionId,
+                                    _contentNoteController.text,
+                                    state.transaction.orderProgress));
+                              },
+                              child: const Text('Simpan')),
+                        )
+                      : const Padding(padding: EdgeInsets.all(0));
             }
             return Container();
           },
@@ -141,14 +159,12 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
   }
 
   Future<bool> updateDialog(context, transaction) async {
-    Text dialogTitle = const Text("Update Status");
-    Text dialogContent =
-        const Text("Are you sure to update status?");
+    Text dialogTitle = const Text("Ubah Status");
+    Text dialogContent = const Text("Apakah Anda yakin ingin mengubah status?");
     TextButton primaryButton = TextButton(
-      child: Text("Yes"),
+      child: const Text("Ya"),
       onPressed: () {
-       transactionBloc.add(
-        UpdateStatusReviewUpload(
+        transactionBloc.add(UpdateStatusReviewUpload(
             widget.transactionId,
             _contentNoteController.text,
             "ON REVIEW",
@@ -157,16 +173,15 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }

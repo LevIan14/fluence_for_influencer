@@ -48,33 +48,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   late Influencer influencer;
   late final List<CategoryType> categories;
-  final List<String> genders = ['Male', 'Female', 'Unknown'];
+  final List<String> genders = ['Pria', 'Wanita', 'Tidak Diketahui'];
 
   final TextEditingController _nameController = TextEditingController();
   String? _nameValidator(String? value) {
-    return value!.isEmpty ? "Name can not be null." : null;
+    return value!.isEmpty ? "Masukkan nama" : null;
   }
 
   final TextEditingController _locationController = TextEditingController();
   String? _locationValidator(String? value) {
-    return value!.isEmpty ? "Location can not be null." : null;
+    return value!.isEmpty ? "Masukkan lokasi" : null;
   }
 
   final TextEditingController _lowestFeeController = TextEditingController();
   String? _lowestFeeValidator(String? value) {
-    if (value!.isEmpty) return "Insert value";
+    if (value!.isEmpty) return "Masukkan harga terendah";
     if (_highestFeeController.value.text.isEmpty) return null;
     return int.parse(value) > int.parse(_highestFeeController.value.text)
-        ? 'Lowest fee can not be higher than highest fee'
+        ? 'Harga tidak valid'
         : null;
   }
 
   final TextEditingController _highestFeeController = TextEditingController();
   String? _highestFeeValidator(String? value) {
-    if (value!.isEmpty) return "Insert value";
+    if (value!.isEmpty) return "Masukkan harga tertinggi";
     if (_lowestFeeController.value.text.isEmpty) return null;
     return int.parse(value) < int.parse(_lowestFeeController.value.text)
-        ? 'Highest fee can not be lower than lowest fee'
+        ? 'Harga tidak valid'
         : null;
   }
 
@@ -181,8 +181,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: BlocListener<CategoryBloc, CategoryState>(
           listener: (context, state) {
             if (state is CategoryLoaded) {
-              print('this is category');
-              print(state.toString());
               setCategoryTypeChips(state.categoryList);
             }
           },
@@ -198,23 +196,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
               },
               child: BlocConsumer<InfluencerBloc, InfluencerState>(
                 listener: (context, state) {
-                  print("helo there");
-                  print(state.toString());
-                  print(_selectedCategory);
-
                   if (state is InfluencerLoaded) {
                     setInfluencerData(state.influencer);
                   }
                 },
                 builder: (context, state) {
                   if (state is InfluencerLoading) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
-                  print(">>>>");
-                  print(state.toString());
-                  print(_selectedCategory);
                   if (state is InfluencerLoaded) {
                     return WillPopScope(
                       onWillPop: () async {
@@ -230,8 +221,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   return Scaffold(
                       appBar: buildAppBar(context),
                       body: Container(
-                        decoration: const BoxDecoration(
-                            color: Constants.backgroundColor),
                         alignment: Alignment.center,
                         height: MediaQuery.of(context).size.height,
                         child: const CircularProgressIndicator(),
@@ -246,18 +235,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return AppBar(
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
-      backgroundColor: Constants.backgroundColor,
+      backgroundColor: Colors.white,
       actions: [
         Container(
-          // decoration: BoxDecoration(color: Constants.navyColor),
-          // padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 7.0),
           margin: const EdgeInsets.only(right: 15.0),
           alignment: Alignment.center,
           child: InkWell(
               onTap: _enableSaveBtn
                   ? () {
-                      // save
-                      // buat bloc save + repository save
                       influencer.fullname = _nameController.text;
                       influencer.location = _locationController.text;
                       influencer.about = _aboutController.text;
@@ -273,7 +258,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Navigator.of(context).pop();
                     }
                   : null,
-              child: Text("Save",
+              child: Text("Simpan",
                   style: TextStyle(
                       fontSize: 17.0,
                       color: _enableSaveBtn
@@ -286,132 +271,125 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget buildBody(BuildContext context) {
-    return Container(
-      color: Constants.backgroundColor,
-      child: SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formSettingsKey,
-          onChanged: () {
-            setState(() {
-              _enableSaveBtn = _formSettingsKey.currentState!.validate();
-            });
-          },
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            buildProfileAvatar(influencer),
-            AppTextfield(
-                field: "Name",
-                fieldController: _nameController,
-                validator: _nameValidator),
-            DirectingTextfield(
-                field: "Gender",
-                fieldController: _genderController,
-                onTap: () => showGenderModal()),
-            const SizedBox(height: 16),
-            const Text('Location'),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _locationController,
-              validator: _locationValidator,
-              decoration: textInputDecoration.copyWith(
-                  suffixIcon: IconButton(
-                      onPressed: () async {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) =>
-                              showDialogWithCircularProgress(context),
-                        );
-                        await _getCurrentPosition();
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(Icons.location_on_rounded))),
-            ),
-            const SizedBox(height: 16),
-
-            // AppTextfield(
-            //     field: "Location",
-            //     fieldController: _locationController,
-            //     validator: _locationValidator,
-            //     isReadOnly: true,
-            //     onTap: () async => await _getCurrentPosition()),
-            buildCategoryTypeChips(categories),
-            DirectingTextfield(
-                field: "About",
-                fieldController: _aboutController,
-                onTap: () async {
-                  final changedValue = await nextScreenAndGetValue(
-                      context,
-                      FullTextfieldPage(
-                          field: "About", fieldController: _aboutController));
-                  _aboutController.text = changedValue;
-                }),
-            DirectingTextfield(
-                field: "Note Agreement",
-                fieldController: _noteAgreementController,
-                onTap: () async {
-                  final changedValue = await nextScreenAndGetValue(
-                      context,
-                      FullTextfieldPage(
-                          field: "Note Agreement",
-                          fieldController: _noteAgreementController));
-                  _noteAgreementController.text = changedValue;
-                }),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: const Text('Fee Range (in Rupiah)',
-                          style: TextStyle(
-                              color: Constants.primaryColor, fontSize: 15),
-                          textAlign: TextAlign.left)),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: TextFormField(
-                      decoration: textInputDecoration.copyWith(
-                        hintText: 'Lowest Fee',
-                        errorStyle:
-                            const TextStyle(overflow: TextOverflow.visible),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: _lowestFeeController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      validator: _lowestFeeValidator,
-                    ),
-                  ),
-                  Container(
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formSettingsKey,
+        onChanged: () {
+          setState(() {
+            _enableSaveBtn = _formSettingsKey.currentState!.validate();
+          });
+        },
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          buildProfileAvatar(influencer),
+          AppTextfield(
+              field: "Nama",
+              fieldController: _nameController,
+              validator: _nameValidator),
+          DirectingTextfield(
+              field: "Jenis Kelamin",
+              fieldController: _genderController,
+              onTap: () => showGenderModal()),
+          const SizedBox(height: 16),
+          const Text('Lokasi'),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _locationController,
+            validator: _locationValidator,
+            decoration: textInputDecoration.copyWith(
+                hintText: "Tekan ikon untuk akses lokasi",
+                suffixIcon: IconButton(
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          showDialogWithCircularProgress(context),
+                    );
+                    await _getCurrentPosition();
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.location_on_rounded),
+                  color: Constants.primaryColor,
+                )),
+          ),
+          const SizedBox(height: 16),
+          buildCategoryTypeChips(categories),
+          DirectingTextfield(
+              field: "Tentang Anda",
+              fieldController: _aboutController,
+              onTap: () async {
+                final changedValue = await nextScreenAndGetValue(
+                    context,
+                    FullTextfieldPage(
+                        field: "Tentang Anda",
+                        fieldController: _aboutController));
+                _aboutController.text = changedValue;
+              }),
+          DirectingTextfield(
+              field: "Catatan Persetujuan",
+              fieldController: _noteAgreementController,
+              onTap: () async {
+                final changedValue = await nextScreenAndGetValue(
+                    context,
+                    FullTextfieldPage(
+                        field: "Catatan Persetujuan",
+                        fieldController: _noteAgreementController));
+                _noteAgreementController.text = changedValue;
+              }),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
                     margin: const EdgeInsets.only(bottom: 16),
-                    child: TextFormField(
-                      decoration: textInputDecoration.copyWith(
-                        hintText: 'Highest Fee',
-                        errorStyle:
-                            const TextStyle(overflow: TextOverflow.visible),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: _highestFeeController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      validator: _highestFeeValidator,
+                    child: const Text('Rentang Harga (Dalam Rupiah)',
+                        style: TextStyle(
+                            color: Constants.primaryColor, fontSize: 15),
+                        textAlign: TextAlign.left)),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: TextFormField(
+                    decoration: textInputDecoration.copyWith(
+                      hintText: 'Harga Terendah',
+                      errorStyle:
+                          const TextStyle(overflow: TextOverflow.visible),
                     ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: _lowestFeeController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    validator: _lowestFeeValidator,
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: TextFormField(
+                    decoration: textInputDecoration.copyWith(
+                      hintText: 'Harga Tertinggi',
+                      errorStyle:
+                          const TextStyle(overflow: TextOverflow.visible),
+                    ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    controller: _highestFeeController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    validator: _highestFeeValidator,
+                  ),
+                ),
+              ],
             ),
-            buildLinkedAccount(),
-          ]),
-        ),
-      )),
-    );
+          ),
+          buildLinkedAccount(),
+        ]),
+      ),
+    ));
   }
 
   Widget buildProfileAvatar(Influencer influencer) {
@@ -465,7 +443,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             leading: Icon(
                                                 Ionicons.image_outline,
                                                 color: Colors.grey.shade600),
-                                            title: Text("Choose from library",
+                                            title: Text("Pilih dari galeri",
                                                 style: textStyle),
                                             onTap: () async {
                                               // bloc untuk upload influencer image
@@ -482,8 +460,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             leading: const Icon(
                                                 Ionicons.trash_outline,
                                                 color: Colors.red),
-                                            title: Text(
-                                                "Remove current profile picture",
+                                            title: Text("Hapus gambar profil",
                                                 style: textStyle.copyWith(
                                                     color: Colors.red)),
                                             onTap: () {
@@ -558,7 +535,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       children: [
         Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
-            child: const Text("Category Type",
+            child: const Text("Tipe Kategori",
                 style: TextStyle(color: Constants.primaryColor, fontSize: 15),
                 textAlign: TextAlign.left)),
         Wrap(

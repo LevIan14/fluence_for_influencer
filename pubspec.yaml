@@ -65,6 +65,7 @@ dependencies:
   intl: ^0.17.0
   webview_flutter: ^4.0.7
   flutter_rating_bar: ^4.0.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

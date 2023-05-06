@@ -2,7 +2,6 @@ import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
-import 'package:fluence_for_influencer/transaction/model/progress/review_upload.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +40,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
       create: (context) => transactionBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Project Progress"),
+          title: const Text("Status Pengerjaan"),
           backgroundColor: Constants.primaryColor,
         ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
@@ -57,7 +56,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                   },
                   steps: [
                     Step(
-                        title: const Text("Content Progress"),
+                        title: const Text("Pembuatan Konten"),
                         isActive: currentStep == 0,
                         state: state.transaction.orderProgress.contentProgress
                                     .status ==
@@ -76,7 +75,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                                 ContentProgressPage(
                                     transactionId: widget.transactionId));
                           },
-                          child: const Text("Update Status"),
+                          child: const Text("Ubah Status"),
                         )),
                     Step(
                       isActive: currentStep == 1,
@@ -85,7 +84,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                               "DONE"
                           ? StepState.complete
                           : StepState.indexed,
-                      title: const Text("Review Content"),
+                      title: const Text("Ulas Konten"),
                       content: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Constants.primaryColor,
@@ -98,7 +97,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                               ReviewContentPage(
                                   transactionId: widget.transactionId));
                         },
-                        child: const Text("Update Status"),
+                        child: const Text("Ubah Status"),
                       ),
                     ),
                     Step(
@@ -108,7 +107,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                               "DONE"
                           ? StepState.complete
                           : StepState.indexed,
-                      title: const Text("Upload Progress"),
+                      title: const Text("Proses Unggah"),
                       content: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Constants.primaryColor,
@@ -121,7 +120,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                               UploadProgressPage(
                                   transactionId: widget.transactionId));
                         },
-                        child: const Text("Update Status"),
+                        child: const Text("Ubah Status"),
                       ),
                     ),
                     Step(
@@ -131,7 +130,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                                 "DONE"
                             ? StepState.complete
                             : StepState.indexed,
-                        title: const Text("Review Upload"),
+                        title: const Text("Ulas Unggahan"),
                         content: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Constants.primaryColor,
@@ -144,11 +143,9 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                                 ReviewUploadPage(
                                     transactionId: widget.transactionId));
                           },
-                          child: const Text("Update Status"),
+                          child: const Text("Ubah Status"),
                         )),
-                    const Step(
-                        title: Text("Done Review"),
-                        content: Text("Done Review Page"))
+                    Step(title: const Text("Selesai"), content: Container())
                   ]);
             }
             return Container();

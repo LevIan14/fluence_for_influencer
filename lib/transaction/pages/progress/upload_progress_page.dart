@@ -37,7 +37,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
       create: (context) => transactionBloc,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Upload Progress"),
+          title: const Text("Proses Unggah"),
           backgroundColor: Constants.primaryColor,
         ),
         body: BlocConsumer<TransactionBloc, TransactionState>(
@@ -61,7 +61,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Notes"),
+                    const Text("Catatan"),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _notesController,
@@ -94,7 +94,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                         onPressed: () {
                           updateDialog(context, state.transaction);
                         },
-                        child: const Text("Update Status")),
+                        child: const Text("Ubah Status")),
                   ),
                   SizedBox(
                       width: double.infinity,
@@ -109,7 +109,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                                 _notesController.text,
                                 state.transaction.orderProgress));
                           },
-                          child: const Text("Save Notes"))),
+                          child: const Text("Simpan"))),
                 ],
               ),
             );
@@ -121,31 +121,27 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
   }
 
   Future<bool> updateDialog(context, transaction) async {
-    Text dialogTitle = const Text("Update Status");
+    Text dialogTitle = const Text("Ubah Status");
     Text dialogContent =
-        const Text("Are you sure to update status?");
+        const Text("Apakah Anda yakin ingin mengubah status menjadi selesai?");
     TextButton primaryButton = TextButton(
-      child: Text("Yes"),
+      child: const Text("Ya"),
       onPressed: () {
-        transactionBloc.add(UpdateStatusUploadProgress(
-                              widget.transactionId,
-                              _notesController.text,
-                              "DONE",
-                              transaction.orderProgress));
+        transactionBloc.add(UpdateStatusUploadProgress(widget.transactionId,
+            _notesController.text, "DONE", transaction.orderProgress));
         Navigator.pop(context, true);
       },
     );
     TextButton secondaryButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Batal"),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
     final bool resp = await showDialog(
         context: context,
-        builder: (context) => showAlertDialog(
-            context, dialogTitle, dialogContent, primaryButton, secondaryButton)
-        );
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
     if (!resp) return false;
     return true;
   }
