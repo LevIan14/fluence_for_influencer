@@ -53,16 +53,34 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
         child: Scaffold(
           appBar: buildAppBar(context),
           body: buildBody(context),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
+                onPressed: () {
+                  saveChanges();
+                  portfolioBloc.add(
+                      EditInfluencerPortfolio(influencerId, editedPortfolio));
+                },
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                      RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Constants.primaryColor),
+                ),
+                child: const Text('Simpan',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w500))),
+          ),
         ));
   }
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      iconTheme: const IconThemeData(color: Constants.primaryColor),
-      elevation: 0,
-      title: const Text('Edit Caption',
-          style: TextStyle(color: Constants.primaryColor)),
-    );
+        elevation: 0,
+        backgroundColor: Constants.primaryColor,
+        title: const Text('Ubah Keterangan'));
   }
 
   Widget buildBody(BuildContext context) {
@@ -101,7 +119,7 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
                 controller: _captionController,
                 decoration: const InputDecoration(
                   filled: false,
-                  hintText: 'Insert a caption...',
+                  hintText: 'Masukkan keterangan...',
                   contentPadding:
                       EdgeInsets.symmetric(horizontal: 10, vertical: 16),
                   constraints: BoxConstraints(maxWidth: 150),
@@ -120,23 +138,6 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
                 ),
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  saveChanges();
-                  portfolioBloc.add(
-                      EditInfluencerPortfolio(influencerId, editedPortfolio));
-                },
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  )),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Constants.primaryColor),
-                ),
-                child: const Text('Save',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w500))),
           ]),
         )),
       ),
@@ -144,17 +145,17 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
   }
 
   Future<bool> createWillPopDialog(context) async {
-    Text dialogTitle = const Text("Discard changes?");
-    Text dialogContent =
-        const Text("If you go back now, you will lose your changes.");
+    Text dialogTitle = const Text("Buang perubahan?");
+    Text dialogContent = const Text(
+        "Anda akan kehilangan perubahan data jika meninggalkan halaman.");
     TextButton discardButton = TextButton(
-      child: const Text("Discard changes"),
+      child: const Text("Buang"),
       onPressed: () {
         Navigator.pop(context, true);
       },
     );
     TextButton cancelButton = TextButton(
-      child: const Text("Continue editing"),
+      child: const Text("Lanjut Ubah"),
       onPressed: () {
         Navigator.pop(context, false);
       },

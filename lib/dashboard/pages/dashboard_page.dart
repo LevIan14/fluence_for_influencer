@@ -21,14 +21,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Fluence for Influencers"),
-        actions: [
-          IconButton(
-            icon: const Icon(Ionicons.log_out_outline),
-            onPressed: () {
-              BlocProvider.of<AuthBloc>(context).add(LogoutRequested());
-            },
-          ),
-        ],
         backgroundColor: Constants.primaryColor,
       ),
       body: BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {

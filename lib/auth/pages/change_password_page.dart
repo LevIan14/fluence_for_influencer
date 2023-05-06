@@ -32,7 +32,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         create: (context) => authBloc,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Ganti Password'),
+            title: const Text('Ubah Password'),
             backgroundColor: Constants.primaryColor,
           ),
           body: BlocConsumer<AuthBloc, AuthState>(

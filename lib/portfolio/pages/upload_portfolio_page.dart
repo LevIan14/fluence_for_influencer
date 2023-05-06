@@ -51,15 +51,33 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
     return Scaffold(
       appBar: buildAppBar(context),
       body: buildBody(context),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ElevatedButton(
+            onPressed: () {
+              portfolioBloc.add(UploadInfluencerPortfolio(
+                  influencerId, widget.img, captionController.text));
+            },
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              )),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Constants.primaryColor),
+            ),
+            child: const Text('Unggah',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w500))),
+      ),
     );
   }
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      iconTheme: const IconThemeData(color: Constants.primaryColor),
+      backgroundColor: Constants.primaryColor,
       elevation: 0,
-      title: const Text('Add Portfolio',
-          style: TextStyle(color: Constants.primaryColor)),
+      title: const Text('Unggah Portfolio'),
     );
   }
 
@@ -101,36 +119,6 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
                   );
                 },
               ),
-              // Container(
-              //   width: MediaQuery.of(context).size.width,
-              //   margin: EdgeInsets.symmetric(vertical: margin / 10),
-              //   child: TextFormField(
-              //     autofocus: true,
-              //     minLines: 1,
-              //     maxLines: 3,
-              //     controller: titleController,
-              //     decoration: const InputDecoration(
-              //       filled: false,
-              //       hintText: 'Insert a title...',
-              //       contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-              //       constraints: BoxConstraints(maxWidth: 150),
-              //       labelStyle: TextStyle(color: Colors.black),
-              //       // Enabled and focused
-              //       focusedBorder: OutlineInputBorder(
-              //           borderSide: BorderSide.none),
-              //       // Enabled and not showing error
-              //       enabledBorder: OutlineInputBorder(
-              //           borderSide: BorderSide.none),
-              //       // Has error but not focus
-              //       errorBorder: OutlineInputBorder(
-              //           borderSide: BorderSide.none),
-              //       // Has error and focus
-              //       focusedErrorBorder: OutlineInputBorder(
-              //           borderSide: BorderSide.none),
-              //     ),
-              //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
-              //   ),
-              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.symmetric(vertical: margin),
@@ -141,7 +129,7 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
                   controller: captionController,
                   decoration: const InputDecoration(
                     filled: false,
-                    hintText: 'Insert a caption...',
+                    hintText: 'Masukkan keterangan...',
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 10, vertical: 16),
                     constraints: BoxConstraints(maxWidth: 150),
@@ -167,33 +155,17 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
               //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
               //   child: Text("UPLOAD", style: TextStyle(color: Colors.white)),
               // ),
-              ElevatedButton(
-                  onPressed: () {
-                    portfolioBloc.add(UploadInfluencerPortfolio(
-                        influencerId, widget.img, captionController.text));
-                  },
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    )),
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Constants.primaryColor),
-                  ),
-                  child: const Text('Share',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500))),
             ]),
           )),
         ));
   }
 
   createDialog(BuildContext context) {
-    Text dialogTitle = const Text("Portfolio Uploaded!");
+    Text dialogTitle = const Text("Portofolio Telah Diunggah");
     Text dialogContent =
-        const Text("New portfolio would be added to your profile.");
+        const Text("Portfolio baru ditambahkan pada profil Anda");
     TextButton okayButton = TextButton(
-      child: Text("Back to Main Page"),
+      child: const Text("Kembali ke Beranda"),
       onPressed: () {
         navigateAsFirstScreen(context, const MainPage(index: 2));
       },

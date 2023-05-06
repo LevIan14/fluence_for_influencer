@@ -20,6 +20,7 @@ import 'package:fluence_for_influencer/models/portfolio.dart';
 import 'package:fluence_for_influencer/portfolio/repository/portfolio_repository.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_button.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_profile_avatar.dart';
 import 'package:fluence_for_influencer/shared/widgets/_profile/profile_menu_content.dart';
@@ -28,6 +29,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
+
+import '../../shared/widgets/widget_review.dart';
 
 class InfluencerProfilePage extends StatefulWidget {
   const InfluencerProfilePage({super.key, required this.influencerId});
@@ -193,7 +196,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                         ListTile(
                           leading: Icon(Ionicons.key_outline,
                               color: Colors.grey.shade600),
-                          title: Text("Ganti Password", style: textStyle),
+                          title: Text("Ubah Password", style: textStyle),
                           onTap: () {
                             Navigator.pop(context);
                             nextScreen(context, const ChangePasswordPage());
@@ -380,7 +383,12 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   Widget buildDescriptionWidget(double margin) {
     List<Widget> finalWidgets = [];
     List<Widget> widgets = [
-      ProfileMenuContent(title: 'About', content: influencer.about),
+      ProfileMenuContent(title: 'Tentang Anda', content: influencer.about),
+      descriptionCategoryType(),
+      ProfileMenuContent(
+          title: 'Rentang Harga',
+          content:
+              "${CurrencyFormat.convertToIDR(influencer.lowestFee)} - ${CurrencyFormat.convertToIDR(influencer.highestFee)}")
     ];
     if (verified) {
       widgets.add(ProfileMenuInsights(
@@ -399,6 +407,43 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
         children: finalWidgets,
       ),
     );
+  }
+
+  Widget descriptionCategoryType() {
+    // influencer.categoryType.join(", ");
+    double margin = 10.0;
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: Constants.defaultBorderRadiusButton,
+          color: Colors.white,
+        ),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+            vertical: margin * 2.5, horizontal: margin * 2.5),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: margin),
+              child: const Text('Tipe Kategori',
+                  style: TextStyle(
+                      color: Constants.primaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22.0)),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var category in influencer.categoryType)
+                  Text(category.categoryTypeName,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                          color: Constants.primaryColor, fontSize: 18.0))
+              ],
+            ),
+          ],
+        ));
   }
 
   Widget buildPortfolioWidget(double margin) {
@@ -432,7 +477,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                 ));
           }
           return Container(
-            padding: EdgeInsets.symmetric(vertical: 10.0),
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
             alignment: Alignment.center,
             child: const Text(Constants.emptyListMessage,
                 style: TextStyle(
@@ -451,12 +496,14 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   }
 
   Widget buildReviewWidget(double margin) {
-    String content =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Velit sed ullamcorper morbi tincidunt ornare massa. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu vitae elementum.";
     List<Widget> finalWidgets = [];
-    List<Widget> widgets = [
-      ProfileMenuContent(title: 'Good!', content: content),
-    ];
+    List<Widget> widgets = [];
+    if (influencer.review != null) {
+      for (var review in influencer.review!) {
+        widgets.add(InfluencerReview(review: review));
+      }
+    }
+
     for (var widget in widgets) {
       finalWidgets.add(Container(
         margin: EdgeInsets.only(bottom: margin),
@@ -464,12 +511,16 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
       ));
     }
     return Container(
-        // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-        margin: EdgeInsets.symmetric(vertical: margin),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: finalWidgets,
-        ));
+      // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: finalWidgets.isNotEmpty
+          ? Column(mainAxisSize: MainAxisSize.max, children: finalWidgets)
+          : const Text(Constants.emptyListMessage,
+              style: TextStyle(
+                  color: Constants.grayColor,
+                  fontSize: 16.0,
+                  fontStyle: FontStyle.italic)),
+    );
   }
 }
 // Widget ProfileAvatar(double verticalMargin, double parentWidth) {

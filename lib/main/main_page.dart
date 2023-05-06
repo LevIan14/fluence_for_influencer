@@ -18,11 +18,13 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List pages = [
     const DashboardPage(),
+    const ChatListPage(),
+
     InfluencerProfilePage(influencerId: FirebaseAuth.instance.currentUser!.uid),
     // const InfluencerSettingPage(),
-    const ChatListPage()
   ];
   int currentIndexPage = 0;
+  DateTime? currentBackPressTime;
 
   @override
   void initState() {
@@ -38,23 +40,40 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(child: pages[currentIndexPage]),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTap,
-        currentIndex: currentIndexPage,
-        selectedItemColor: Constants.primaryColor,
-        unselectedItemColor: Colors.grey.withOpacity(0.5),
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        elevation: 0,
-        items: const [
-          BottomNavigationBarItem(label: 'Beranda', icon: Icon(Ionicons.home)),
-          BottomNavigationBarItem(
-              label: 'Pengaturan', icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(label: 'Pesan', icon: Icon(Ionicons.chatbox)),
-        ],
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        body: Container(child: pages[currentIndexPage]),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: onTap,
+          currentIndex: currentIndexPage,
+          selectedItemColor: Constants.primaryColor,
+          unselectedItemColor: Colors.grey.withOpacity(0.5),
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(
+                label: 'Beranda', icon: Icon(Ionicons.home)),
+            BottomNavigationBarItem(
+                label: 'Pesan', icon: Icon(Ionicons.chatbox)),
+            BottomNavigationBarItem(
+                label: 'Profil', icon: Icon(Ionicons.person_circle)),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tekan kembali untuk keluar')));
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 }
