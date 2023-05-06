@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
             return;
           }
           if (state is Authenticated) {
-            nextScreenReplace(context, const MainPage(index: 0));
+            navigateAsFirstScreen(context, const MainPage(index: 0));
             return;
           }
         }),

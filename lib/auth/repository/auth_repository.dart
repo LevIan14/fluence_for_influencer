@@ -199,11 +199,11 @@ class AuthRepository {
   Future<void> registerUserWithGoogleLogin(
       String email,
       String fullname,
-      String location,
       String bankAccount,
       String bankAccountName,
       String bankAccountNumber,
       String gender,
+      String location,
       List<String> categoryList,
       String customCategory,
       String id) async {

@@ -53,11 +53,11 @@ class CheckIsUserLoggedIn extends AuthEvent {}
 class GoogleLoginRegisterRequested extends AuthEvent {
   final String email;
   final String fullname;
-  final String location;
   final String bankAccount;
   final String bankAccountName;
   final String bankAccountNumber;
   final String gender;
+  final String location;
   final List<String> categoryList;
   final String customCategory;
   final String id;
