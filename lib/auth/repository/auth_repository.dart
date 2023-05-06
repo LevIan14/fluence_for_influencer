@@ -83,8 +83,6 @@ class AuthRepository {
           password: oldPassword);
       await Constants.firebaseAuth.currentUser!.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
-      print(">>>");
-      print(e.code);
       if (e.code == 'user-not-found') {
         throw Exception('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {

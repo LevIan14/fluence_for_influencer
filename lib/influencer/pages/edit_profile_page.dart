@@ -145,9 +145,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
           i.lowestFee != null ? i.lowestFee.toString() : "";
       _highestFeeController.text =
           i.highestFee != null ? i.highestFee.toString() : "";
-      // _bankAccountController.text = i.bank;
-      // _bankAccountNameController.text = i.bank;
-      // _bankAccountNumberController.text = i.bank;
+      _bankAccountController.text = i.bankAccount;
+      _bankAccountNameController.text = i.bankAccountName;
+      _bankAccountNumberController.text = i.bankAccountNumber;
 
       if (i.customCategory.isNotEmpty) {
         CategoryType othersCategoryType = CategoryType("", i.customCategory);
@@ -192,6 +192,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         influencer.noteAgreement == _noteAgreementController.text &&
         influencer.gender == _genderController.text &&
         influencer.categoryType == _selectedCategory &&
+        influencer.bankAccount == _bankAccountController.text &&
+        influencer.bankAccountName == _bankAccountNameController.text &&
+        influencer.bankAccountNumber == _bankAccountNumberController.text &&
         influencer.lowestFee == int.parse(_lowestFeeController.text) &&
         influencer.highestFee == int.parse(_highestFeeController.text) &&
         _selectedImage == null) {
@@ -279,6 +282,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       influencer.noteAgreement = _noteAgreementController.text;
                       influencer.gender = _genderController.text;
                       influencer.categoryType = _selectedCategory;
+                      influencer.bankAccount = _bankAccountController.text;
+                      influencer.bankAccountName =
+                          _bankAccountNameController.text;
+                      influencer.bankAccountNumber =
+                          _bankAccountNumberController.text;
                       influencer.lowestFee =
                           int.parse(_lowestFeeController.text);
                       influencer.highestFee =

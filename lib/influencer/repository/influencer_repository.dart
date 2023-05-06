@@ -97,6 +97,9 @@ class InfluencerRepository {
         'highest_fee': influencer.highestFee,
         'facebook_access_token': influencer.facebookAccessToken,
         'instagram_user_id': influencer.instagramUserId,
+        'bank_account': influencer.bankAccount,
+        'bank_account_name': influencer.bankAccountName,
+        'bank_account_number': influencer.bankAccountNumber
       });
     } catch (e) {
       throw Exception(e.toString());

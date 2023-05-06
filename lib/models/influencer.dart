@@ -35,6 +35,10 @@ class Influencer {
   late List<Portfolio>? portfolio;
   late List<Review>? review;
 
+  String bankAccount;
+  String bankAccountName;
+  String bankAccountNumber;
+
   Influencer(
       this.userId,
       this.portfolio,
@@ -58,7 +62,10 @@ class Influencer {
       this.fourWeekReach,
       this.previousReach,
       this.fourWeekImpressions,
-      this.previousImpressions);
+      this.previousImpressions,
+      this.bankAccount,
+      this.bankAccountName,
+      this.bankAccountNumber);
 
   factory Influencer.fromJson(String userId, Map<String, dynamic> json) {
     return Influencer(
@@ -84,6 +91,9 @@ class Influencer {
         json['four_week_reach'],
         json['previous_reach'],
         json['four_week_impressions'],
-        json['previous_impressions']);
+        json['previous_impressions'],
+        json['bank_account'],
+        json['bank_account_name'],
+        json['bank_account_number']);
   }
 }
