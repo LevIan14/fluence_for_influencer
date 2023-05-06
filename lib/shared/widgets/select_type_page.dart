@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectTypePage extends StatefulWidget {
-  const SelectTypePage({super.key});
+  final List<CategoryType> selectedCategoryTypeList;
+
+  const SelectTypePage({Key? key, required this.selectedCategoryTypeList})
+      : super(key: key);
 
   @override
   State<SelectTypePage> createState() => _SelectTypePageState();
@@ -17,7 +20,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
   late final CategoryBloc categoryBloc;
   final CategoryRepository categoryRepository = CategoryRepository();
 
-  final List<CategoryType> _selectedCategory = [];
+  List<CategoryType> _selectedCategory = [];
 
   bool othersSelected = false;
   final TextEditingController _otherCategoryController =
@@ -28,6 +31,16 @@ class _SelectTypePageState extends State<SelectTypePage> {
     super.initState();
     categoryBloc = CategoryBloc(categoryRepository: categoryRepository);
     categoryBloc.add(GetCategoryTypeListRequested());
+    _selectedCategory = List.from(widget.selectedCategoryTypeList);
+    if (_selectedCategory.isNotEmpty) {
+      othersSelected = _selectedCategory.last.categoryTypeId.isEmpty &&
+          _selectedCategory.last.categoryTypeName.isNotEmpty;
+
+      if (othersSelected) {
+        _otherCategoryController.text = _selectedCategory.last.categoryTypeName;
+        _selectedCategory.removeLast();
+      }
+    }
   }
 
   @override
@@ -72,7 +85,20 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30))),
             onPressed: () {
-              Navigator.pop(context, _selectedCategory);
+              if (_otherCategoryController.text.isNotEmpty && othersSelected) {
+                CategoryType others =
+                    CategoryType("", _otherCategoryController.text);
+                if (_selectedCategory.last.categoryTypeId.isEmpty &&
+                    _selectedCategory.last.categoryTypeName.isNotEmpty) {
+                  _selectedCategory.last = others;
+                } else {
+                  _selectedCategory.add(others);
+                }
+                Navigator.pop(context, _selectedCategory);
+              } else if (_otherCategoryController.text.isEmpty &&
+                  !othersSelected) {
+                Navigator.pop(context, _selectedCategory);
+              }
             },
             child: const Text('Kirim'),
           ),
@@ -84,7 +110,8 @@ class _SelectTypePageState extends State<SelectTypePage> {
   Widget buildCategoryTypeChips(List<CategoryType> categories) {
     List<Widget> widgetChips = [];
     for (CategoryType category in categories) {
-      bool selected = _selectedCategory.contains(category);
+      bool selected = _selectedCategory
+          .any((element) => element.categoryTypeId == category.categoryTypeId);
       Widget chip = FilterChip(
           padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
           labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -109,13 +136,10 @@ class _SelectTypePageState extends State<SelectTypePage> {
           onSelected: (bool value) {
             setState(() {
               if (value) {
-                if (!_selectedCategory.contains(category)) {
-                  _selectedCategory.add(category);
-                }
+                _selectedCategory.add(category);
               } else {
-                if (_selectedCategory.contains(category)) {
-                  _selectedCategory.remove(category);
-                }
+                _selectedCategory.removeWhere((element) =>
+                    element.categoryTypeId == category.categoryTypeId);
               }
             });
           });
@@ -124,6 +148,7 @@ class _SelectTypePageState extends State<SelectTypePage> {
         child: chip,
       ));
     }
+
     Widget othersChip = FilterChip(
         padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
         labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -147,7 +172,10 @@ class _SelectTypePageState extends State<SelectTypePage> {
         selected: othersSelected,
         onSelected: (bool value) {
           setState(() {
-            othersSelected = !othersSelected;
+            if (!value) {
+              _otherCategoryController.clear();
+            }
+            othersSelected = value;
           });
         });
     widgetChips.add(Container(
@@ -167,12 +195,10 @@ class _SelectTypePageState extends State<SelectTypePage> {
                 child: SizedBox(
                     width: double.infinity,
                     child: AppTextfield(
-                      field: 'Other Category Type',
+                      field: 'Lainnya',
                       fieldController: _otherCategoryController,
                       validator: (value) {
-                        return value!.isEmpty
-                            ? 'Please input your other category type!'
-                            : null;
+                        return value!.isEmpty ? 'Masukkan nama kategori' : null;
                       },
                     )))
             : Container()

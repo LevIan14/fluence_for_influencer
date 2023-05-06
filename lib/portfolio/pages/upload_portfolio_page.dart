@@ -24,7 +24,8 @@ class InfluencerUploadPortfolio extends StatefulWidget {
   final XFile img;
 
   @override
-  State<InfluencerUploadPortfolio> createState() => _InfluencerUploadPortfolioState();
+  State<InfluencerUploadPortfolio> createState() =>
+      _InfluencerUploadPortfolioState();
 }
 
 class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
@@ -57,146 +58,147 @@ class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
     return AppBar(
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
-      backgroundColor: Constants.backgroundColor,
-      title: const Text('Add Portfolio', style: TextStyle(color: Constants. primaryColor)),
+      title: const Text('Add Portfolio',
+          style: TextStyle(color: Constants.primaryColor)),
     );
   }
 
   Widget buildBody(BuildContext context) {
     double margin = 10.0;
     return BlocProvider(
-      create: (context) => portfolioBloc,
-      child: BlocListener<PortfolioBloc, PortfolioState>(
-        listener: (context, state) {
-          if(state is InfluencerPortfolioUploaded) {
-            showDialog(context: context, builder: (context) => createDialog(context));
-          }
-        },
-        child: SingleChildScrollView(
+        create: (context) => portfolioBloc,
+        child: BlocListener<PortfolioBloc, PortfolioState>(
+          listener: (context, state) {
+            if (state is InfluencerPortfolioUploaded) {
+              showDialog(
+                  context: context,
+                  builder: (context) => createDialog(context));
+            }
+          },
+          child: SingleChildScrollView(
               child: Container(
-                  decoration: const BoxDecoration(color: Constants.backgroundColor),
-                  height: MediaQuery.of(context).size.height,
-                  padding: EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
-                  child: Column(
-                    children: [
-                      FutureBuilder(
-                        future: getImgBytes(),
-                        builder: (BuildContext context, AsyncSnapshot snapshot) {
-                          if(snapshot.hasData){
-                            final imgBytes = snapshot.data!;
-                            return Container(
-                              margin: EdgeInsets.symmetric(vertical: margin / 2),
-                              child: AspectRatio(
-                                aspectRatio: 3/4,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: Image.memory(imgBytes, fit: BoxFit.cover),
-                                ),
-                              )
-                            );
-                          }
-                          return const SizedBox(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                      ),
-                      // Container(
-                      //   width: MediaQuery.of(context).size.width,
-                      //   margin: EdgeInsets.symmetric(vertical: margin / 10),
-                      //   child: TextFormField(
-                      //     autofocus: true,
-                      //     minLines: 1,
-                      //     maxLines: 3,
-                      //     controller: titleController,
-                      //     decoration: const InputDecoration(
-                      //       filled: false,
-                      //       hintText: 'Insert a title...',
-                      //       contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                      //       constraints: BoxConstraints(maxWidth: 150),
-                      //       labelStyle: TextStyle(color: Colors.black),
-                      //       // Enabled and focused
-                      //       focusedBorder: OutlineInputBorder(
-                      //           borderSide: BorderSide.none),
-                      //       // Enabled and not showing error
-                      //       enabledBorder: OutlineInputBorder(
-                      //           borderSide: BorderSide.none),
-                      //       // Has error but not focus
-                      //       errorBorder: OutlineInputBorder(
-                      //           borderSide: BorderSide.none),
-                      //       // Has error and focus
-                      //       focusedErrorBorder: OutlineInputBorder(
-                      //           borderSide: BorderSide.none),
-                      //     ),
-                      //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
-                      //   ),
-                      // ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.symmetric(vertical: margin),
-                        child: TextFormField(
-                          autofocus: true,
-                          minLines: 1,
-                          maxLines: 50,
-                          controller: captionController,
-                          decoration: const InputDecoration(
-                            filled: false,
-                            hintText: 'Insert a caption...',
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                            constraints: BoxConstraints(maxWidth: 150),
-                            labelStyle: TextStyle(color: Colors.black),
-                            // Enabled and focused
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none),
-                            // Enabled and not showing error
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none),
-                            // Has error but not focus
-                            errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none),
-                            // Has error and focus
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none),
+            height: MediaQuery.of(context).size.height,
+            padding:
+                EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
+            child: Column(children: [
+              FutureBuilder(
+                future: getImgBytes(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    final imgBytes = snapshot.data!;
+                    return Container(
+                        margin: EdgeInsets.symmetric(vertical: margin / 2),
+                        child: AspectRatio(
+                          aspectRatio: 3 / 4,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.memory(imgBytes, fit: BoxFit.cover),
                           ),
-                        ),
-                      ),
-                      // Container(
-                      //   margin: EdgeInsets.symmetric(vertical: margin / 2),
-                      //   padding: EdgeInsets.symmetric(vertical: margin / 2, horizontal: margin / 2),
-                      //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-                      //   child: Text("UPLOAD", style: TextStyle(color: Colors.white)),
-                      // ),
-                      ElevatedButton(
-                        onPressed: () {
-                          portfolioBloc.add(UploadInfluencerPortfolio(influencerId, widget.img, captionController.text));
-                        },
-                        style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          )),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Constants.primaryColor),
-                        ),
-                        child: const Text('Share', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500))
-                      ),
-                    ]
+                        ));
+                  }
+                  return const SizedBox(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+              // Container(
+              //   width: MediaQuery.of(context).size.width,
+              //   margin: EdgeInsets.symmetric(vertical: margin / 10),
+              //   child: TextFormField(
+              //     autofocus: true,
+              //     minLines: 1,
+              //     maxLines: 3,
+              //     controller: titleController,
+              //     decoration: const InputDecoration(
+              //       filled: false,
+              //       hintText: 'Insert a title...',
+              //       contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+              //       constraints: BoxConstraints(maxWidth: 150),
+              //       labelStyle: TextStyle(color: Colors.black),
+              //       // Enabled and focused
+              //       focusedBorder: OutlineInputBorder(
+              //           borderSide: BorderSide.none),
+              //       // Enabled and not showing error
+              //       enabledBorder: OutlineInputBorder(
+              //           borderSide: BorderSide.none),
+              //       // Has error but not focus
+              //       errorBorder: OutlineInputBorder(
+              //           borderSide: BorderSide.none),
+              //       // Has error and focus
+              //       focusedErrorBorder: OutlineInputBorder(
+              //           borderSide: BorderSide.none),
+              //     ),
+              //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+              //   ),
+              // ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.symmetric(vertical: margin),
+                child: TextFormField(
+                  autofocus: true,
+                  minLines: 1,
+                  maxLines: 50,
+                  controller: captionController,
+                  decoration: const InputDecoration(
+                    filled: false,
+                    hintText: 'Insert a caption...',
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                    constraints: BoxConstraints(maxWidth: 150),
+                    labelStyle: TextStyle(color: Colors.black),
+                    // Enabled and focused
+                    focusedBorder:
+                        OutlineInputBorder(borderSide: BorderSide.none),
+                    // Enabled and not showing error
+                    enabledBorder:
+                        OutlineInputBorder(borderSide: BorderSide.none),
+                    // Has error but not focus
+                    errorBorder:
+                        OutlineInputBorder(borderSide: BorderSide.none),
+                    // Has error and focus
+                    focusedErrorBorder:
+                        OutlineInputBorder(borderSide: BorderSide.none),
                   ),
-                )
-            ),
-      )
-      );
-
+                ),
+              ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(vertical: margin / 2),
+              //   padding: EdgeInsets.symmetric(vertical: margin / 2, horizontal: margin / 2),
+              //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+              //   child: Text("UPLOAD", style: TextStyle(color: Colors.white)),
+              // ),
+              ElevatedButton(
+                  onPressed: () {
+                    portfolioBloc.add(UploadInfluencerPortfolio(
+                        influencerId, widget.img, captionController.text));
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    )),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Constants.primaryColor),
+                  ),
+                  child: const Text('Share',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w500))),
+            ]),
+          )),
+        ));
   }
 
-  createDialog(BuildContext context){
+  createDialog(BuildContext context) {
     Text dialogTitle = const Text("Portfolio Uploaded!");
-    Text dialogContent = const Text("New portfolio would be added to your profile.");
+    Text dialogContent =
+        const Text("New portfolio would be added to your profile.");
     TextButton okayButton = TextButton(
       child: Text("Back to Main Page"),
       onPressed: () {
         navigateAsFirstScreen(context, const MainPage(index: 2));
       },
     );
-    return showAlertDialog(context, dialogTitle, dialogContent, okayButton, null);
+    return showAlertDialog(
+        context, dialogTitle, dialogContent, okayButton, null);
   }
 }

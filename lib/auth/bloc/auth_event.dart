@@ -22,6 +22,7 @@ class RegisterRequested extends AuthEvent {
   final String gender;
   final String location;
   final List<String> categoryList;
+  final String customCategory;
 
   RegisterRequested(
       this.email,
@@ -32,7 +33,8 @@ class RegisterRequested extends AuthEvent {
       this.bankAccountNumber,
       this.gender,
       this.location,
-      this.categoryList);
+      this.categoryList,
+      this.customCategory);
 }
 
 class ChangePasswordRequested extends AuthEvent {
@@ -57,6 +59,7 @@ class GoogleLoginRegisterRequested extends AuthEvent {
   final String bankAccountNumber;
   final String gender;
   final List<String> categoryList;
+  final String customCategory;
   final String id;
 
   GoogleLoginRegisterRequested(
@@ -68,6 +71,7 @@ class GoogleLoginRegisterRequested extends AuthEvent {
       this.bankAccountNumber,
       this.gender,
       this.categoryList,
+      this.customCategory,
       this.id);
 }
 

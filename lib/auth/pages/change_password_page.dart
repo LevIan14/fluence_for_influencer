@@ -32,7 +32,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         create: (context) => authBloc,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Change Password'),
+            title: const Text('Ganti Password'),
             backgroundColor: Constants.primaryColor,
           ),
           body: BlocConsumer<AuthBloc, AuthState>(
@@ -40,8 +40,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               if (state is ChangePasswordSuccess) {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text('Change password success'),
+                  content: const Text('Berhasil mengganti password'),
                   backgroundColor: Colors.green[300],
+                ));
+              }
+              if (state is AuthError) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red[300],
                 ));
               }
             },
@@ -53,25 +59,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Old Password'),
+                      const Text('Password Lama'),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _oldPasswordController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) =>
-                            value!.isEmpty ? "Insert your email" : null,
+                        validator: (value) => value!.length < 6
+                            ? "Panjang password setidaknya 6 karakter"
+                            : null,
                         decoration: textInputDecoration,
                         keyboardType: TextInputType.emailAddress,
                         obscureText: true,
                       ),
                       const SizedBox(height: 16),
-                      const Text('New Password'),
+                      const Text('Password Baru'),
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _newPasswordController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) =>
-                            value!.isEmpty ? "Insert your email" : null,
+                        validator: (value) => value!.length < 6
+                            ? "Panjang password setidaknya 6 karakter"
+                            : null,
                         decoration: textInputDecoration,
                         keyboardType: TextInputType.emailAddress,
                         obscureText: true,
@@ -97,7 +105,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           _newPasswordController.text));
                     }
                   },
-                  child: const Text('Submit'))),
+                  child: const Text('Kirim'))),
         ));
   }
 }

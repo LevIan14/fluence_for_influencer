@@ -12,7 +12,6 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditPortfolioPage extends StatefulWidget {
-  
   EditPortfolioPage({super.key, required this.portfolio});
 
   Portfolio portfolio;
@@ -22,7 +21,6 @@ class EditPortfolioPage extends StatefulWidget {
 }
 
 class _EditPortfolioPageState extends State<EditPortfolioPage> {
-
   late final PortfolioBloc portfolioBloc;
   final PortfolioRepository portfolioRepository = PortfolioRepository();
 
@@ -35,7 +33,8 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
     super.initState();
     portfolioBloc = PortfolioBloc(portfolioRepository: portfolioRepository);
     editedPortfolio = widget.portfolio;
-    if(widget.portfolio.caption != null) _captionController.text = widget.portfolio.caption!;
+    if (widget.portfolio.caption != null)
+      _captionController.text = widget.portfolio.caption!;
   }
 
   saveChanges() {
@@ -47,23 +46,22 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if(widget.portfolio.caption == _captionController.text) return true;
-        return createWillPopDialog(context);
-      },
-      child: Scaffold(
-        appBar: buildAppBar(context),
-        body: buildBody(context),
-      )
-    );
+        onWillPop: () async {
+          if (widget.portfolio.caption == _captionController.text) return true;
+          return createWillPopDialog(context);
+        },
+        child: Scaffold(
+          appBar: buildAppBar(context),
+          body: buildBody(context),
+        ));
   }
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
-      backgroundColor: Constants.backgroundColor,
-      title: const Text('Edit Caption', style: TextStyle(color: Constants.primaryColor)),
+      title: const Text('Edit Caption',
+          style: TextStyle(color: Constants.primaryColor)),
     );
   }
 
@@ -73,75 +71,74 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
       create: (context) => portfolioBloc,
       child: BlocListener<PortfolioBloc, PortfolioState>(
         listener: (context, state) {
-          if(state is InfluencerPortfolioUpdated) {
+          if (state is InfluencerPortfolioUpdated) {
             navigateAsFirstScreen(context, const MainPage(index: 1));
           }
         },
         child: SingleChildScrollView(
-          child: Container(
-              decoration: const BoxDecoration(color: Constants.backgroundColor),
-              height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: margin / 2),
-                    child: AspectRatio(
-                      aspectRatio: 3/4,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.network(widget.portfolio.imageUrl, fit: BoxFit.cover),
-                      ),
-                    )
+            child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding:
+              EdgeInsets.symmetric(horizontal: margin * 2, vertical: margin),
+          child: Column(children: [
+            Container(
+                margin: EdgeInsets.symmetric(vertical: margin / 2),
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(widget.portfolio.imageUrl,
+                        fit: BoxFit.cover),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(vertical: margin),
-                    child: TextFormField(
-                      autofocus: true,
-                      minLines: 1,
-                      maxLines: 50,
-                      controller: _captionController,
-                      decoration: const InputDecoration(
-                        filled: false,
-                        hintText: 'Insert a caption...',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                        constraints: BoxConstraints(maxWidth: 150),
-                        labelStyle: TextStyle(color: Colors.black),
-                        // Enabled and focused
-                        focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none),
-                        // Enabled and not showing error
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none),
-                        // Has error but not focus
-                        errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none),
-                        // Has error and focus
-                        focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      saveChanges();
-                      portfolioBloc.add(EditInfluencerPortfolio(influencerId, editedPortfolio));
-                    },
-                    style: ButtonStyle(
-                      shape:
-                          MaterialStateProperty.all<OutlinedBorder>(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      )),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Constants.primaryColor),
-                    ),
-                    child: const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500))
-                  ),
-                ]
+                )),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.symmetric(vertical: margin),
+              child: TextFormField(
+                autofocus: true,
+                minLines: 1,
+                maxLines: 50,
+                controller: _captionController,
+                decoration: const InputDecoration(
+                  filled: false,
+                  hintText: 'Insert a caption...',
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+                  constraints: BoxConstraints(maxWidth: 150),
+                  labelStyle: TextStyle(color: Colors.black),
+                  // Enabled and focused
+                  focusedBorder:
+                      OutlineInputBorder(borderSide: BorderSide.none),
+                  // Enabled and not showing error
+                  enabledBorder:
+                      OutlineInputBorder(borderSide: BorderSide.none),
+                  // Has error but not focus
+                  errorBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                  // Has error and focus
+                  focusedErrorBorder:
+                      OutlineInputBorder(borderSide: BorderSide.none),
+                ),
               ),
-            )
-        ),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  saveChanges();
+                  portfolioBloc.add(
+                      EditInfluencerPortfolio(influencerId, editedPortfolio));
+                },
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                      RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Constants.primaryColor),
+                ),
+                child: const Text('Save',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w500))),
+          ]),
+        )),
       ),
     );
   }
@@ -169,5 +166,4 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
     if (!resp) return false;
     return true;
   }
-
 }

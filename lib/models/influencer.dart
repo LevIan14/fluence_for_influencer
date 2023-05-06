@@ -31,6 +31,7 @@ class Influencer {
   late int? previousImpressions;
 
   late List<dynamic> categoryType;
+  late String customCategory;
   late List<Portfolio>? portfolio;
   late List<Review>? review;
 
@@ -38,6 +39,7 @@ class Influencer {
       this.userId,
       this.portfolio,
       this.categoryType,
+      this.customCategory,
       this.review,
       this.fullname,
       this.gender,
@@ -63,6 +65,7 @@ class Influencer {
         userId,
         json['portfolio'],
         json['category_type_id'],
+        json['custom_category'],
         json['reviews'],
         json['fullname'],
         json['gender'],

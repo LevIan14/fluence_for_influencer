@@ -1,5 +1,6 @@
 import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
 import 'package:fluence_for_influencer/auth/pages/login_page.dart';
+import 'package:fluence_for_influencer/auth/pages/terms_and_condition_page.dart';
 import 'package:fluence_for_influencer/auth/pages/verify_email_page.dart';
 import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
@@ -46,7 +47,7 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   Position? _currentPosition;
 
   List<CategoryType> selectedCategoryType = List.empty();
-  bool checkedTermsAndService = false;
+  CategoryType othersCategoryType = CategoryType("", "");
 
   @override
   void dispose() {
@@ -235,12 +236,25 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                                       color: Constants.primaryColor,
                                       size: 16),
                                   onTap: () async {
-                                    dynamic selected = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SelectTypePage()));
+                                    List<CategoryType> selected =
+                                        await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SelectTypePage(
+                                                      selectedCategoryTypeList:
+                                                          selectedCategoryType,
+                                                    )));
                                     setState(() {
+                                      if (selected.last.categoryTypeName
+                                              .isNotEmpty &&
+                                          selected
+                                              .last.categoryTypeId.isEmpty) {
+                                        othersCategoryType = selected.last;
+                                      } else {
+                                        othersCategoryType =
+                                            CategoryType("", "");
+                                      }
                                       selectedCategoryType = selected;
                                     });
                                   },
@@ -256,8 +270,20 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const SelectTypePage()));
+                                                      SelectTypePage(
+                                                        selectedCategoryTypeList:
+                                                            selectedCategoryType,
+                                                      )));
                                       setState(() {
+                                        if (selected.last.categoryTypeName
+                                                .isNotEmpty &&
+                                            selected
+                                                .last.categoryTypeId.isEmpty) {
+                                          othersCategoryType = selected.last;
+                                        } else {
+                                          othersCategoryType =
+                                              CategoryType("", "");
+                                        }
                                         selectedCategoryType = selected;
                                       });
                                     },
@@ -273,22 +299,26 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                                   )
                                 : buildCategoryTypeChips(selectedCategoryType),
                             const SizedBox(height: 16),
-                            // CheckboxListTile(
-                            //   title: Text.rich(
-                            //       TextSpan(text: 'Saya menerima ', children: [
-                            //     TextSpan(
-                            //         text: 'Terms and Service',
-                            //         recognizer: TapGestureRecognizer()
-                            //           ..onTap = () {})
-                            //   ])),
-                            //   value: checkedTermsAndService,
-                            //   onChanged: (value) {
-                            //     setState(() {
-                            //       checkedTermsAndService = value ?? false;
-                            //     });
-                            //   },
-                            //   controlAffinity: ListTileControlAffinity.leading,
-                            // ),
+                            Text.rich(
+                              TextSpan(
+                                  text:
+                                      'Dengan melanjutkan, Anda setuju dengan ',
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: 'syarat dan ketentuan layanan',
+                                        style: const TextStyle(
+                                          color: Constants.maroonColor,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            nextScreen(context,
+                                                const TermsAndConditionPage());
+                                          }),
+                                  ]),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
@@ -416,7 +446,6 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                   Navigator.pop(context);
                 }));
           }
-          ;
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Column(
@@ -430,8 +459,10 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
   void _createAccountWithEmailAndPassword(BuildContext context) {
     List<String> categoryTypeIdList = [];
 
-    for (var element in selectedCategoryType) {
-      categoryTypeIdList.add(element.categoryTypeId);
+    for (CategoryType element in selectedCategoryType) {
+      if (element.categoryTypeId.isNotEmpty) {
+        categoryTypeIdList.add(element.categoryTypeId);
+      }
     }
 
     if (widget.password.isEmpty) {
@@ -444,6 +475,7 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
           _genderController.text,
           _locationController.text,
           categoryTypeIdList,
+          othersCategoryType.categoryTypeName,
           widget.id));
     } else {
       BlocProvider.of<AuthBloc>(context).add(RegisterRequested(
@@ -455,7 +487,8 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
           _bankAccountNumberController.text,
           _genderController.text,
           _locationController.text,
-          categoryTypeIdList));
+          categoryTypeIdList,
+          othersCategoryType.categoryTypeName));
     }
   }
 

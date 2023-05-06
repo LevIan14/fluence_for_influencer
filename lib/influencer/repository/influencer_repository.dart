@@ -73,15 +73,22 @@ class InfluencerRepository {
     // }
     try {
       List<String> categoryTypeId = [];
+      String customCategory = "";
       for (CategoryType category in influencer.categoryType) {
-        categoryTypeId.add(category.categoryTypeId);
+        if (category.categoryTypeId.isNotEmpty) {
+          categoryTypeId.add(category.categoryTypeId);
+        } else {
+          customCategory = category.categoryTypeName;
+        }
       }
+
       await Constants.firebaseFirestore
           .collection('influencers')
           .doc(influencer.userId)
           .update({
         'about': influencer.about,
         'category_type_id': categoryTypeId,
+        'custom_category': customCategory,
         'fullname': influencer.fullname,
         'gender': influencer.gender,
         'location': influencer.location,

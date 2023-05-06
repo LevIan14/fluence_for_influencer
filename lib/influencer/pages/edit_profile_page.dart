@@ -14,6 +14,7 @@ import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
+import 'package:fluence_for_influencer/shared/widgets/select_type_page.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
         : null;
   }
 
+  final TextEditingController _bankAccountController = TextEditingController();
+  String? _bankAccountValidator(String? value) {
+    if (value!.isEmpty) return "Pilih akun bank";
+    return null;
+  }
+
+  final TextEditingController _bankAccountNameController =
+      TextEditingController();
+  String? _bankAccountNameValidator(String? value) {
+    if (value!.isEmpty) return "Masukkan nama pemilik rekening";
+    return null;
+  }
+
+  final TextEditingController _bankAccountNumberController =
+      TextEditingController();
+  String? _bankAccountNumberValidator(String? value) {
+    if (value!.isEmpty) return "Masukkan nomor rekening";
+    return null;
+  }
+
   final TextEditingController _aboutController = TextEditingController();
   final TextEditingController _noteAgreementController =
       TextEditingController();
@@ -86,6 +107,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _currentAddress;
   Position? _currentPosition;
   List<CategoryType> _selectedCategory = [];
+
   XFile? _selectedImage;
   late ImageProvider<Object> _selectedImageWidget;
   bool verified = false;
@@ -123,6 +145,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           i.lowestFee != null ? i.lowestFee.toString() : "";
       _highestFeeController.text =
           i.highestFee != null ? i.highestFee.toString() : "";
+      // _bankAccountController.text = i.bank;
+      // _bankAccountNameController.text = i.bank;
+      // _bankAccountNumberController.text = i.bank;
+
+      if (i.customCategory.isNotEmpty) {
+        CategoryType othersCategoryType = CategoryType("", i.customCategory);
+        _selectedCategory.add(othersCategoryType);
+      }
     });
   }
 
@@ -315,7 +345,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 )),
           ),
           const SizedBox(height: 16),
-          buildCategoryTypeChips(categories),
+          buildCategoryTypeChips(_selectedCategory),
           DirectingTextfield(
               field: "Tentang Anda",
               fieldController: _aboutController,
@@ -383,6 +413,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     validator: _highestFeeValidator,
                   ),
                 ),
+                DirectingTextfield(
+                    field: "Akun Bank",
+                    fieldController: _bankAccountController,
+                    onTap: () => showBankNameModalBottom()),
+                AppTextfield(
+                    field: "Nama Pemilik Rekening",
+                    fieldController: _bankAccountNameController,
+                    validator: _bankAccountNameValidator),
+                AppTextfield(
+                    field: "Nomor Rekening",
+                    fieldController: _bankAccountNumberController,
+                    validator: _bankAccountNumberValidator),
               ],
             ),
           ),
@@ -390,6 +432,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ]),
       ),
     ));
+  }
+
+  void showBankNameModalBottom() {
+    List<Widget> bankNameRadios = [];
+    List<String> bankList = [
+      'BCA',
+      'BRI',
+      'BNI',
+      'BTN',
+      'Bank Permata',
+      'Bank Jakarta'
+    ];
+    for (String bank in bankList) {
+      bankNameRadios.add(RadioListTile(
+          title: Text(bank,
+              style: const TextStyle(color: Colors.black87, fontSize: 18)),
+          value: bank,
+          groupValue: _bankAccountController.text,
+          onChanged: (value) {
+            _bankAccountController.text = value.toString();
+            Navigator.pop(context);
+          }));
+    }
+
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child:
+              Column(mainAxisSize: MainAxisSize.min, children: bankNameRadios),
+        );
+      },
+    );
   }
 
   Widget buildProfileAvatar(Influencer influencer) {
@@ -490,41 +570,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget buildCategoryTypeChips(List<CategoryType> categories) {
     List<Widget> widgetChips = [];
     for (CategoryType category in categories) {
-      bool selected = _selectedCategory
-          .any((element) => element.categoryTypeId == category.categoryTypeId);
-      Widget chip = FilterChip(
-          padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
-          labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-          selectedColor: Constants.primaryColor.withOpacity(0.6),
-          backgroundColor: Constants.secondaryColor.withOpacity(0.35),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
+      Widget chip = Chip(
+        padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 13.0),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+        backgroundColor: Constants.primaryColor.withOpacity(0.6),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
             side: BorderSide(
-                width: 0.5,
-                color: selected
-                    ? Constants.grayColor.withOpacity(0.5)
-                    : Constants.secondaryColor),
-          ),
-          elevation: selected ? 0.5 : 0,
-          checkmarkColor: selected ? Colors.white : null,
-          label: Text(category.categoryTypeName,
-              style: TextStyle(
-                  fontSize: 14.0,
-                  color: selected ? Colors.white : Colors.grey.shade700,
-                  fontWeight: FontWeight.w400)),
-          selected: selected,
-          onSelected: (bool value) {
-            setState(() {
-              if (value) {
-                _selectedCategory.add(category);
-              } else {
-                _selectedCategory.removeWhere(
-                  (element) =>
-                      element.categoryTypeId == category.categoryTypeId,
-                );
-              }
-            });
-          });
+                width: 0.5, color: Constants.grayColor.withOpacity(0.5))),
+        elevation: 0.5,
+        label: Text(category.categoryTypeName,
+            style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.white,
+                fontWeight: FontWeight.w400)),
+      );
       widgetChips.add(Container(
         margin: const EdgeInsets.only(bottom: 5.0),
         child: chip,
@@ -534,10 +594,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: const Text("Tipe Kategori",
-                style: TextStyle(color: Constants.primaryColor, fontSize: 15),
-                textAlign: TextAlign.left)),
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Tipe Kategori",
+                      style: TextStyle(
+                          color: Constants.primaryColor, fontSize: 15),
+                      textAlign: TextAlign.left),
+                  GestureDetector(
+                    child: const Icon(Icons.arrow_forward_ios_outlined,
+                        color: Constants.primaryColor, size: 16),
+                    onTap: () async {
+                      List<CategoryType> selected = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SelectTypePage(
+                                    selectedCategoryTypeList: _selectedCategory,
+                                  )));
+                      setState(() {
+                        _selectedCategory = selected;
+                      });
+                    },
+                  ),
+                ])),
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 10.0,
@@ -611,7 +691,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
@@ -673,7 +753,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Navigator.pop(context);
                 }));
           }
-          ;
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Column(
@@ -742,18 +821,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<bool> createWillPopDialog(context) async {
-    Text dialogTitle = const Text("Discard changes?");
-    Text dialogContent =
-        const Text("If you go back now, you will lose your changes.");
+    Text dialogTitle = const Text("Buang perubahan?");
+    Text dialogContent = const Text(
+        "Anda akan kehilangan perubahan data jika meninggalkan halaman.");
     TextButton discardButton = TextButton(
-      child: Text("Discard changes"),
+      child: const Text("Buang"),
       onPressed: () {
         Navigator.pop(context, true);
         Navigator.pop(context);
       },
     );
     TextButton cancelButton = TextButton(
-      child: Text("Continue editing"),
+      child: const Text("Lanjut Ubah"),
       onPressed: () {
         Navigator.pop(context, false);
       },

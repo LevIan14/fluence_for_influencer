@@ -6,19 +6,16 @@ import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 
 class FullTextfieldPage extends StatelessWidget {
-  const FullTextfieldPage({super.key, required this.field, required this.fieldController});
+  const FullTextfieldPage(
+      {super.key, required this.field, required this.fieldController});
 
   final String field;
   final TextEditingController fieldController;
-  // final 
+  // final
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: buildBody(context)
-    );
+    return Scaffold(appBar: buildAppBar(context), body: buildBody(context));
   }
 
   AppBar buildAppBar(BuildContext context) {
@@ -26,18 +23,21 @@ class FullTextfieldPage extends StatelessWidget {
       title: Text(field, style: const TextStyle(color: Constants.primaryColor)),
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
-      backgroundColor: Constants.backgroundColor,
+      backgroundColor: Colors.white,
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 15.0),
           alignment: Alignment.center,
           child: InkWell(
-            onTap:() {
-              // save
-              Navigator.pop(context, fieldController.text);
-            },
-            child: const Text("Save", style: TextStyle(fontSize: 17.0, color: Constants.primaryColor, fontWeight: FontWeight.w500))
-          ),
+              onTap: () {
+                // save
+                Navigator.pop(context, fieldController.text);
+              },
+              child: const Text("Save",
+                  style: TextStyle(
+                      fontSize: 17.0,
+                      color: Constants.primaryColor,
+                      fontWeight: FontWeight.w500))),
         ),
       ],
     );
@@ -47,14 +47,12 @@ class FullTextfieldPage extends StatelessWidget {
     double margin = 10.0;
     return SingleChildScrollView(
       child: Container(
-        decoration: const BoxDecoration(color: Constants.backgroundColor),
         height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.symmetric(horizontal: margin * 2),
         width: MediaQuery.of(context).size.width,
         child: TextFormField(
           autofocus: true,
-          minLines: 1,
-          maxLines: 100,
+          maxLines: null,
           controller: fieldController,
           decoration: const InputDecoration(
             filled: false,
@@ -63,21 +61,16 @@ class FullTextfieldPage extends StatelessWidget {
             constraints: BoxConstraints(maxWidth: 150),
             labelStyle: TextStyle(color: Colors.black),
             // Enabled and focused
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
             // Enabled and not showing error
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
             // Has error but not focus
-            errorBorder: OutlineInputBorder(
-                borderSide: BorderSide.none),
+            errorBorder: OutlineInputBorder(borderSide: BorderSide.none),
             // Has error and focus
-            focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide.none),
+            focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide.none),
           ),
         ),
       ),
     );
   }
-
 }

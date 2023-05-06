@@ -93,7 +93,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             event.bankAccountNumber,
             event.gender,
             event.location,
-            event.categoryList);
+            event.categoryList,
+            event.customCategory);
         await authRepository.sendEmailVerification();
         emit(NeedVerify());
       } catch (e) {
@@ -114,6 +115,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             event.gender,
             event.location,
             event.categoryList,
+            event.customCategory,
             event.id);
         emit(Authenticated());
       } catch (e) {

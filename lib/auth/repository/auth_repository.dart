@@ -81,13 +81,16 @@ class AuthRepository {
       await Constants.firebaseAuth.signInWithEmailAndPassword(
           email: Constants.firebaseAuth.currentUser!.email!,
           password: oldPassword);
-
       await Constants.firebaseAuth.currentUser!.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
+      print(">>>");
+      print(e.code);
       if (e.code == 'user-not-found') {
         throw Exception('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {
         throw Exception('Password salah');
+      } else if (e.code == 'too-many-request') {
+        throw Exception(Constants.genericErrorException);
       }
     } catch (e) {
       throw Exception(e.toString());
@@ -119,7 +122,8 @@ class AuthRepository {
       String bankAccountNumber,
       String gender,
       String location,
-      List<String> categoryList) async {
+      List<String> categoryList,
+      String customCategory) async {
     try {
       UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -129,7 +133,7 @@ class AuthRepository {
             "https://firebasestorage.googleapis.com/v0/b/fluence-1673609236730.appspot.com/o/dummy-profile-pic.png?alt=media&token=23db1237-3e40-4643-8af0-e63e1583e8ab",
         "fullname": fullname,
         "category_type_id": categoryList,
-        "custom_category": "",
+        "custom_category": customCategory,
         "note_agreement": "",
         "about": "",
         "email": email,
@@ -203,6 +207,7 @@ class AuthRepository {
       String bankAccountNumber,
       String gender,
       List<String> categoryList,
+      String customCategory,
       String id) async {
     try {
       final dataUmkm = {
@@ -211,7 +216,7 @@ class AuthRepository {
         "fullname": fullname,
         "location": location,
         "category_type_id": categoryList,
-        "custom_category": "",
+        "custom_category": customCategory,
         "note_agreement": "",
         "about": "",
         "email": email,

@@ -144,8 +144,6 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
           return Scaffold(
               appBar: buildAppBar(context),
               body: Container(
-                decoration:
-                    const BoxDecoration(color: Constants.backgroundColor),
                 alignment: Alignment.center,
                 height: MediaQuery.of(context).size.height,
                 child: const CircularProgressIndicator(),
@@ -156,15 +154,14 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   }
 
   AppBar buildAppBar(context) {
-    final Size size = MediaQuery.of(context).size;
     return AppBar(
       iconTheme: const IconThemeData(color: Constants.primaryColor),
       elevation: 0,
-      backgroundColor: Constants.backgroundColor,
+      backgroundColor: Colors.white,
       actions: [
         IconButton(
           icon: const Icon(Ionicons.settings_outline, size: 27.0),
-          tooltip: "Settings",
+          tooltip: "Pengaturan",
           onPressed: () {
             showModalBottomSheet<dynamic>(
                 shape: const RoundedRectangleBorder(
@@ -229,7 +226,6 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
         constraints:
             BoxConstraints(minHeight: MediaQuery.of(context).size.height),
         padding: EdgeInsets.symmetric(horizontal: margin * 2),
-        decoration: const BoxDecoration(color: Constants.backgroundColor),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
