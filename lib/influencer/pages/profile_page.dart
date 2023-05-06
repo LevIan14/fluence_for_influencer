@@ -309,25 +309,20 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       followersCountWidget,
-                      Container(
-                        // decoration: BoxDecoration(color: Constants.primaryColor),
-                        // margin: EdgeInsets.only(left: margin / 2),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Ionicons.location_outline,
-                                  color: Color.fromARGB(129, 162, 0, 32),
-                                  size: 18.0),
-                              Container(
-                                  margin: EdgeInsets.only(left: margin / 3),
-                                  child: Text(influencer.location,
-                                      style: const TextStyle(
-                                          color:
-                                              Color.fromARGB(129, 162, 0, 32),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18.0)))
-                            ]),
-                      )
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Ionicons.location_outline,
+                                color: Color.fromARGB(129, 162, 0, 32),
+                                size: 18.0),
+                            Container(
+                                margin: EdgeInsets.only(left: margin / 3),
+                                child: Text(influencer.location,
+                                    style: const TextStyle(
+                                        color: Color.fromARGB(129, 162, 0, 32),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18.0)))
+                          ])
                     ]),
               )
             ],
@@ -340,7 +335,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         ProfileMenuButton(
-            title: 'Description',
+            title: 'Deskripsi',
             tab: 0,
             active: currentTab == 0,
             onTapMenu: onChangeTab),
@@ -350,7 +345,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
             active: currentTab == 1,
             onTapMenu: onChangeTab),
         ProfileMenuButton(
-            title: 'Reviews',
+            title: 'Ulasan',
             tab: 2,
             active: currentTab == 2,
             onTapMenu: onChangeTab),
@@ -360,7 +355,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
 
   Widget buildProfilePageContent() {
     Widget emptyContent = Container(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       alignment: Alignment.center,
       child: const Text(Constants.emptyListMessage,
           style: TextStyle(
@@ -401,7 +396,6 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
       // constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
       margin: EdgeInsets.symmetric(vertical: margin),
       child: Column(
-        // mainAxisSize: MainAxisSize.max,
         children: finalWidgets,
       ),
     );

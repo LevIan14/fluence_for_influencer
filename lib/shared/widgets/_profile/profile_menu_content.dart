@@ -28,7 +28,7 @@ class _ProfileMenuContentState extends State<ProfileMenuContent> {
             vertical: margin * 2.5, horizontal: margin * 2.5),
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
-          // crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               margin: EdgeInsets.only(bottom: margin),
@@ -38,12 +38,10 @@ class _ProfileMenuContentState extends State<ProfileMenuContent> {
                       fontWeight: FontWeight.w600,
                       fontSize: 22.0)),
             ),
-            Container(
-              child: Text(widget.content,
-                  textAlign: TextAlign.justify,
-                  style: const TextStyle(
-                      color: Constants.primaryColor, fontSize: 18.0)),
-            )
+            Text(widget.content,
+                textAlign: TextAlign.justify,
+                style: const TextStyle(
+                    color: Constants.primaryColor, fontSize: 18.0))
           ],
         ));
   }
