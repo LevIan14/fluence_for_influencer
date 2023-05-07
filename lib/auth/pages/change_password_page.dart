@@ -15,10 +15,16 @@ class ChangePasswordPage extends StatefulWidget {
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
   late final AuthBloc authBloc;
   final AuthRepository authRepository = AuthRepository();
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmNewPasswordController =
+      TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
+  bool _oldPasswordInvisible = true;
+  bool _newPasswordInvisible = true;
+  bool _confirmNewPasswordInvisible = true;
 
   @override
   void initState() {
@@ -64,12 +70,22 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       TextFormField(
                         controller: _oldPasswordController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => value!.length < 6
-                            ? "Panjang password setidaknya 6 karakter"
-                            : null,
-                        decoration: textInputDecoration,
+                        decoration: textInputDecoration.copyWith(
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _oldPasswordInvisible =
+                                        !_oldPasswordInvisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  _oldPasswordInvisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Constants.primaryColor,
+                                ))),
+                        obscureText: _oldPasswordInvisible,
                         keyboardType: TextInputType.emailAddress,
-                        obscureText: true,
                       ),
                       const SizedBox(height: 16),
                       const Text('Password Baru'),
@@ -77,12 +93,64 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       TextFormField(
                         controller: _newPasswordController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => value!.length < 6
-                            ? "Panjang password setidaknya 6 karakter"
-                            : null,
-                        decoration: textInputDecoration,
+                        validator: (value) {
+                          if (value!.length < 6) {
+                            return "Panjang password setidaknya 6 karakter";
+                          } else if (value !=
+                              _confirmNewPasswordController.text) {
+                            return "Password tidak sama";
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration: textInputDecoration.copyWith(
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _newPasswordInvisible =
+                                        !_newPasswordInvisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  _newPasswordInvisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Constants.primaryColor,
+                                ))),
+                        obscureText: _newPasswordInvisible,
                         keyboardType: TextInputType.emailAddress,
-                        obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Konfirmasi Password Baru'),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _newPasswordController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) {
+                          if (value!.length < 6) {
+                            return "Panjang password setidaknya 6 karakter";
+                          } else if (value != _newPasswordController.text) {
+                            return "Password tidak sama";
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration: textInputDecoration.copyWith(
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _confirmNewPasswordInvisible =
+                                        !_confirmNewPasswordInvisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  _confirmNewPasswordInvisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Constants.primaryColor,
+                                ))),
+                        obscureText: _confirmNewPasswordInvisible,
+                        keyboardType: TextInputType.emailAddress,
                       )
                     ],
                   ),

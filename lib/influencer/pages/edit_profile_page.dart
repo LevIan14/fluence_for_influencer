@@ -776,9 +776,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location services are disabled. Please enable the services')));
+      SnackBarWidget.failed(
+          context, 'Akses lokasi dinonaktifkan. Harap aktifkan akses');
       return false;
     }
 

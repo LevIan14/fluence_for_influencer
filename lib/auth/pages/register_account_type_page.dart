@@ -6,6 +6,7 @@ import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/select_type_page.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
@@ -530,9 +531,8 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location services are disabled. Please enable the services')));
+      SnackBarWidget.failed(
+          context, 'Akses lokasi dinonaktifkan. Harap aktifkan akses');
       return false;
     }
 
@@ -540,16 +540,14 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied')));
+        SnackBarWidget.failed(context, 'Akses lokasi ditolak');
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location permissions are permanently denied, we cannot request permissions.')));
+      SnackBarWidget.failed(context,
+          'Akses lokasi dimatikan permanen! Tidak mendapatkan akses lokasi');
       return false;
     }
     return true;

@@ -23,6 +23,8 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _passwordInvisible = true;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -123,11 +125,23 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
-                                  obscureText: true,
+                                  obscureText: _passwordInvisible,
                                   decoration: textInputDecoration.copyWith(
                                       prefixIcon: Icon(Icons.lock,
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                              Theme.of(context).primaryColor),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _passwordInvisible =
+                                                !_passwordInvisible;
+                                          });
+                                        },
+                                        icon: Icon(_passwordInvisible
+                                            ? Icons.visibility_off
+                                            : Icons.visibility),
+                                        color: Constants.primaryColor,
+                                      )),
                                   controller: _passwordController,
                                   keyboardType: TextInputType.text,
                                   autovalidateMode:

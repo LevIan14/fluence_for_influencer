@@ -183,7 +183,8 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<MessageBloc, MessageState>(
               listener: (context, state) {
                 if (state is NewChatAndMessageCreated) {
-                  navigateAsFirstScreen(context, const MainPage(index: 1));
+                  Navigator.pop(context);
+                  // navigateAsFirstScreen(context, const MainPage(index: 1));
                 }
               },
             )
@@ -362,6 +363,24 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                             )),
                       )
                     ],
+                  ),
+                );
+              } else if (state.negotiationDetails.negotiationStatus ==
+                  'ACCEPTED') {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30))),
+                        onPressed: () {
+                          navigateAsFirstScreen(
+                              context, const MainPage(index: 0));
+                        },
+                        child: const Text("Ke Halaman Persetujuan")),
                   ),
                 );
               } else {
