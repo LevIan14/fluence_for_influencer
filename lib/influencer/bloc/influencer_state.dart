@@ -9,6 +9,8 @@ class InfluencerInitial extends InfluencerState {}
 
 class InfluencerLoading extends InfluencerState {}
 
+class UpdateInfluencerProfileSuccess extends InfluencerState {}
+
 class InfluencerLoaded extends InfluencerState {
   final Influencer influencer;
 

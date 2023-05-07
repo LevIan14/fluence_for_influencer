@@ -14,6 +14,7 @@ import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/umkm/bloc/umkm_bloc.dart';
 import 'package:fluence_for_influencer/umkm/model/umkm.dart';
@@ -121,6 +122,9 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                   umkmProfile = state.umkm;
                   influencerBloc.add(GetInfluencerDetail(widget.influencerId));
                 }
+                if (state is UmkmError) {
+                  SnackBarWidget.failed(context, state.error);
+                }
               },
             ),
             BlocListener<InfluencerBloc, InfluencerState>(
@@ -134,6 +138,8 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
             BlocListener<AgreementBloc, AgreementState>(
               listener: (context, state) {
                 if (state is CreateNewAgreementSuccess) {
+                  SnackBarWidget.success(
+                      context, 'Berhasil menerima negosiasi');
                   messageBloc.add(SendNewNegotiation(
                       widget.chatId!,
                       Constants.firebaseAuth.currentUser!.uid,
@@ -156,28 +162,28 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                     "influencer_id": widget.influencerId,
                     "umkm_id": widget.umkmId,
                     "negotiation_id": widget.negotiationId,
-                    "agreement_status":
-                        influencerProfile.noteAgreement!.isNotEmpty ||
-                                umkmProfile.noteAgreement!.isNotEmpty
-                            ? "ON PROCESS"
-                            : "PENDING",
+                    "agreement_status": "PENDING",
                     "created_at": Timestamp.now()
                   };
                   agreementBloc.add(CreateNewAgreement(newAgreement));
-                } else if (state is RejectNegotiationSuccess) {
+                }
+                if (state is RejectNegotiationSuccess) {
+                  SnackBarWidget.success(context, 'Berhasil menolak negosiasi');
                   messageBloc.add(SendNewNegotiation(
                       widget.chatId!,
                       Constants.firebaseAuth.currentUser!.uid,
                       widget.negotiationId,
                       'Negosiasi ditolak'));
-                  // navigateAsFirstScreen(context, const MainPage());
+                }
+                if (state is NegotiationError) {
+                  SnackBarWidget.failed(context, state.error);
                 }
               },
             ),
             BlocListener<MessageBloc, MessageState>(
               listener: (context, state) {
                 if (state is NewChatAndMessageCreated) {
-                  navigateAsFirstScreen(context, const MainPage(index: 2));
+                  navigateAsFirstScreen(context, const MainPage(index: 1));
                 }
               },
             )

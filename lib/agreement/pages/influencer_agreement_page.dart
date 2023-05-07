@@ -3,6 +3,7 @@ import 'package:fluence_for_influencer/agreement/repository/agreement_repository
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,11 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
           child: BlocConsumer<AgreementBloc, AgreementState>(
             listener: (context, state) {
               if (state is AgreementProcessSuccess) {
+                SnackBarWidget.success(context, 'Berhasil melakukan aktivitas');
                 navigateAsFirstScreen(context, const MainPage(index: 0));
+              }
+              if (state is AgreementError) {
+                SnackBarWidget.failed(context, state.error);
               }
             },
             builder: (context, state) {

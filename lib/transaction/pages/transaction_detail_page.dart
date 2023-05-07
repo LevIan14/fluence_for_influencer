@@ -329,42 +329,91 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
               builder: (context, state) {
                 if (state is TransactionLoaded) {
                   return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: state.transaction.transactionStatus == "DONE"
-                          ? Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                state.transaction.reviewId.isEmpty
-                                    ? const Padding(padding: EdgeInsets.zero)
-                                    : SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Constants.primaryColor,
-                                                elevation: 0,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30))),
-                                            onPressed: () {
-                                              nextScreen(
-                                                  context,
-                                                  ReviewPage(
-                                                      influencerId: state
-                                                          .transaction
-                                                          .influencerId,
-                                                      transactionId:
-                                                          widget.transactionId,
-                                                      reviewId: state
-                                                          .transaction
-                                                          .reviewId));
-                                            },
-                                            child: const Text("Lihat Review"))),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.all(16),
+                      child: state.transaction.transactionStatus == 'PENDING'
+                          ? const Padding(
+                              padding: EdgeInsets.zero,
+                            )
+                          : state.transaction.transactionStatus == "DONE"
+                              ? Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    state.transaction.reviewId.isEmpty
+                                        ? const Padding(
+                                            padding: EdgeInsets.zero)
+                                        : SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Constants.primaryColor,
+                                                    elevation: 0,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30))),
+                                                onPressed: () {
+                                                  nextScreen(
+                                                      context,
+                                                      ReviewPage(
+                                                          influencerId: state
+                                                              .transaction
+                                                              .influencerId,
+                                                          transactionId: widget
+                                                              .transactionId,
+                                                          reviewId: state
+                                                              .transaction
+                                                              .reviewId));
+                                                },
+                                                child: const Text(
+                                                    "Lihat Review"))),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30))),
+                                          onPressed: () {
+                                            nextScreen(
+                                                context,
+                                                TransactionProgressPage(
+                                                  transactionId:
+                                                      widget.transactionId,
+                                                ));
+                                          },
+                                          child: const Text(
+                                              "Lihat Status Pengerjaan")),
+                                    ),
+                                  ],
+                                )
+                              : state.transaction.transactionStatus ==
+                                      'CANCELED'
+                                  ? ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Constants.primaryColor,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30))),
+                                      onPressed: () {
+                                        nextScreen(
+                                            context,
+                                            RejectPage(
+                                                reason: state
+                                                    .transaction.cancelReason));
+                                      },
+                                      child:
+                                          const Text('Lihat Alasan Pembatalan'))
+                                  : ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Constants.primaryColor,
                                           elevation: 0,
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -373,47 +422,11 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                         nextScreen(
                                             context,
                                             TransactionProgressPage(
-                                              transactionId:
-                                                  widget.transactionId,
-                                            ));
+                                                transactionId:
+                                                    state.transaction.id));
                                       },
                                       child: const Text(
-                                          "Lihat Status Pengerjaan")),
-                                ),
-                              ],
-                            )
-                          : state.transaction.transactionStatus == 'CANCELED'
-                              ? ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Constants.primaryColor,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30))),
-                                  onPressed: () {
-                                    nextScreen(
-                                        context,
-                                        RejectPage(
-                                            reason: state
-                                                .transaction.cancelReason));
-                                  },
-                                  child: const Text('Lihat Alasan Batal'))
-                              : ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Constants.primaryColor,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30))),
-                                  onPressed: () {
-                                    nextScreen(
-                                        context,
-                                        TransactionProgressPage(
-                                            transactionId:
-                                                state.transaction.id));
-                                  },
-                                  child:
-                                      const Text("Lihat Status Pengerjaan")));
+                                          "Lihat Status Pengerjaan")));
                 }
                 return Container();
               },

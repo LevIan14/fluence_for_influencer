@@ -12,6 +12,7 @@ import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                         Uuid uuid = const Uuid();
 
                         final newTransaction = {
-                          "order_id": uuid,
+                          "order_id": uuid.v4(),
                           "negotiation_id": state.agreement.negotiationId,
                           "influencer_id": state.agreement.influencerId,
                           "umkm_id": state.agreement.umkmId,
@@ -126,6 +127,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                         transactionBloc
                             .add(CreateNewTransaction(newTransaction));
                       } else {
+                        SnackBarWidget.success(
+                            context, 'Berhasil melakukan aktivitas');
                         navigateAsFirstScreen(
                             context, const MainPage(index: 0));
                       }
@@ -137,12 +140,20 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                       _umkmAgreementController.text =
                           state.agreement.umkmAgreement!;
                     }
+                    if (state is AgreementError) {
+                      SnackBarWidget.failed(context, state.error);
+                    }
                   },
                 ),
                 BlocListener<TransactionBloc, TransactionState>(
                   listener: (context, state) {
                     if (state is TransactionProcessSuccess) {
+                      SnackBarWidget.success(
+                          context, 'Berhasil menerima persetujuan');
                       navigateAsFirstScreen(context, const MainPage(index: 0));
+                    }
+                    if (state is TransactionError) {
+                      SnackBarWidget.failed(context, state.error);
                     }
                   },
                 ),
@@ -151,6 +162,9 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                     if (state is NegotiationLoaded) {
                       negotiation = state.negotiationDetails;
                       agreementBloc.add(GetAgreementDetail(widget.agreementId));
+                    }
+                    if (state is NegotiationError) {
+                      SnackBarWidget.failed(context, state.error);
                     }
                   },
                 )
@@ -389,8 +403,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
           bottomNavigationBar: BlocBuilder<AgreementBloc, AgreementState>(
             builder: (context, state) {
               if (state is AgreementLoaded) {
-                return state.agreement.umkmAgreementStatus != 'ACCEPTED' &&
-                        state.agreement.influencerAgreementStatus != 'ACCEPTED'
+                return state.agreement.umkmAgreementStatus != 'ACCEPTED'
                     ? Padding(
                         padding: const EdgeInsets.all(16),
                         child: SizedBox(

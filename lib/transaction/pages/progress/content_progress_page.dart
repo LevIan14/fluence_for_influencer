@@ -2,6 +2,7 @@ import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
@@ -43,7 +44,11 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
         body: BlocConsumer<TransactionBloc, TransactionState>(
           listener: (context, state) {
             if (state is TransactionProcessSuccess) {
+              SnackBarWidget.success(context, 'Berhasil melakukan aktivitas');
               navigateAsFirstScreen(context, const MainPage(index: 0));
+            }
+            if (state is TransactionError) {
+              SnackBarWidget.failed(context, state.toString());
             }
           },
           builder: (context, state) {

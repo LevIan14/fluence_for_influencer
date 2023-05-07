@@ -5,11 +5,13 @@ import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 class UmkmAgreementPage extends StatefulWidget {
   final String agreementId;
@@ -51,7 +53,12 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
             BlocListener<TransactionBloc, TransactionState>(
               listener: (context, state) {
                 if (state is TransactionProcessSuccess) {
+                  SnackBarWidget.success(
+                      context, 'Berhasil menerima persetujuan');
                   navigateAsFirstScreen(context, const MainPage(index: 0));
+                }
+                if (state is TransactionError) {
+                  SnackBarWidget.failed(context, state.error);
                 }
               },
             ),
@@ -60,36 +67,57 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                 if (state is AcceptAgreementSuccess) {
                   if (state.agreement.umkmAgreementStatus == 'ACCEPTED' &&
                       state.agreement.influencerAgreementStatus == 'ACCEPTED') {
+                    Uuid uuid = const Uuid();
+
                     final newTransaction = {
+                      "order_id": uuid.v4(),
                       "negotiation_id": state.agreement.negotiationId,
                       "influencer_id": state.agreement.influencerId,
                       "umkm_id": state.agreement.umkmId,
                       "transaction_status": "PENDING",
                       "progress": {
-                        "content_progress": {"status": "PENDING"},
+                        "content_progress": {
+                          "status": "PENDING",
+                          "influencer_note": ""
+                        },
                         "review_content": {
                           "status": "PENDING",
                           "influencer_note": "",
-                          "umkm_note": ""
+                          "influencer_note_draft": "",
+                          "umkm_note": "",
+                          "umkm_note_draft": ""
                         },
-                        "upload_progress": {"status": "PENDING"},
+                        "upload_progress": {
+                          "status": "PENDING",
+                          "influencer_note": ""
+                        },
                         "review_upload": {
                           "status": "PENDING",
                           "influencer_note": "",
-                          "umkm_note": ""
+                          "influencer_note_draft": "",
+                          "umkm_note": "",
+                          "umkm_note_draft": ""
                         }
                       },
                       "agreement_id": widget.agreementId,
                       "review_id": "",
+                      "cancel_reason": "",
                       "created_at": Timestamp.now()
                     };
                     transactionBloc.add(CreateNewTransaction(newTransaction));
                   } else {
+                    SnackBarWidget.success(
+                        context, 'Berhasil melakukan aktivitas');
                     navigateAsFirstScreen(context, const MainPage(index: 0));
                   }
                 }
                 if (state is AgreementProcessSuccess) {
+                  SnackBarWidget.success(
+                      context, 'Berhasil melakukan aktivitas');
                   navigateAsFirstScreen(context, const MainPage(index: 0));
+                }
+                if (state is AgreementError) {
+                  SnackBarWidget.failed(context, state.error);
                 }
               },
             )
@@ -153,8 +181,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                                               borderRadius:
                                                   BorderRadius.circular(30))),
                                       onPressed: () {
-                                        agreementBloc.add(AcceptAgreement(
-                                            widget.agreementId));
+                                        acceptDialog(context);
                                       },
                                       child: const Text("Terima"),
                                     ),
@@ -168,8 +195,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                                               borderRadius:
                                                   BorderRadius.circular(30))),
                                       onPressed: () {
-                                        agreementBloc.add(NeedRevisionAgreement(
-                                            widget.agreementId));
+                                        revisionDialog(context);
                                       },
                                       child: const Text("Butuh Revisi"),
                                     ),
@@ -184,7 +210,7 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
         ));
   }
 
-  Future<bool> saveDialog(context) async {
+  Future<bool> acceptDialog(context) async {
     Text dialogTitle = const Text("Terima Persetujuan");
     Text dialogContent =
         const Text("Apakah Anda yakin untuk menerima persetujuan?");
@@ -192,6 +218,31 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
       child: const Text("Terima"),
       onPressed: () {
         acceptAgreement();
+        Navigator.pop(context, true);
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: const Text("Batal"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
+    if (!resp) return false;
+    return true;
+  }
+
+  Future<bool> revisionDialog(context) async {
+    Text dialogTitle = const Text("Ajukan Revisi");
+    Text dialogContent =
+        const Text("Apakah Anda yakin untuk mengajukan revisi?");
+    TextButton primaryButton = TextButton(
+      child: const Text("Ya"),
+      onPressed: () {
+        agreementBloc.add(NeedRevisionAgreement(widget.agreementId));
         Navigator.pop(context, true);
       },
     );

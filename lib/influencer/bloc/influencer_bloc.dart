@@ -50,6 +50,7 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         emit(InfluencerLoading());
         await influencerRepository.updateInfluencerProfileSettings(
             event.influencer, event.img);
+        emit(UpdateInfluencerProfileSuccess());
       } catch (e) {
         emit(InfluencerError(e.toString()));
       }

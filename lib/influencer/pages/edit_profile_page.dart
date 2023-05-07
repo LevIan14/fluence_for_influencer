@@ -17,6 +17,7 @@ import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/app_textfield.dart';
 import 'package:fluence_for_influencer/shared/widgets/select_type_page.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -217,6 +218,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             if (state is CategoryLoaded) {
               setCategoryTypeChips(state.categoryList);
             }
+            if (state is CategoryError) {
+              SnackBarWidget.failed(context, state.error);
+            }
           },
           child: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
@@ -227,11 +231,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     verified = true;
                   });
                 }
+                if (state is AuthError) {
+                  SnackBarWidget.failed(context, state.error);
+                }
               },
               child: BlocConsumer<InfluencerBloc, InfluencerState>(
                 listener: (context, state) {
+                  if (state is UpdateInfluencerProfileSuccess) {
+                    Navigator.pop(context);
+                    SnackBarWidget.success(context, 'Berhasil menyimpan data');
+                    navigateAsFirstScreen(context, const MainPage(index: 2));
+                  }
                   if (state is InfluencerLoaded) {
                     setInfluencerData(state.influencer);
+                  }
+                  if (state is InfluencerError) {
+                    SnackBarWidget.failed(context, state.toString());
                   }
                 },
                 builder: (context, state) {
@@ -277,24 +292,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: InkWell(
               onTap: _enableSaveBtn
                   ? () {
-                      influencer.fullname = _nameController.text;
-                      influencer.location = _locationController.text;
-                      influencer.about = _aboutController.text;
-                      influencer.noteAgreement = _noteAgreementController.text;
-                      influencer.gender = _genderController.text;
-                      influencer.categoryType = _selectedCategory;
-                      influencer.bankAccount = _bankAccountController.text;
-                      influencer.bankAccountName =
-                          _bankAccountNameController.text;
-                      influencer.bankAccountNumber =
-                          _bankAccountNumberController.text;
-                      influencer.lowestFee =
-                          int.parse(_lowestFeeController.text);
-                      influencer.highestFee =
-                          int.parse(_highestFeeController.text);
-                      influencerBloc.add(UpdateInfluencerProfileSettings(
-                          influencer, _selectedImage));
-                      navigateAsFirstScreen(context, const MainPage(index: 2));
+                      saveDialog(context);
                     }
                   : null,
               child: Text("Simpan",
@@ -827,6 +825,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }).catchError((e) {
       debugPrint(e);
     });
+  }
+
+  Future<bool> saveDialog(context) async {
+    Text dialogTitle = const Text("Simpan Perubahan");
+    Text dialogContent =
+        const Text("Apa Anda yakin untuk menyimpan perubahan?");
+    TextButton primaryButton = TextButton(
+      child: const Text("Simpan"),
+      onPressed: () {
+        influencer.fullname = _nameController.text;
+        influencer.location = _locationController.text;
+        influencer.about = _aboutController.text;
+        influencer.noteAgreement = _noteAgreementController.text;
+        influencer.gender = _genderController.text;
+        influencer.categoryType = _selectedCategory;
+        influencer.bankAccount = _bankAccountController.text;
+        influencer.bankAccountName = _bankAccountNameController.text;
+        influencer.bankAccountNumber = _bankAccountNumberController.text;
+        influencer.lowestFee = int.parse(_lowestFeeController.text);
+        influencer.highestFee = int.parse(_highestFeeController.text);
+        influencerBloc
+            .add(UpdateInfluencerProfileSettings(influencer, _selectedImage));
+      },
+    );
+    TextButton secondaryButton = TextButton(
+      child: const Text("Batal"),
+      onPressed: () {
+        Navigator.pop(context, false);
+      },
+    );
+    final bool resp = await showDialog(
+        context: context,
+        builder: (context) => showAlertDialog(context, dialogTitle,
+            dialogContent, primaryButton, secondaryButton));
+    if (!resp) return false;
+    return true;
   }
 
   Future<bool> createWillPopDialog(context) async {

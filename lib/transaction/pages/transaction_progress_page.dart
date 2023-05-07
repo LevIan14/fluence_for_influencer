@@ -145,7 +145,14 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                           },
                           child: const Text("Ubah Status"),
                         )),
-                    Step(title: const Text("Selesai"), content: Container())
+                    Step(
+                        title: const Text("Selesai"),
+                        isActive: currentStep == 4,
+                        state: state.transaction.transactionStatus == "DONE" &&
+                                currentStep == 4
+                            ? StepState.complete
+                            : StepState.indexed,
+                        content: Container())
                   ]);
             }
             return Container();
