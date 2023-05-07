@@ -11,7 +11,7 @@ class AgreementRepository {
           .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -39,7 +39,7 @@ class AgreementRepository {
         return agreement;
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -49,7 +49,7 @@ class AgreementRepository {
           .collection("agreements")
           .add(newAgreement);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -73,7 +73,7 @@ class AgreementRepository {
             .update({"agreement_status": "DONE"});
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -84,7 +84,7 @@ class AgreementRepository {
           .doc(agreementId)
           .update({"umkm_agreement_status": "NEED REVISION"});
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -101,7 +101,7 @@ class AgreementRepository {
         "agreement_status": "ON PROCESS"
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -115,7 +115,7 @@ class AgreementRepository {
         "influencer_agreement_draft": influencerAgreement,
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

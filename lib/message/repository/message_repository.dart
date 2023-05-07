@@ -11,7 +11,7 @@ class MessageRepository {
           .orderBy("created_at", descending: false)
           .snapshots();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -34,7 +34,7 @@ class MessageRepository {
           .doc(chatId)
           .update({"recent_message": message, "updated_at": timestamp});
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -58,7 +58,7 @@ class MessageRepository {
           .doc(chatId)
           .update({"recent_message": message, "updated_at": timestamp});
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

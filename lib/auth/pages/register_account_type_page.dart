@@ -158,10 +158,11 @@ class _RegisterAccountTypePageState extends State<RegisterAccountTypePage> {
                                     context: context,
                                     builder: (context) {
                                       return const Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8),
+                                        padding: EdgeInsets.all(16),
                                         child: Text(
-                                            "Ini digunakan untuk mengidentifikasi akun Anda saat mentransfer dana atau menyiapkan setoran langsung.\n\nHarap perhatikan bahwa Anda tidak boleh membagikan nomor rekening bank Anda dengan siapa pun yang tidak Anda percayai, karena dapat digunakan untuk menarik dana dari rekening Anda."),
+                                          "Ini digunakan untuk mengidentifikasi akun Anda saat mentransfer dana atau menyiapkan setoran langsung.\n\nHarap perhatikan bahwa Anda tidak boleh membagikan nomor rekening bank Anda dengan siapa pun yang tidak Anda percayai, karena berpotensi disalahgunakan untuk merugikan Anda.",
+                                          textAlign: TextAlign.justify,
+                                        ),
                                       );
                                     },
                                   );

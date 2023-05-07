@@ -23,7 +23,7 @@ class InfluencerRepository {
         i = Influencer.fromJson(value.id, value.data()!);
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return i;
   }
@@ -35,7 +35,7 @@ class InfluencerRepository {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
       if (avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     try {
       String downloadURL;
@@ -58,7 +58,9 @@ class InfluencerRepository {
           .update({'avatar_url': downloadURL});
       return downloadURL;
     } on FirebaseException catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
+    } catch (e) {
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -68,7 +70,7 @@ class InfluencerRepository {
       await updateInfluencerAvatar(
           influencer.userId, influencer.avatarUrl, img);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     // }
     try {
@@ -102,7 +104,7 @@ class InfluencerRepository {
         'bank_account_number': influencer.bankAccountNumber
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return;
   }
@@ -135,7 +137,7 @@ class InfluencerRepository {
         Map<String, dynamic> res = jsonDecode(resp);
         followersCount = res["followers_count"];
       } catch (e) {
-        throw Exception(e.toString());
+        throw Exception(Constants.genericErrorException);
       }
       try {
         HttpClientResponse response = await getAudienceFromAPI(
@@ -154,7 +156,7 @@ class InfluencerRepository {
           topAudienceCity.add(toBeSorted[i]['city']);
         }
       } catch (e) {
-        throw Exception(e.toString());
+        throw Exception(Constants.genericErrorException);
       }
       try {
         HttpClientResponse response = await getInsightFromAPI(
@@ -171,10 +173,10 @@ class InfluencerRepository {
         previousReach = reachValue.first["value"];
         fourWeekReach = reachValue.last["value"];
       } catch (e) {
-        throw Exception(e.toString());
+        throw Exception(Constants.genericErrorException);
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     } finally {
       influencer.followersCount = followersCount;
       influencer.topAudienceCity = topAudienceCity;
@@ -222,7 +224,7 @@ class InfluencerRepository {
           queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     } finally {
       httpClient.close();
     }
@@ -276,7 +278,7 @@ class InfluencerRepository {
         };
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

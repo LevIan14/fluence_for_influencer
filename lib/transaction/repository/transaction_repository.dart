@@ -62,7 +62,7 @@ class TransactionRepository {
         return orderTransaction;
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -74,7 +74,7 @@ class TransactionRepository {
           .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -84,7 +84,7 @@ class TransactionRepository {
           .collection("transactions")
           .add(newTransaction);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -128,7 +128,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -174,7 +174,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -219,7 +219,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -265,7 +265,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -311,7 +311,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -357,7 +357,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -403,7 +403,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -449,7 +449,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

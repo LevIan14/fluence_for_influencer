@@ -430,12 +430,12 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
       categoryText.add(Text(category.categoryTypeName,
           textAlign: TextAlign.left,
           style:
-              const TextStyle(color: Constants.primaryColor, fontSize: 18.0)));
+              const TextStyle(color: Constants.primaryColor, fontSize: 16.0)));
     }
     if (influencer.customCategory.isNotEmpty) {
       categoryText.add(Text(influencer.customCategory,
           textAlign: TextAlign.left,
-          style: const TextStyle(color: Constants.primaryColor, fontSize: 18)));
+          style: const TextStyle(color: Constants.primaryColor, fontSize: 16)));
     }
     return Container(
         decoration: BoxDecoration(
@@ -455,7 +455,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                   style: TextStyle(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.w600,
-                      fontSize: 22.0)),
+                      fontSize: 20.0)),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

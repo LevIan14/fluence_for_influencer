@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/models/category_type.dart';
+import 'package:fluence_for_influencer/shared/constants.dart';
 
 class CategoryRepository {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -14,7 +15,7 @@ class CategoryRepository {
         }
       });
     } catch (e) {
-      throw Exception(e);
+      throw Exception(Constants.genericErrorException);
     }
     return categoryList;
   }

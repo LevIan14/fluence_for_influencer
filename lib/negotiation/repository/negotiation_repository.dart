@@ -31,7 +31,7 @@ class NegotiationRepository {
         return data;
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return null;
   }
@@ -43,7 +43,7 @@ class NegotiationRepository {
           .doc(negotiationId)
           .update({"negotiation_status": "DONE"});
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -54,7 +54,7 @@ class NegotiationRepository {
           .doc(negotiationId)
           .update({"negotiation_status": "REJECTED"});
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,8 +7,8 @@ import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PortfolioRepository {
-
-  Future<List<Portfolio>> getInfluencerPortfolioList(String influencerId) async {
+  Future<List<Portfolio>> getInfluencerPortfolioList(
+      String influencerId) async {
     List<Portfolio> portfolioList = [];
     try {
       await Constants.firebaseFirestore
@@ -25,12 +24,13 @@ class PortfolioRepository {
         }
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return portfolioList;
   }
 
-  Future<void> uploadInfluencerPortfolio(String influencerId, XFile img, String caption) async {
+  Future<void> uploadInfluencerPortfolio(
+      String influencerId, XFile img, String caption) async {
     try {
       String finalImagePath = 'influencers/$influencerId/portfolio/${img.name}';
       File file = File(img.path);
@@ -52,55 +52,55 @@ class PortfolioRepository {
           'uploaded_at': now,
         });
       } catch (e) {
-        throw Exception(e.toString());
+        throw Exception(Constants.genericErrorException);
       }
     } on FirebaseException catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return;
   }
 
-  Future<void> editInfluencerPortfolio(String influencerId, Portfolio updatedPortfolio) async {
+  Future<void> editInfluencerPortfolio(
+      String influencerId, Portfolio updatedPortfolio) async {
     // late Portfolio ;
     try {
       await Constants.firebaseFirestore
-        .collection("influencers")
-        .doc(influencerId)
-        .collection("portfolio")
-        .doc(updatedPortfolio.portfolioId)
-        .update({
-          'caption': updatedPortfolio.caption,
-        });
+          .collection("influencers")
+          .doc(influencerId)
+          .collection("portfolio")
+          .doc(updatedPortfolio.portfolioId)
+          .update({
+        'caption': updatedPortfolio.caption,
+      });
       // await getInfluencerPortfolio(influencerId, portfolio.portfolioId);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
-  Future<void> deleteInfluencerPortfolio(String influencerId, Portfolio portfolio) async {
+  Future<void> deleteInfluencerPortfolio(
+      String influencerId, Portfolio portfolio) async {
     try {
       final storageRef = FirebaseStorage.instance;
       final imageRef = storageRef.refFromURL(portfolio.imageUrl);
       imageRef.delete();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     } finally {
       try {
         await Constants.firebaseFirestore
-        .collection('influencers')
-        .doc(influencerId)
-        .collection('portfolio')
-        .doc(portfolio.portfolioId)
-        .delete();
+            .collection('influencers')
+            .doc(influencerId)
+            .collection('portfolio')
+            .doc(portfolio.portfolioId)
+            .delete();
       } catch (e) {
-        throw Exception(e.toString());
-      } 
+        throw Exception(Constants.genericErrorException);
+      }
       // finally {
       //   List<Portfolio> portfolioList = await getInfluencerPortfolioList(influencerId);
       //   // kalo hrs return nnt di return
       // }
     }
-
   }
-
 }

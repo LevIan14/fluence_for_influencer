@@ -35,7 +35,7 @@ class AuthRepository {
         throw Exception('Password salah');
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -56,7 +56,7 @@ class AuthRepository {
         }
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -91,7 +91,7 @@ class AuthRepository {
         throw Exception(Constants.genericErrorException);
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -99,7 +99,7 @@ class AuthRepository {
     try {
       return Constants.firebaseAuth.currentUser!.sendEmailVerification();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -107,7 +107,7 @@ class AuthRepository {
     try {
       return Constants.firebaseAuth.currentUser!.emailVerified;
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -132,6 +132,8 @@ class AuthRepository {
         "fullname": fullname,
         "category_type_id": categoryList,
         "custom_category": customCategory,
+        "instagram_user_id": "",
+        "facebook_access_token": "",
         "note_agreement": "",
         "about": "",
         "email": email,
@@ -155,7 +157,7 @@ class AuthRepository {
         throw Exception('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -194,7 +196,7 @@ class AuthRepository {
       }
       return userInfluencer;
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -239,7 +241,7 @@ class AuthRepository {
         throw Exception('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 
@@ -292,20 +294,20 @@ class AuthRepository {
                 'instagram_user_id': instagramUserId
               };
             } catch (e) {
-              log(e.toString());
+              throw Exception(Constants.genericErrorException);
             } finally {}
           } catch (e) {
-            log(e.toString());
+            throw Exception(Constants.genericErrorException);
           }
         } catch (e) {
-          log(e.toString());
+          throw Exception(Constants.genericErrorException);
         }
-      } else
-        log('error!');
+      } else {
+        throw Exception(Constants.genericErrorException);
+      }
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
-    return null;
   }
 
   Future<HttpClientResponse> getLongLivedUserAccessToken(
@@ -325,7 +327,7 @@ class AuthRepository {
           'graph.facebook.com', '/v16.0/oauth/access_token', queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(Constants.genericErrorException);
     } finally {
       httpClient.close();
     }
@@ -346,7 +348,7 @@ class AuthRepository {
           queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(Constants.genericErrorException);
     } finally {
       httpClient.close();
     }
@@ -366,7 +368,7 @@ class AuthRepository {
           'graph.facebook.com', '/v16.0/$facebookPageId', queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(Constants.genericErrorException);
     } finally {
       httpClient.close();
     }
@@ -385,7 +387,7 @@ class AuthRepository {
     try {
       await firebaseAuth.signOut();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

@@ -10,7 +10,7 @@ class ChatRepository {
           .orderBy("updated_at", descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
   }
 }

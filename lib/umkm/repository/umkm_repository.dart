@@ -13,7 +13,7 @@ class UmkmRepository {
         u = Umkm.fromJson(value.id, value.data()!);
       });
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception(Constants.genericErrorException);
     }
     return u;
   }

@@ -638,7 +638,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Container(
           margin: const EdgeInsets.only(top: 15.0, bottom: 10.0),
-          child: const Text('Linked Accounts',
+          child: const Text('Akun yang terhubung',
               style: TextStyle(
                   color: Constants.primaryColor,
                   fontSize: 17,
@@ -669,7 +669,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           leading: Icon(Ionicons.pencil_outline,
                               color: Colors.grey.shade600),
                           title:
-                              Text("Reconnect to Facebook", style: textStyle),
+                              Text("Hubungkan ke Facebook", style: textStyle),
                           onTap: () {
                             Navigator.pop(context);
                             authBloc.add(
@@ -679,7 +679,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ListTile(
                           leading: const Icon(Ionicons.trash_outline,
                               color: Colors.red),
-                          title: Text("Revoke Facebook access",
+                          title: Text("Cabut akses Facebook",
                               style: textStyle.copyWith(color: Colors.red)),
                           onTap: () {
                             revokeFacebookAccess();
@@ -720,7 +720,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(verified ? 'Connected' : 'Not connected',
+                          Text(verified ? 'Terhubung' : 'Tidak terhubung',
                               style: const TextStyle(
                                   color: Constants.grayColor, fontSize: 15.0)),
                           const Padding(

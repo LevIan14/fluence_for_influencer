@@ -36,12 +36,12 @@ class _ProfileMenuContentState extends State<ProfileMenuContent> {
                   style: const TextStyle(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.w600,
-                      fontSize: 22.0)),
+                      fontSize: 20.0)),
             ),
             Text(widget.content,
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
-                    color: Constants.primaryColor, fontSize: 18.0))
+                    color: Constants.primaryColor, fontSize: 16.0))
           ],
         ));
   }
