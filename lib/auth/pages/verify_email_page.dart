@@ -2,6 +2,7 @@ import 'package:fluence_for_influencer/auth/bloc/auth_bloc.dart';
 import 'package:fluence_for_influencer/auth/pages/login_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,14 +21,13 @@ class VerifyEmailPageState extends State<VerifyEmailPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is VerifyEmailReqestSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const Text('Berhasil mengirim email verifikasi'),
-              backgroundColor: Colors.green[300],
-            ));
+            SnackBarWidget.success(
+                context, 'Berhasil mengirim email verifikasi');
             Navigator.of(context).pop();
             return;
           }
           if (state is AuthError) {
+            SnackBarWidget.failed(context, state.error);
             Navigator.of(context).pop();
             return;
           }

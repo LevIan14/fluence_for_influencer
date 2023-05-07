@@ -35,6 +35,7 @@ class AgreementRepository {
             snapshot.get('influencer_agreement'),
             snapshot.get('influencer_agreement_draft'),
             snapshot.get('influencer_agreement_status'),
+            snapshot.get('agreement_status'),
             createdAt.toDate());
         return agreement;
       }

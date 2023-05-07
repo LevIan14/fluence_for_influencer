@@ -3,6 +3,9 @@ import 'package:fluence_for_influencer/agreement/bloc/agreement_bloc.dart';
 import 'package:fluence_for_influencer/agreement/pages/influencer_agreement_page.dart';
 import 'package:fluence_for_influencer/agreement/pages/umkm_agreement_page.dart';
 import 'package:fluence_for_influencer/agreement/repository/agreement_repository.dart';
+import 'package:fluence_for_influencer/category/repository/category_repository.dart';
+import 'package:fluence_for_influencer/influencer/bloc/influencer_bloc.dart';
+import 'package:fluence_for_influencer/influencer/repository/influencer_repository.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/negotiation/bloc/negotiation_bloc.dart';
 import 'package:fluence_for_influencer/negotiation/model/negotiation.dart';
@@ -15,6 +18,8 @@ import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
 import 'package:fluence_for_influencer/transaction/repository/transaction_repository.dart';
+import 'package:fluence_for_influencer/umkm/bloc/umkm_bloc.dart';
+import 'package:fluence_for_influencer/umkm/repository/umkm_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
@@ -47,12 +52,17 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
   late final NegotiationBloc negotiationBloc;
   final NegotiationRepository negotiationRepository = NegotiationRepository();
 
+  late final UmkmBloc umkmBloc;
+  final UmkmRepository umkmRepository = UmkmRepository();
+  final CategoryRepository categoryRepository = CategoryRepository();
+
   final TextEditingController _umkmAgreementController =
       TextEditingController();
   final TextEditingController _influencerAgreementController =
       TextEditingController();
 
   bool isInfluencerAgreementEmpty = true;
+  String umkmName = '';
 
   @override
   void initState() {
@@ -64,6 +74,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
     transactionBloc =
         TransactionBloc(transactionRepository: transactionRepository);
     agreementBloc = AgreementBloc(agreementRepository: agreementRepository);
+    umkmBloc = UmkmBloc(
+        umkmRepository: umkmRepository, categoryRepository: categoryRepository);
   }
 
   @override
@@ -72,7 +84,8 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
         providers: [
           BlocProvider(create: (context) => agreementBloc),
           BlocProvider(create: (context) => transactionBloc),
-          BlocProvider(create: (context) => negotiationBloc)
+          BlocProvider(create: (context) => negotiationBloc),
+          BlocProvider(create: (context) => umkmBloc)
         ],
         child: Scaffold(
           appBar: AppBar(
@@ -161,9 +174,20 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                   listener: (context, state) {
                     if (state is NegotiationLoaded) {
                       negotiation = state.negotiationDetails;
-                      agreementBloc.add(GetAgreementDetail(widget.agreementId));
+                      umkmBloc.add(GetUmkmDetail(widget.umkmId));
                     }
                     if (state is NegotiationError) {
+                      SnackBarWidget.failed(context, state.error);
+                    }
+                  },
+                ),
+                BlocListener<UmkmBloc, UmkmState>(
+                  listener: (context, state) {
+                    if (state is UmkmLoaded) {
+                      umkmName = state.umkm.fullname;
+                      agreementBloc.add(GetAgreementDetail(widget.agreementId));
+                    }
+                    if (state is UmkmError) {
                       SnackBarWidget.failed(context, state.error);
                     }
                   },
@@ -178,66 +202,107 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                   }
                   if (state is AgreementLoaded) {
                     return Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: SingleChildScrollView(
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(DateUtil.dateWithDayFormat(
-                                    state.agreement.createdAt)),
-                                GestureDetector(
-                                  onTap: () {
-                                    nextScreen(
-                                        context,
-                                        NegotiationDetailPage(
-                                            umkmId: widget.umkmId,
-                                            influencerId:
-                                                state.agreement.influencerId,
-                                            negotiationId:
-                                                state.agreement.negotiationId));
-                                  },
-                                  child: Card(
-                                      child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(DateUtil.dateWithDayFormat(
+                                        state.agreement.createdAt)),
+                                    Chip(
+                                      backgroundColor: state
+                                                  .agreement.agreementStatus ==
+                                              'DONE'
+                                          ? Colors.green[300]
+                                          : state.agreement.agreementStatus ==
+                                                  'PENDING'
+                                              ? Colors.yellow[300]
+                                              : Colors.blue[300],
+                                      label: Text(
+                                          state.agreement.agreementStatus,
+                                          style: const TextStyle(fontSize: 10)),
+                                    )
+                                  ],
+                                ),
+                                Container(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: const Divider()),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text("Informasi Negosiasi"),
+                                    const SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () {
+                                        nextScreen(
+                                            context,
+                                            NegotiationDetailPage(
+                                                umkmId: widget.umkmId,
+                                                influencerId: state
+                                                    .agreement.influencerId,
+                                                negotiationId: state
+                                                    .agreement.negotiationId));
+                                      },
+                                      child: Card(
+                                          child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(negotiation
+                                                        .projectTitle),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                        "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8),
+                                                child: const Divider()),
                                             Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(negotiation.projectTitle),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                          'Kesepakatan Harga'),
+                                                      Text(umkmName)
+                                                    ]),
                                                 const SizedBox(height: 8),
                                                 Text(
-                                                    "${DateUtil.dateWithDayFormat(negotiation.projectDuration['start']!)} - ${DateUtil.dateWithDayFormat(negotiation.projectDuration['end']!)}"),
+                                                    CurrencyFormat.convertToIDR(
+                                                        negotiation
+                                                            .projectPrice))
                                               ],
-                                            ),
+                                            )
                                           ],
                                         ),
-                                        Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                vertical: 4),
-                                            child: const Divider()),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text('Kesepakatan Harga'),
-                                            const SizedBox(
-                                              height: 8,
-                                            ),
-                                            Text(CurrencyFormat.convertToIDR(
-                                                negotiation.projectPrice))
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )),
+                                      )),
+                                    )
+                                  ],
                                 ),
                                 GestureDetector(
                                   onTap: () {
@@ -248,7 +313,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                   },
                                   child: Card(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(12),
                                       child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -325,7 +390,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                   },
                                   child: Card(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(12),
                                       child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -423,7 +488,25 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                               child: const Text("Terima Persetujuan UMKM")),
                         ),
                       )
-                    : const Padding(padding: EdgeInsets.zero);
+                    : state.agreement.agreementStatus == 'DONE'
+                        ? Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Constants.primaryColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                  onPressed: () {
+                                    navigateAsFirstScreen(
+                                        context, const MainPage(index: 3));
+                                  },
+                                  child: const Text("Ke Halaman Transaksi")),
+                            ),
+                          )
+                        : const Padding(padding: EdgeInsets.zero);
               }
               return Container();
             },

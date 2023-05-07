@@ -62,28 +62,30 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
                     state.agreement.influencerAgreementDraft!;
                 return Form(
                   key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Catatan Persetujuan",
-                        style: TextStyle(color: Constants.primaryColor),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        decoration: textInputDecoration,
-                        controller: _influencerAgreementController,
-                        readOnly: state.agreement.influencerAgreementStatus ==
-                                "ACCEPTED" ||
-                            state.agreement.influencerAgreementStatus ==
-                                'ON REVIEW',
-                        validator: (value) => value!.isEmpty
-                            ? "Masukkan catatan persetujuan"
-                            : null,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        maxLines: null,
-                      )
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Catatan Persetujuan",
+                          style: TextStyle(color: Constants.primaryColor),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          decoration: textInputDecoration,
+                          controller: _influencerAgreementController,
+                          readOnly: state.agreement.influencerAgreementStatus ==
+                                  "ACCEPTED" ||
+                              state.agreement.influencerAgreementStatus ==
+                                  'ON REVIEW',
+                          validator: (value) => value!.isEmpty
+                              ? "Masukkan catatan persetujuan"
+                              : null,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          maxLines: null,
+                        )
+                      ],
+                    ),
                   ),
                 );
               }

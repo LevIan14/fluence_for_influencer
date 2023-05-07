@@ -70,7 +70,11 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _notesController,
-                      decoration: textInputDecoration,
+                      decoration: textInputDecoration.copyWith(
+                        helperMaxLines: 10,
+                        helperText:
+                            'Anda bisa memberi catatan seperti tautan konten yang telah diunggah. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
+                      ),
                       maxLines: null,
                     )
                   ],
@@ -99,7 +103,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                         onPressed: () {
                           updateDialog(context, state.transaction);
                         },
-                        child: const Text("Ubah Status")),
+                        child: const Text("Selesai Mengunggah Konten")),
                   ),
                   SizedBox(
                       width: double.infinity,

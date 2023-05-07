@@ -6,6 +6,7 @@ import 'package:fluence_for_influencer/auth/pages/verify_email_page.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +38,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: ((context, state) {
-          print("!!! LOGIN listener !!!");
-          print(state.toString());
           if (state is GoogleLoginRequestedSuccess) {
             nextScreen(
                 context,
@@ -57,10 +56,11 @@ class _LoginPageState extends State<LoginPage> {
             navigateAsFirstScreen(context, const MainPage(index: 0));
             return;
           }
+          if (state is AuthError) {
+            SnackBarWidget.failed(context, state.error);
+          }
         }),
         builder: (context, state) {
-          print("!!! LOGIN BUILDER !!!");
-          print(state.toString());
           if (state is Loading) {
             return const Center(child: CircularProgressIndicator());
           }

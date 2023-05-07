@@ -365,8 +365,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                     ],
                   ),
                 );
-              } else if (state.negotiationDetails.negotiationStatus ==
-                  'ACCEPTED') {
+              } else if (state.negotiationDetails.negotiationStatus == 'DONE') {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: SizedBox(

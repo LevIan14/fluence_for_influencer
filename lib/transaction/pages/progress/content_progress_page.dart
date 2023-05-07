@@ -71,7 +71,11 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                           TextField(
                             controller: _notesController,
                             maxLines: null,
-                            decoration: textInputDecoration,
+                            decoration: textInputDecoration.copyWith(
+                              helperMaxLines: 10,
+                              helperText:
+                                  'Anda bisa memberi catatan seperti tautan konten yang telah dibuat. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
+                            ),
                           )
                         ]),
                   ));
@@ -99,7 +103,7 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                           onPressed: () {
                             updateDialog(context, state.transaction);
                           },
-                          child: const Text("Ubah Status")),
+                          child: const Text("Selesai Membuat Konten")),
                     ),
                     SizedBox(
                         width: double.infinity,

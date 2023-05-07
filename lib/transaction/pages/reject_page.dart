@@ -12,6 +12,11 @@ class RejectPage extends StatefulWidget {
 
 class _RejectPageState extends State<RejectPage> {
   final TextEditingController _rejectReasonController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _rejectReasonController.text = widget.reason;
+  }
 
   @override
   Widget build(BuildContext context) {

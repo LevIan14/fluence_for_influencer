@@ -127,37 +127,40 @@ class _UmkmAgreementPageState extends State<UmkmAgreementPage> {
                 title: const Text("Persetujuan UMKM"),
                 backgroundColor: Constants.primaryColor,
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(16),
-                child: BlocConsumer<AgreementBloc, AgreementState>(
-                  listener: (context, state) {
-                    if (state is AgreementProcessSuccess) {
-                      navigateAsFirstScreen(context, const MainPage(index: 0));
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is AgreementLoaded) {
-                      _umkmAgreementController.text =
-                          state.agreement.umkmAgreement!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Catatan Persetujuan",
-                            style: TextStyle(color: Constants.primaryColor),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _umkmAgreementController,
-                            readOnly: true,
-                            maxLines: null,
-                            decoration: textInputDecoration,
-                          )
-                        ],
-                      );
-                    }
-                    return Container();
-                  },
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: BlocConsumer<AgreementBloc, AgreementState>(
+                    listener: (context, state) {
+                      if (state is AgreementProcessSuccess) {
+                        navigateAsFirstScreen(
+                            context, const MainPage(index: 0));
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is AgreementLoaded) {
+                        _umkmAgreementController.text =
+                            state.agreement.umkmAgreement!;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Catatan Persetujuan",
+                              style: TextStyle(color: Constants.primaryColor),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: _umkmAgreementController,
+                              readOnly: true,
+                              maxLines: null,
+                              decoration: textInputDecoration,
+                            )
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
                 ),
               ),
               bottomNavigationBar: BlocConsumer<AgreementBloc, AgreementState>(

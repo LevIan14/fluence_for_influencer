@@ -5,6 +5,7 @@ import 'package:fluence_for_influencer/umkm/bloc/umkm_bloc.dart';
 import 'package:fluence_for_influencer/umkm/repository/umkm_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ionicons/ionicons.dart';
 
 class InfluencerReview extends StatefulWidget {
@@ -45,7 +46,7 @@ class _InfluencerReviewState extends State<InfluencerReview> {
               vertical: margin * 2.5, horizontal: margin * 2.5),
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BlocBuilder<UmkmBloc, UmkmState>(
                 builder: (context, state) {
@@ -61,7 +62,15 @@ class _InfluencerReviewState extends State<InfluencerReview> {
                   return Container();
                 },
               ),
-              buildStar(),
+              RatingBarIndicator(
+                rating: widget.review.rating.toDouble(),
+                itemBuilder: (context, index) =>
+                    const Icon(Icons.star, color: Colors.yellow),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              // buildStar(),
               Container(
                 child: Text(widget.review.review ?? " ",
                     textAlign: TextAlign.justify,

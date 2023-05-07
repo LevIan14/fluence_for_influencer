@@ -9,6 +9,7 @@ class Agreement {
   final String? influencerAgreement;
   final String? influencerAgreementDraft;
   final String influencerAgreementStatus;
+  final String agreementStatus;
   final DateTime createdAt;
 
   Agreement(
@@ -22,5 +23,6 @@ class Agreement {
       this.influencerAgreement,
       this.influencerAgreementDraft,
       this.influencerAgreementStatus,
+      this.agreementStatus,
       this.createdAt);
 }

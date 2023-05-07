@@ -67,29 +67,39 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
 
               return Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Catatan Unggahan"),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      decoration: textInputDecoration,
-                      maxLines: null,
-                      controller: _contentNoteController,
-                      validator: (value) =>
-                          value!.isEmpty ? "Masukkan catatan unggahan" : null,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text("Ulasan"),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      decoration: textInputDecoration,
-                      readOnly: true,
-                      maxLines: null,
-                      controller: _reviewNoteController,
-                    )
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Catatan Unggahan"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                          helperMaxLines: 10,
+                          helperText:
+                              'Kolom milik Influencer untuk memberi catatan terkait unggahan seperti unggahan dalam bentuk tautan',
+                        ),
+                        maxLines: null,
+                        controller: _contentNoteController,
+                        validator: (value) =>
+                            value!.isEmpty ? "Masukkan catatan unggahan" : null,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text("Ulasan"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                          helperMaxLines: 10,
+                          helperText:
+                              'Kolom milik UMKM untuk memberi ulasan. Anda bisa menyimpan draft ulasan dengan menekan ikon centang.',
+                        ),
+                        readOnly: true,
+                        maxLines: null,
+                        controller: _reviewNoteController,
+                      )
+                    ],
+                  ),
                 ),
               );
             }

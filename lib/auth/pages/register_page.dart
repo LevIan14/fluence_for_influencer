@@ -4,6 +4,7 @@ import 'package:fluence_for_influencer/auth/pages/register_account_type_page.dar
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:fluence_for_influencer/shared/widgets/text_input.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     email: _emailController.text,
                     password: _passwordController.text,
                     id: ""));
+          }
+          if (state is AuthError) {
+            SnackBarWidget.failed(context, state.error);
           }
         },
         builder: (context, state) {

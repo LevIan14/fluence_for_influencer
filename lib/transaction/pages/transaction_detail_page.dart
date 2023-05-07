@@ -15,6 +15,7 @@ import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/currency_utility.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/transaction/bloc/transaction_bloc.dart';
+import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
 import 'package:fluence_for_influencer/transaction/pages/reject_page.dart';
 import 'package:fluence_for_influencer/transaction/pages/review/review_page.dart';
 import 'package:fluence_for_influencer/transaction/pages/transaction_progress_page.dart';
@@ -60,6 +61,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
   late Agreement agreement;
   late String influencerName;
 
+  int currentProgress = 0;
   @override
   void initState() {
     super.initState();
@@ -379,11 +381,14 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                                       BorderRadius.circular(
                                                           30))),
                                           onPressed: () {
+                                            checkProgress(state.transaction);
                                             nextScreen(
                                                 context,
                                                 TransactionProgressPage(
                                                   transactionId:
                                                       widget.transactionId,
+                                                  currentProgress:
+                                                      currentProgress,
                                                 ));
                                           },
                                           child: const Text(
@@ -419,11 +424,14 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                               borderRadius:
                                                   BorderRadius.circular(30))),
                                       onPressed: () {
+                                        checkProgress(state.transaction);
                                         nextScreen(
                                             context,
                                             TransactionProgressPage(
-                                                transactionId:
-                                                    state.transaction.id));
+                                              transactionId:
+                                                  state.transaction.id,
+                                              currentProgress: currentProgress,
+                                            ));
                                       },
                                       child: const Text(
                                           "Lihat Status Pengerjaan")));
@@ -433,5 +441,29 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
             ),
           ),
         ));
+  }
+
+  void checkProgress(OrderTransaction transaction) {
+    int index = 0;
+
+    if (transaction.orderProgress.contentProgress.status != "DONE") {
+      index = 0;
+    } else {
+      if (transaction.orderProgress.reviewContent.status != "DONE") {
+        index = 1;
+      } else {
+        if (transaction.orderProgress.uploadProgress.status != "DONE") {
+          index = 2;
+        } else {
+          if (transaction.orderProgress.reviewUpload.status != "DONE") {
+            index = 3;
+          } else {
+            index = 4;
+          }
+        }
+      }
+    }
+
+    currentProgress = index;
   }
 }

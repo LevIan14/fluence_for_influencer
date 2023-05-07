@@ -13,7 +13,9 @@ import 'progress/upload_progress_page.dart';
 
 class TransactionProgressPage extends StatefulWidget {
   final String transactionId;
-  const TransactionProgressPage({Key? key, required this.transactionId})
+  final int currentProgress;
+  const TransactionProgressPage(
+      {Key? key, required this.transactionId, required this.currentProgress})
       : super(key: key);
 
   @override
@@ -29,6 +31,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
   @override
   void initState() {
     super.initState();
+    currentStep = widget.currentProgress;
     transactionBloc =
         TransactionBloc(transactionRepository: transactionRepository);
     transactionBloc.add(GetTransactionDetail(widget.transactionId));
@@ -50,6 +53,13 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
               checkProgress(state.transaction);
 
               return Stepper(
+                  onStepTapped: (step) {
+                    if (step <= widget.currentProgress) {
+                      setState(() {
+                        currentStep = step;
+                      });
+                    }
+                  },
                   currentStep: currentStep,
                   controlsBuilder: (context, details) {
                     return Container();
@@ -63,19 +73,33 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                                 "DONE"
                             ? StepState.complete
                             : StepState.indexed,
-                        content: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Constants.primaryColor,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30))),
-                          onPressed: () {
-                            nextScreen(
-                                context,
-                                ContentProgressPage(
-                                    transactionId: widget.transactionId));
-                          },
-                          child: const Text("Ubah Status"),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Anda bisa memulai pembuatan konten sesuai kesepakatan dengan UMKM. Anda bisa menyimpan catatan seperti unggahan konten dalam bentuk tautan dalam halaman detail',
+                              textAlign: TextAlign.justify,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Constants.primaryColor,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
+                                onPressed: () {
+                                  nextScreen(
+                                      context,
+                                      ContentProgressPage(
+                                          transactionId: widget.transactionId));
+                                },
+                                child: const Text("Lihat Detail"),
+                              ),
+                            ),
+                          ],
                         )),
                     Step(
                       isActive: currentStep == 1,
@@ -85,19 +109,32 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                           ? StepState.complete
                           : StepState.indexed,
                       title: const Text("Ulas Konten"),
-                      content: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Constants.primaryColor,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30))),
-                        onPressed: () {
-                          nextScreen(
-                              context,
-                              ReviewContentPage(
-                                  transactionId: widget.transactionId));
-                        },
-                        child: const Text("Ubah Status"),
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Buka untuk melihat catatan ulasan konten',
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.primaryColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              onPressed: () {
+                                nextScreen(
+                                    context,
+                                    ReviewContentPage(
+                                        transactionId: widget.transactionId));
+                              },
+                              child: const Text("Lihat Detail"),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     Step(
@@ -108,19 +145,32 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                           ? StepState.complete
                           : StepState.indexed,
                       title: const Text("Proses Unggah"),
-                      content: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Constants.primaryColor,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30))),
-                        onPressed: () {
-                          nextScreen(
-                              context,
-                              UploadProgressPage(
-                                  transactionId: widget.transactionId));
-                        },
-                        child: const Text("Ubah Status"),
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Anda bisa mulai mengunggah konten sesuai kesepakatan dengan UMKM. Anda bisa menyimpan catatan seperti unggahan konten dalam bentuk link dalam halaman detail',
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.primaryColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              onPressed: () {
+                                nextScreen(
+                                    context,
+                                    UploadProgressPage(
+                                        transactionId: widget.transactionId));
+                              },
+                              child: const Text("Lihat Detail"),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                     Step(
@@ -131,19 +181,33 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                             ? StepState.complete
                             : StepState.indexed,
                         title: const Text("Ulas Unggahan"),
-                        content: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Constants.primaryColor,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30))),
-                          onPressed: () {
-                            nextScreen(
-                                context,
-                                ReviewUploadPage(
-                                    transactionId: widget.transactionId));
-                          },
-                          child: const Text("Ubah Status"),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Buka untuk melihat catatan ulasan unggahan',
+                              textAlign: TextAlign.justify,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Constants.primaryColor,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
+                                onPressed: () {
+                                  nextScreen(
+                                      context,
+                                      ReviewUploadPage(
+                                          transactionId: widget.transactionId));
+                                },
+                                child: const Text("Lihat Detail"),
+                              ),
+                            ),
+                          ],
                         )),
                     Step(
                         title: const Text("Selesai"),
