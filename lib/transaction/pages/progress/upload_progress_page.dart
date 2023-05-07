@@ -23,6 +23,7 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
   final TransactionRepository transactionRepository = TransactionRepository();
 
   final TextEditingController _notesController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -60,25 +61,31 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
             if (state is TransactionLoaded) {
               _notesController.text =
                   state.transaction.orderProgress.uploadProgress.influencerNote;
-              return Padding(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Catatan"),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _notesController,
-                      decoration: textInputDecoration.copyWith(
-                        helperMaxLines: 10,
-                        helperText:
-                            'Anda bisa memberi catatan seperti tautan konten yang telah diunggah. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
-                      ),
-                      maxLines: null,
-                    )
-                  ],
-                )),
+              return Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Catatan"),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _notesController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) =>
+                            value!.isEmpty ? "Masukkan catatan" : null,
+                        decoration: textInputDecoration.copyWith(
+                          helperMaxLines: 10,
+                          helperText:
+                              'Anda bisa memberi catatan seperti tautan konten yang telah diunggah. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
+                        ),
+                        maxLines: null,
+                      )
+                    ],
+                  )),
+                ),
               );
             }
             return Container();
@@ -101,7 +108,9 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30))),
                         onPressed: () {
-                          updateDialog(context, state.transaction);
+                          if (_formKey.currentState!.validate()) {
+                            updateDialog(context, state.transaction);
+                          }
                         },
                         child: const Text("Selesai Mengunggah Konten")),
                   ),
@@ -113,10 +122,12 @@ class _UploadProgressPageState extends State<UploadProgressPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
-                            transactionBloc.add(SaveNotesUploadProgress(
-                                widget.transactionId,
-                                _notesController.text,
-                                state.transaction.orderProgress));
+                            if (_formKey.currentState!.validate()) {
+                              transactionBloc.add(SaveNotesUploadProgress(
+                                  widget.transactionId,
+                                  _notesController.text,
+                                  state.transaction.orderProgress));
+                            }
                           },
                           child: const Text("Simpan"))),
                 ],

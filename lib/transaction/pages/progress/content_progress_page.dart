@@ -24,6 +24,8 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
 
   final TextEditingController _notesController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -60,25 +62,32 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
             if (state is TransactionLoaded) {
               _notesController.text = state
                   .transaction.orderProgress.contentProgress.influencerNote;
-              return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Catatan"),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _notesController,
-                            maxLines: null,
-                            decoration: textInputDecoration.copyWith(
-                              helperMaxLines: 10,
-                              helperText:
-                                  'Anda bisa memberi catatan seperti tautan konten yang telah dibuat. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
-                            ),
-                          )
-                        ]),
-                  ));
+              return Form(
+                key: _formKey,
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Catatan"),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _notesController,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) =>
+                                  value!.isEmpty ? "Masukkan catatan" : null,
+                              maxLines: null,
+                              decoration: textInputDecoration.copyWith(
+                                helperMaxLines: 10,
+                                helperText:
+                                    'Anda bisa memberi catatan seperti tautan konten yang telah dibuat. Anda bisa menyimpan draft catatan dengan menekan tombol Simpan.',
+                              ),
+                            )
+                          ]),
+                    )),
+              );
             }
             return Container();
           },
@@ -101,7 +110,9 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
                           onPressed: () {
-                            updateDialog(context, state.transaction);
+                            if (_formKey.currentState!.validate()) {
+                              updateDialog(context, state.transaction);
+                            }
                           },
                           child: const Text("Selesai Membuat Konten")),
                     ),
@@ -113,10 +124,12 @@ class _ContentProgressPageState extends State<ContentProgressPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30))),
                             onPressed: () {
-                              transactionBloc.add(SaveNotesContentProgress(
-                                  widget.transactionId,
-                                  _notesController.text,
-                                  state.transaction.orderProgress));
+                              if (_formKey.currentState!.validate()) {
+                                transactionBloc.add(SaveNotesContentProgress(
+                                    widget.transactionId,
+                                    _notesController.text,
+                                    state.transaction.orderProgress));
+                              }
                             },
                             child: const Text("Simpan"))),
                   ],
