@@ -128,7 +128,8 @@ class _ReviewUploadPageState extends State<ReviewUploadPage> {
                                     updateDialog(context, state.transaction);
                                   }
                                 },
-                                child: const Text("Ubah Status"))),
+                                child:
+                                    const Text("Selesai Mengunggah Konten"))),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(

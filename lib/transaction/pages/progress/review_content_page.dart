@@ -128,7 +128,7 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                                     updateDialog(context, state.transaction);
                                   }
                                 },
-                                child: const Text("Ubah Status"))),
+                                child: const Text("Selesai Membuat Konten"))),
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
