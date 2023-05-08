@@ -273,7 +273,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
               Container(
                 // decoration: BoxDecoration(color: Constants.primaryColor),
                 margin: EdgeInsets.only(right: margin / 2),
-                child: Text("${influencer.followersCount} Followers",
+                child: Text("${influencer.followersCount} Pengikut",
                     style: const TextStyle(
                         color: Constants.primaryColor,
                         fontWeight: FontWeight.w400,
@@ -404,7 +404,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     ];
     if (verified) {
       widgets.add(ProfileMenuInsights(
-          title: 'Instagram Metrics', influencer: influencer));
+          title: 'Informasi Instagram', influencer: influencer));
     }
     for (var widget in widgets) {
       finalWidgets.add(Container(

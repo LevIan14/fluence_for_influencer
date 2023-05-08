@@ -1,5 +1,7 @@
+import 'package:auto_localization/auto_localization.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
@@ -9,6 +11,7 @@ class ProfileMenuInsights extends StatelessWidget {
 
   final String title;
   final Influencer influencer;
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +30,39 @@ class ProfileMenuInsights extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(bottom: margin / 2),
             child: Text(title, 
-              style: const TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w600, fontSize: 22.0)
+              style: const TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w600, fontSize: 20.0)
             ),
           ),
-          InstagramAudience(influencer),
+          FutureBuilder(
+            future: translate(influencer.topAudienceCity!),
+            builder: (context, AsyncSnapshot snapshot) {
+              if(snapshot.hasData) return InstagramAudience(context, influencer, snapshot.data);
+              return Container();
+          }),
+          // InstagramAudience(context, influencer),
           InstagramInsight(influencer),
         ],
       )
     );
   }
 
-  Widget InstagramAudience(Influencer influencer) {
+  Future<List<String>> translate(cities) async {
+    List<String> translated = [];
+    // var local = await ;
+    cities.forEach((city) async {
+      String translate = await AutoLocalization.translate(city, startingLanguage: 'en', targetLanguage: 'id');
+      translated.add(translate);
+      
+    });
+    return translated;
+  }
+
+  Widget InstagramAudience(context, Influencer influencer, List<String> translateCity) {
     double margin = 10.0;
-    List<String> cities = influencer.topAudienceCity!;
+    // List<String> cities = await translate(influencer.topAudienceCity!);
+    List<String> cities = translateCity;
     List<Widget> citiesWidget = [];
+
     cities.forEach((city) {
       citiesWidget.add(
         Container(
@@ -53,13 +75,25 @@ class ProfileMenuInsights extends StatelessWidget {
                 size: 18.0),
               Container(
                 margin: EdgeInsets.only(left: margin), 
-                child: Text(city, 
-                  style: TextStyle(
-                    color:Constants.primaryColor.withOpacity(0.5),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16.0
-                  )
+                child: Text(city,
+                      style: TextStyle(
+                      color:Constants.primaryColor.withOpacity(0.5),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.0
+                    )
                 )
+                // child: AutoLocalBuilder(
+                //   text: cities,
+                //   builder: (TranslationWorker tw) {
+                //     return Text(tw.get(city),
+                //       style: TextStyle(
+                //       color:Constants.primaryColor.withOpacity(0.5),
+                //       fontWeight: FontWeight.w500,
+                //       fontSize: 16.0
+                //     )
+                //     );
+                //   }
+                // )
               ),
             ],
           )
@@ -73,14 +107,26 @@ class ProfileMenuInsights extends StatelessWidget {
         children: [
           Container(
             margin: EdgeInsets.symmetric(vertical: margin / 2),
-            child: const Text('Top Audience City', 
+            child: const Text('Kota Audiens Teratas', 
               textAlign: TextAlign.justify,
               style: TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w500, fontSize: 18.0)
             ),
           ),
-          Column(
-            children: citiesWidget,
+          Localizations.override(
+            context: context,
+            locale: const Locale('id'),
+            child: Builder(
+              builder: (context) {
+                return Column(
+                  children: citiesWidget,
+                );
+              }
+            )
           )
+          
+          // Column(
+          //   children: citiesWidget,
+          // )
         ],
       ),
     );
@@ -92,10 +138,10 @@ class ProfileMenuInsights extends StatelessWidget {
     DateTime fourWeeksAgo = now.subtract(const Duration(days: 28));
     DateTime prevNow = fourWeeksAgo.subtract(const Duration(days: 1));
     DateTime prevFourWeeksAgo = prevNow.subtract(const Duration(days: 28));
-    String since = DateFormat.MMMd().format(fourWeeksAgo);
-    String until = DateFormat.MMMd().format(now);
-    String prevSince = DateFormat.MMMd().format(prevFourWeeksAgo);
-    String prevUntil = DateFormat.MMMd().format(prevNow);
+    String since = DateUtil.insightDate(fourWeeksAgo);
+    String until = DateUtil.insightDate(now);
+    String prevSince = DateUtil.insightDate(prevFourWeeksAgo);
+    String prevUntil = DateUtil.insightDate(prevNow);
     double reachPercent = ((influencer.fourWeekReach! - influencer.previousReach!) / influencer.previousReach!) * 100;
     double impressionPercent = ((influencer.fourWeekImpressions! - influencer.previousImpressions!) / influencer.previousImpressions!) * 100;
     return 
@@ -106,8 +152,8 @@ class ProfileMenuInsights extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Insights', 
-                    style: TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w600, fontSize: 20.0)
+                  const Text('Data Analitik', 
+                    style: TextStyle(color: Constants.primaryColor, fontWeight: FontWeight.w600, fontSize: 18.0)
                   ), 
                   Text('$since - $until', 
                     style: TextStyle(color: Constants.primaryColor.withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 14.0)
@@ -121,8 +167,8 @@ class ProfileMenuInsights extends StatelessWidget {
                   children: [
                     Container(
                       margin: EdgeInsets.symmetric(vertical: margin / 5),
-                      child: Text('Total Reach', 
-                        style: TextStyle(color: Constants.primaryColor.withOpacity(0.9), fontWeight: FontWeight.w500, fontSize: 18.0)
+                      child: Text('Total Jangkauan', 
+                        style: TextStyle(color: Constants.primaryColor.withOpacity(0.9), fontWeight: FontWeight.w500, fontSize: 16.0)
                       ),
                     ),
                     Container(
@@ -133,13 +179,13 @@ class ProfileMenuInsights extends StatelessWidget {
                           Container(
                             margin: EdgeInsets.only(right: margin / 2),
                             child: Text('${influencer.fourWeekReach}', 
-                              style: TextStyle(color: Constants.primaryColor, fontSize: 16.0)
+                              style: TextStyle(color: Constants.primaryColor, fontSize: 15.0)
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(left: margin / 2),
-                            child: Text(reachPercent < 0 ? '${reachPercent.toStringAsPrecision(2)}% vs $prevSince - $prevUntil' : 
-                              "+${reachPercent.toStringAsPrecision(2)}% $prevSince - $prevUntil", 
+                            child: Text(reachPercent < 0 ? '${reachPercent.toStringAsPrecision(2)}%  $prevSince - $prevUntil' : 
+                              "+${reachPercent.toStringAsPrecision(2)}%  $prevSince - $prevUntil", 
                               style: TextStyle(color: reachPercent < 0 ? Constants.grayColor : Colors.green.shade400, fontSize: 14.0)
                             )
                           ),
@@ -156,8 +202,8 @@ class ProfileMenuInsights extends StatelessWidget {
                   children: [
                     Container(
                       margin: EdgeInsets.symmetric(vertical: margin / 5),
-                      child: Text('Total Impressions', 
-                        style: TextStyle(color: Constants.primaryColor.withOpacity(0.9), fontWeight: FontWeight.w500, fontSize: 18.0)
+                      child: Text('Total Impresi', 
+                        style: TextStyle(color: Constants.primaryColor.withOpacity(0.9), fontWeight: FontWeight.w500, fontSize: 16.0)
                       ),
                     ),
                     Container(
@@ -168,13 +214,13 @@ class ProfileMenuInsights extends StatelessWidget {
                           Container(
                             margin: EdgeInsets.only(right: margin / 2),
                             child: Text('${influencer.fourWeekImpressions}', 
-                              style: TextStyle(color: Constants.primaryColor, fontSize: 16.0)
+                              style: TextStyle(color: Constants.primaryColor, fontSize: 15.0)
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.only(left: margin / 2),
-                            child: Text(impressionPercent < 0 ? '${impressionPercent.toStringAsPrecision(2)}% vs $prevSince - $prevUntil' : 
-                              "+${impressionPercent.toStringAsPrecision(2)}% $prevSince - $prevUntil", 
+                            child: Text(impressionPercent < 0 ? '${impressionPercent.toStringAsPrecision(2)}%  $prevSince - $prevUntil' : 
+                              "+${impressionPercent.toStringAsPrecision(2)}%  $prevSince - $prevUntil", 
                               style: TextStyle(color: impressionPercent < 0 ? Constants.grayColor : Colors.green.shade400, fontSize: 14.0)
                             )
                           ),

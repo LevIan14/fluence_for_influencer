@@ -76,7 +76,7 @@ class _FluenceAppState extends State<FluenceForInfluencer> {
               }
               return const LoginPage();
             },
-          )),
+          ))
     );
   }
 }

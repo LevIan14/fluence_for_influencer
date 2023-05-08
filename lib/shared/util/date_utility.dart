@@ -46,6 +46,10 @@ class DateUtil {
     return DateFormat("dd/MM/yyyy").format(dateTime);
   }
 
+  static String insightDate(DateTime dateTime) {
+    return DateFormat.MMMd("id_ID").format(dateTime);
+  }
+
   // static List<String> _weekNames() {
   //   return <String>[
   //     '',
