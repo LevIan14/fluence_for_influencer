@@ -6,6 +6,7 @@ import 'package:fluence_for_influencer/auth/pages/verify_email_page.dart';
 import 'package:fluence_for_influencer/auth/repository/auth_repository.dart';
 import 'package:fluence_for_influencer/main/main_page.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/widgets/snackbar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -58,10 +59,7 @@ class _FluenceAppState extends State<FluenceForInfluencer> {
           home: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthError) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red[300],
-                ));
+                SnackBarWidget.failed(context, state.error);
               }
             },
             builder: (context, state) {

@@ -57,12 +57,11 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
   @override
   void initState() {
     super.initState();
-    String influencerId = widget.influencerId;
     influencerBloc = InfluencerBloc(
         influencerRepository: influencerRepository,
         categoryRepository: categoryRepository);
+    influencerBloc.add(GetInfluencerDetail(widget.influencerId));
     portfolioBloc = PortfolioBloc(portfolioRepository: portfolioRepository);
-    influencerBloc.add(GetInfluencerDetail(influencerId));
   }
 
   setInfluencerData(Influencer i) {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/agreement/model/agreement.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 
 class AgreementRepository {
   Future<dynamic> getAgreementList(String influencerId) async {
@@ -11,7 +12,7 @@ class AgreementRepository {
           .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -40,7 +41,7 @@ class AgreementRepository {
         return agreement;
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -50,7 +51,7 @@ class AgreementRepository {
           .collection("agreements")
           .add(newAgreement);
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -74,7 +75,7 @@ class AgreementRepository {
             .update({"agreement_status": "DONE"});
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -85,7 +86,7 @@ class AgreementRepository {
           .doc(agreementId)
           .update({"umkm_agreement_status": "NEED REVISION"});
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -102,7 +103,7 @@ class AgreementRepository {
         "agreement_status": "ON PROCESS"
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -116,7 +117,7 @@ class AgreementRepository {
         "influencer_agreement_draft": influencerAgreement,
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 
 class MessageRepository {
   Future<dynamic> getMessageList(String chatId) async {
@@ -11,7 +12,7 @@ class MessageRepository {
           .orderBy("created_at", descending: false)
           .snapshots();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -34,7 +35,7 @@ class MessageRepository {
           .doc(chatId)
           .update({"recent_message": message, "updated_at": timestamp});
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -58,7 +59,7 @@ class MessageRepository {
           .doc(chatId)
           .update({"recent_message": message, "updated_at": timestamp});
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

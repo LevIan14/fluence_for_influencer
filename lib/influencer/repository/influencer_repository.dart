@@ -7,8 +7,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluence_for_influencer/models/category_type.dart';
 import 'package:fluence_for_influencer/models/influencer.dart';
 import 'package:fluence_for_influencer/models/portfolio.dart';
+import 'package:fluence_for_influencer/models/review.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/category/repository/category_repository.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InfluencerRepository {
@@ -23,7 +25,25 @@ class InfluencerRepository {
         i = Influencer.fromJson(value.id, value.data()!);
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
+    } finally {
+      try {
+        await Constants.firebaseFirestore
+            .collection("influencers")
+            .doc(influencerId)
+            .collection("reviews")
+            .get()
+            .then((value) {
+          List<Review> influencerReview = [];
+          for (var v in value.docs) {
+            Review r = Review.fromJson(v.id, v.data());
+            influencerReview.add(r);
+          }
+          i.review = influencerReview;
+        });
+      } catch (e) {
+        throw CustomException(e.toString());
+      }
     }
     return i;
   }
@@ -35,7 +55,7 @@ class InfluencerRepository {
       final avatarRef = Constants.firebaseStorage.refFromURL(avatarUrl);
       if (avatarRef.name != 'dummy-profile-pic.png') avatarRef.delete();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     try {
       String downloadURL;
@@ -58,9 +78,9 @@ class InfluencerRepository {
           .update({'avatar_url': downloadURL});
       return downloadURL;
     } on FirebaseException catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -70,7 +90,7 @@ class InfluencerRepository {
       await updateInfluencerAvatar(
           influencer.userId, influencer.avatarUrl, img);
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     // }
     try {
@@ -104,7 +124,7 @@ class InfluencerRepository {
         'bank_account_number': influencer.bankAccountNumber
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     return;
   }
@@ -117,7 +137,7 @@ class InfluencerRepository {
   //       'instagram_user_id': instagramUserId,
   //     });
   //   } catch (e) {
-  //     throw Exception('Facebook connection failed!');
+  //     throw CustomException('Facebook connection failed!');
   //   }
   // }
 
@@ -137,7 +157,7 @@ class InfluencerRepository {
         Map<String, dynamic> res = jsonDecode(resp);
         followersCount = res["followers_count"];
       } catch (e) {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
       try {
         HttpClientResponse response = await getAudienceFromAPI(
@@ -156,7 +176,7 @@ class InfluencerRepository {
           topAudienceCity.add(toBeSorted[i]['city']);
         }
       } catch (e) {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
       try {
         HttpClientResponse response = await getInsightFromAPI(
@@ -173,10 +193,10 @@ class InfluencerRepository {
         previousReach = reachValue.first["value"];
         fourWeekReach = reachValue.last["value"];
       } catch (e) {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       influencer.followersCount = followersCount;
       influencer.topAudienceCity = topAudienceCity;
@@ -201,7 +221,7 @@ class InfluencerRepository {
           'graph.facebook.com', '/v16.0/$instagramUserId', queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e);
+      throw CustomException(e);
     } finally {
       httpClient.close();
     }
@@ -224,7 +244,7 @@ class InfluencerRepository {
           queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       httpClient.close();
     }
@@ -254,7 +274,7 @@ class InfluencerRepository {
           queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(e);
+      throw CustomException(e);
     } finally {
       httpClient.close();
     }
@@ -278,7 +298,7 @@ class InfluencerRepository {
         };
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

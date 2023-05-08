@@ -65,11 +65,11 @@ class GoogleLoginRegisterRequested extends AuthEvent {
   GoogleLoginRegisterRequested(
       this.email,
       this.fullname,
-      this.location,
       this.bankAccount,
       this.bankAccountName,
       this.bankAccountNumber,
       this.gender,
+      this.location,
       this.categoryList,
       this.customCategory,
       this.id);

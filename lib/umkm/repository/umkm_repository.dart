@@ -1,4 +1,5 @@
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 import 'package:fluence_for_influencer/umkm/model/umkm.dart';
 
 class UmkmRepository {
@@ -13,7 +14,7 @@ class UmkmRepository {
         u = Umkm.fromJson(value.id, value.data()!);
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     return u;
   }

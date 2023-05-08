@@ -48,9 +48,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     password: _passwordController.text,
                     id: ""));
           }
-          if (state is AuthError) {
-            SnackBarWidget.failed(context, state.error);
-          }
         },
         builder: (context, state) {
           if (state is Loading) {

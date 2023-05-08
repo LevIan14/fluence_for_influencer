@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluence_for_influencer/models/portfolio.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PortfolioRepository {
@@ -24,7 +25,7 @@ class PortfolioRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     return portfolioList;
   }
@@ -52,10 +53,10 @@ class PortfolioRepository {
           'uploaded_at': now,
         });
       } catch (e) {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
     } on FirebaseException catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     return;
   }
@@ -74,7 +75,7 @@ class PortfolioRepository {
       });
       // await getInfluencerPortfolio(influencerId, portfolio.portfolioId);
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -85,7 +86,7 @@ class PortfolioRepository {
       final imageRef = storageRef.refFromURL(portfolio.imageUrl);
       imageRef.delete();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       try {
         await Constants.firebaseFirestore
@@ -95,7 +96,7 @@ class PortfolioRepository {
             .doc(portfolio.portfolioId)
             .delete();
       } catch (e) {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
       // finally {
       //   List<Portfolio> portfolioList = await getInfluencerPortfolioList(influencerId);

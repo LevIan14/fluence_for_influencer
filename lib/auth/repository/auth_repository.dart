@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -30,12 +31,12 @@ class AuthRepository {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw Exception('Pengguna tidak ditemukan');
+        throw CustomException('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {
-        throw Exception('Password salah');
+        throw CustomException('Password salah');
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -56,7 +57,7 @@ class AuthRepository {
         }
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -69,10 +70,10 @@ class AuthRepository {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        throw Exception('Email telah digunakan');
+        throw CustomException('Email telah digunakan');
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -84,14 +85,14 @@ class AuthRepository {
       await Constants.firebaseAuth.currentUser!.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw Exception('Pengguna tidak ditemukan');
+        throw CustomException('Pengguna tidak ditemukan');
       } else if (e.code == 'wrong-password') {
-        throw Exception('Password salah');
+        throw CustomException('Password salah');
       } else if (e.code == 'too-many-request') {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(e.toString());
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -99,7 +100,7 @@ class AuthRepository {
     try {
       return Constants.firebaseAuth.currentUser!.sendEmailVerification();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -107,7 +108,7 @@ class AuthRepository {
     try {
       return Constants.firebaseAuth.currentUser!.emailVerified;
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -152,12 +153,12 @@ class AuthRepository {
           .set(dataInfluencer);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw Exception('Password terlalu lemah');
+        throw CustomException('Password terlalu lemah');
       } else if (e.code == 'email-already-in-use') {
-        throw Exception('Email telah digunakan oleh pengguna lain');
+        throw CustomException('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -173,6 +174,15 @@ class AuthRepository {
 
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(credential);
+
+      DocumentSnapshot umkmSnapshots = await Constants.firebaseFirestore
+          .collection("umkm")
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (umkmSnapshots.exists) {
+        throw CustomException('Pengguna telah terdaftar sebagai UMKM');
+      }
 
       DocumentSnapshot snapshot = await Constants.firebaseFirestore
           .collection("influencers")
@@ -196,7 +206,7 @@ class AuthRepository {
       }
       return userInfluencer;
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -236,12 +246,12 @@ class AuthRepository {
           .set(dataInfluencer);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw Exception('Password terlalu lemah');
+        throw CustomException('Password terlalu lemah');
       } else if (e.code == 'email-already-in-use') {
-        throw Exception('Email telah digunakan oleh pengguna lain');
+        throw CustomException('Email telah digunakan oleh pengguna lain');
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -294,19 +304,19 @@ class AuthRepository {
                 'instagram_user_id': instagramUserId
               };
             } catch (e) {
-              throw Exception(Constants.genericErrorException);
+              throw CustomException(e.toString());
             } finally {}
           } catch (e) {
-            throw Exception(Constants.genericErrorException);
+            throw CustomException(e.toString());
           }
         } catch (e) {
-          throw Exception(Constants.genericErrorException);
+          throw CustomException(e.toString());
         }
       } else {
-        throw Exception(Constants.genericErrorException);
+        throw CustomException(Constants.genericErrorException);
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -327,7 +337,7 @@ class AuthRepository {
           'graph.facebook.com', '/v16.0/oauth/access_token', queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       httpClient.close();
     }
@@ -348,7 +358,7 @@ class AuthRepository {
           queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       httpClient.close();
     }
@@ -368,7 +378,7 @@ class AuthRepository {
           'graph.facebook.com', '/v16.0/$facebookPageId', queryParameters));
       response = await request.close();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     } finally {
       httpClient.close();
     }
@@ -379,7 +389,7 @@ class AuthRepository {
     try {
       await Constants.firebaseAuth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -387,7 +397,7 @@ class AuthRepository {
     try {
       await firebaseAuth.signOut();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

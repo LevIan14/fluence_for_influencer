@@ -1,4 +1,5 @@
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 
 class ChatRepository {
   Future<dynamic> getChatList() async {
@@ -10,7 +11,7 @@ class ChatRepository {
           .orderBy("updated_at", descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

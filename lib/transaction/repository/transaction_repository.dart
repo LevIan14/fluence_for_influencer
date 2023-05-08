@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction.dart';
 import 'package:fluence_for_influencer/transaction/model/order_transaction_progress.dart';
 import 'package:fluence_for_influencer/transaction/model/progress/content_progress.dart';
@@ -62,7 +63,7 @@ class TransactionRepository {
         return orderTransaction;
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -74,7 +75,7 @@ class TransactionRepository {
           .orderBy('created_at', descending: true)
           .snapshots();
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -84,7 +85,7 @@ class TransactionRepository {
           .collection("transactions")
           .add(newTransaction);
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -128,7 +129,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -174,7 +175,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -219,7 +220,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -265,7 +266,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -311,7 +312,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -357,7 +358,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -403,7 +404,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -449,7 +450,7 @@ class TransactionRepository {
         }
       });
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }

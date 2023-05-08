@@ -56,9 +56,6 @@ class _LoginPageState extends State<LoginPage> {
             navigateAsFirstScreen(context, const MainPage(index: 0));
             return;
           }
-          if (state is AuthError) {
-            SnackBarWidget.failed(context, state.error);
-          }
         }),
         builder: (context, state) {
           if (state is Loading) {
