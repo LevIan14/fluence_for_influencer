@@ -144,7 +144,7 @@ class AuthRepository {
         "bank_account_number": bankAccountNumber,
         "gender": gender,
         "highest_fee": 0,
-        "lowes_fee": 0
+        "lowest_fee": 0
       };
 
       firebaseFirestore
