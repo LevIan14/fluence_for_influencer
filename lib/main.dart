@@ -43,8 +43,10 @@ class _FluenceAppState extends State<FluenceForInfluencer> {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => authBloc)],
       child: MaterialApp(
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
             Locale('id'),

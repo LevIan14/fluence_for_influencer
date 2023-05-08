@@ -1,5 +1,7 @@
 <resources>
-    <string name="facebook_app_id">748827173013593</string>
+    <string name="facebook_app_id">748827173013593</string>?
+    <!-- <string name="facebook_app_id">2199064830292116</string> -->
     <string name="fb_login_protocol_scheme">fb748827173013593</string>
     <string name="facebook_client_token">929a644b71511be737a2ecc77f9e528b</string>
+    <!-- <string name="facebook_client_token">3d7e967aa06f644f4d5f5033cd241ef0</string> -->
 </resources>
