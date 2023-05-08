@@ -60,22 +60,22 @@ class _MessageListPageState extends State<MessageListPage> {
           }
 
           if (state is MessageListLoaded) {
-
             return Scaffold(
                 appBar: AppBar(
-                  flexibleSpace: GestureDetector(
-                    onTap: () {
-                      nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
-                    }
-                  ),
+                  flexibleSpace: GestureDetector(onTap: () {
+                    print('hasi');
+
+                    nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
+                  }),
                   elevation: 0,
                   title: GestureDetector(
                     onTap: () {
-                      nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
-                    }, child: Text(widget.fromUserName),
+                      nextScreen(
+                          context, UmkmProfilePage(umkmId: widget.umkmId));
+                    },
+                    child: Text(widget.fromUserName),
                   ),
                   backgroundColor: Constants.primaryColor,
-                  
                 ),
                 body: Padding(
                   padding:
