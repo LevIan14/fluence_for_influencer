@@ -65,14 +65,12 @@ class _MessageListPageState extends State<MessageListPage> {
                 appBar: AppBar(
                   flexibleSpace: GestureDetector(
                     onTap: () {
-                      print('tapped!');
                       nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
                     }
                   ),
                   elevation: 0,
                   title: GestureDetector(
                     onTap: () {
-                      print('title tapped!');
                       nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
                     }, child: Text(widget.fromUserName),
                   ),
