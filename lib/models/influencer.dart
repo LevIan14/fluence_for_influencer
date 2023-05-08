@@ -17,8 +17,8 @@ class Influencer {
   String location;
   String about;
   String? noteAgreement;
-  num? lowestFee;
-  num? highestFee;
+  num lowestFee;
+  num highestFee;
 
   late String? facebookAccessToken;
   late String? instagramUserId;

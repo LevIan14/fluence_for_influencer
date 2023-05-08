@@ -81,6 +81,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.facebook.android:facebook-login:latest.release'
+    // implementation 'com.facebook.android:facebook-login:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation 'com.google.firebase:firebase-appcheck-debug:16.1.2'
 }
