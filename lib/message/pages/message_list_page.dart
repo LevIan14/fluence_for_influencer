@@ -3,7 +3,9 @@ import 'package:fluence_for_influencer/message/bloc/message_bloc.dart';
 import 'package:fluence_for_influencer/message/repository/message_repository.dart';
 import 'package:fluence_for_influencer/message/widgets/message_tile.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/util/date_utility.dart';
+import 'package:fluence_for_influencer/umkm/pages/umkm_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,11 +60,24 @@ class _MessageListPageState extends State<MessageListPage> {
           }
 
           if (state is MessageListLoaded) {
+
             return Scaffold(
                 appBar: AppBar(
+                  flexibleSpace: GestureDetector(
+                    onTap: () {
+                      print('tapped!');
+                      nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
+                    }
+                  ),
                   elevation: 0,
-                  title: Text(widget.fromUserName),
+                  title: GestureDetector(
+                    onTap: () {
+                      print('title tapped!');
+                      nextScreen(context, UmkmProfilePage(umkmId: widget.umkmId));
+                    }, child: Text(widget.fromUserName),
+                  ),
                   backgroundColor: Constants.primaryColor,
+                  
                 ),
                 body: Padding(
                   padding:
