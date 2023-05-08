@@ -66,11 +66,40 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                   state.transaction.orderProgress.reviewContent.umkmNote;
 
               return Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Status Progress'),
+                          Chip(
+                              backgroundColor: state.transaction.orderProgress
+                                          .reviewContent.status ==
+                                      "DONE"
+                                  ? Colors.green[300]
+                                  : state.transaction.orderProgress
+                                              .reviewContent.status ==
+                                          "ON REVIEW"
+                                      ? Colors.blue[300]
+                                      : state.transaction.orderProgress
+                                                  .reviewContent.status ==
+                                              'NEED REVISION'
+                                          ? Colors.orange[300]
+                                          : Colors.yellow[300],
+                              label: Text(
+                                state.transaction.orderProgress.reviewContent
+                                    .status,
+                                style: const TextStyle(fontSize: 10),
+                              )),
+                        ],
+                      ),
+                      Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: const Divider()),
                       const Text("Catatan Konten"),
                       const SizedBox(height: 8),
                       TextFormField(
@@ -137,10 +166,12 @@ class _ReviewContentPageState extends State<ReviewContentPage> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30))),
                               onPressed: () {
-                                transactionBloc.add(SaveNotesReviewContent(
-                                    widget.transactionId,
-                                    _contentNoteController.text,
-                                    state.transaction.orderProgress));
+                                if (_contentNoteController.text.isNotEmpty) {
+                                  transactionBloc.add(SaveNotesReviewContent(
+                                      widget.transactionId,
+                                      _contentNoteController.text,
+                                      state.transaction.orderProgress));
+                                }
                               },
                               child: const Text("Simpan")),
                         )

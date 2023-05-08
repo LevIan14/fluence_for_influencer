@@ -244,7 +244,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                               ),
                               const SizedBox(height: 12),
                               const Text(
-                                "Judul",
+                                "Judul Project",
                                 style: TextStyle(color: Constants.primaryColor),
                               ),
                               const SizedBox(height: 8),
@@ -265,7 +265,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                "Durasi",
+                                "Durasi Project",
                                 style: TextStyle(color: Constants.primaryColor),
                               ),
                               const SizedBox(height: 8),
@@ -285,7 +285,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("Harga",
+                              const Text("Harga Project",
                                   style:
                                       TextStyle(color: Constants.primaryColor)),
                               const SizedBox(height: 8),
@@ -305,7 +305,7 @@ class _NegotiationDetailPageState extends State<NegotiationDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Deskripsi",
+                              "Deskripsi Project",
                               style: TextStyle(color: Constants.primaryColor),
                             ),
                             const SizedBox(height: 8),

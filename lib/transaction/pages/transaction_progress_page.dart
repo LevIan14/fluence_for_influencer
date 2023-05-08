@@ -13,9 +13,7 @@ import 'progress/upload_progress_page.dart';
 
 class TransactionProgressPage extends StatefulWidget {
   final String transactionId;
-  final int currentProgress;
-  const TransactionProgressPage(
-      {Key? key, required this.transactionId, required this.currentProgress})
+  const TransactionProgressPage({Key? key, required this.transactionId})
       : super(key: key);
 
   @override
@@ -27,11 +25,12 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
   late final TransactionBloc transactionBloc;
   final TransactionRepository transactionRepository = TransactionRepository();
   int currentStep = 0;
+  int currentProgress = 0;
+  bool isFirstLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    currentStep = widget.currentProgress;
     transactionBloc =
         TransactionBloc(transactionRepository: transactionRepository);
     transactionBloc.add(GetTransactionDetail(widget.transactionId));
@@ -54,7 +53,7 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
 
               return Stepper(
                   onStepTapped: (step) {
-                    if (step <= widget.currentProgress) {
+                    if (step <= currentProgress) {
                       setState(() {
                         currentStep = step;
                       });
@@ -117,6 +116,25 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                             textAlign: TextAlign.justify,
                           ),
                           const SizedBox(height: 16),
+                          Chip(
+                              backgroundColor: state.transaction.orderProgress
+                                          .reviewContent.status ==
+                                      "DONE"
+                                  ? Colors.green[300]
+                                  : state.transaction.orderProgress
+                                              .reviewContent.status ==
+                                          "ON REVIEW"
+                                      ? Colors.blue[300]
+                                      : state.transaction.orderProgress
+                                                  .reviewContent.status ==
+                                              'NEED REVISION'
+                                          ? Colors.orange[300]
+                                          : Colors.yellow[300],
+                              label: Text(
+                                state.transaction.orderProgress.reviewContent
+                                    .status,
+                                style: const TextStyle(fontSize: 10),
+                              )),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -189,6 +207,25 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
                               textAlign: TextAlign.justify,
                             ),
                             const SizedBox(height: 16),
+                            Chip(
+                                backgroundColor: state.transaction.orderProgress
+                                            .reviewUpload.status ==
+                                        "DONE"
+                                    ? Colors.green[300]
+                                    : state.transaction.orderProgress
+                                                .reviewUpload.status ==
+                                            "ON REVIEW"
+                                        ? Colors.blue[300]
+                                        : state.transaction.orderProgress
+                                                    .reviewUpload.status ==
+                                                'NEED REVISION'
+                                            ? Colors.orange[300]
+                                            : Colors.yellow[300],
+                                label: Text(
+                                  state.transaction.orderProgress.reviewUpload
+                                      .status,
+                                  style: const TextStyle(fontSize: 10),
+                                )),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
@@ -247,6 +284,10 @@ class _TransactionProgressPageState extends State<TransactionProgressPage> {
       }
     }
 
-    currentStep = index;
+    if (!isFirstLoaded) {
+      isFirstLoaded = true;
+      currentProgress = index;
+      currentStep = index;
+    }
   }
 }

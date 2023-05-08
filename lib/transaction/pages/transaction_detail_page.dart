@@ -61,7 +61,6 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
   late Agreement agreement;
   late String influencerName;
 
-  int currentProgress = 0;
   @override
   void initState() {
     super.initState();
@@ -157,7 +156,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                             ],
                           ),
                           Container(
-                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              margin: const EdgeInsets.symmetric(vertical: 4),
                               child: const Divider()),
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +233,7 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                     ]),
                                 Container(
                                     margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     child: const Divider()),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,15 +380,11 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                                       BorderRadius.circular(
                                                           30))),
                                           onPressed: () {
-                                            checkProgress(state.transaction);
                                             nextScreen(
                                                 context,
                                                 TransactionProgressPage(
-                                                  transactionId:
-                                                      widget.transactionId,
-                                                  currentProgress:
-                                                      currentProgress,
-                                                ));
+                                                    transactionId:
+                                                        widget.transactionId));
                                           },
                                           child: const Text(
                                               "Lihat Status Pengerjaan")),
@@ -424,14 +419,11 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
                                               borderRadius:
                                                   BorderRadius.circular(30))),
                                       onPressed: () {
-                                        checkProgress(state.transaction);
                                         nextScreen(
                                             context,
                                             TransactionProgressPage(
-                                              transactionId:
-                                                  state.transaction.id,
-                                              currentProgress: currentProgress,
-                                            ));
+                                                transactionId:
+                                                    state.transaction.id));
                                       },
                                       child: const Text(
                                           "Lihat Status Pengerjaan")));
@@ -441,29 +433,5 @@ class TransactionDetailPageState extends State<TransactionDetailPage> {
             ),
           ),
         ));
-  }
-
-  void checkProgress(OrderTransaction transaction) {
-    int index = 0;
-
-    if (transaction.orderProgress.contentProgress.status != "DONE") {
-      index = 0;
-    } else {
-      if (transaction.orderProgress.reviewContent.status != "DONE") {
-        index = 1;
-      } else {
-        if (transaction.orderProgress.uploadProgress.status != "DONE") {
-          index = 2;
-        } else {
-          if (transaction.orderProgress.reviewUpload.status != "DONE") {
-            index = 3;
-          } else {
-            index = 4;
-          }
-        }
-      }
-    }
-
-    currentProgress = index;
   }
 }

@@ -25,6 +25,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  bool _passwordInvisible = true;
+  bool _confirmPasswordInvisible = true;
+
   @override
   void dispose() {
     _fullnameController.dispose();
@@ -152,14 +155,29 @@ class _RegisterPageState extends State<RegisterPage> {
                                       TextFormField(
                                         decoration:
                                             textInputDecoration.copyWith(
-                                          prefixIcon: const Icon(Icons.lock,
-                                              color: Constants.primaryColor),
-                                        ),
+                                                prefixIcon: const Icon(
+                                                    Icons.lock,
+                                                    color:
+                                                        Constants.primaryColor),
+                                                suffixIcon: IconButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _passwordInvisible =
+                                                            !_passwordInvisible;
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      _passwordInvisible
+                                                          ? Icons.visibility_off
+                                                          : Icons.visibility,
+                                                      color: Constants
+                                                          .primaryColor,
+                                                    ))),
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         controller: _passwordController,
                                         keyboardType: TextInputType.text,
-                                        obscureText: true,
+                                        obscureText: _passwordInvisible,
                                         validator: (value) {
                                           return value!.length < 6
                                               ? "Panjang password setidaknya 6 karakter"
@@ -184,12 +202,25 @@ class _RegisterPageState extends State<RegisterPage> {
                                             textInputDecoration.copyWith(
                                           prefixIcon: const Icon(Icons.lock,
                                               color: Constants.primaryColor),
+                                          suffixIcon: IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _confirmPasswordInvisible =
+                                                      !_confirmPasswordInvisible;
+                                                });
+                                              },
+                                              icon: Icon(
+                                                _confirmPasswordInvisible
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility,
+                                                color: Constants.primaryColor,
+                                              )),
                                         ),
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         controller: _confirmPasswordController,
                                         keyboardType: TextInputType.text,
-                                        obscureText: true,
+                                        obscureText: _confirmPasswordInvisible,
                                         validator: (value) {
                                           if (value!.length < 6) {
                                             return "Panjang password setidaknya 6 karakter";

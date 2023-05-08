@@ -230,7 +230,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                 ),
                                 Container(
                                     margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     child: const Divider()),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
