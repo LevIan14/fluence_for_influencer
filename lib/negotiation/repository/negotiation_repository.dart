@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluence_for_influencer/negotiation/model/negotiation.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/util/custom_exception.dart';
 
 class NegotiationRepository {
   Future<dynamic> getNegotiationDetail(String negotiationId) async {
@@ -31,7 +32,7 @@ class NegotiationRepository {
         return data;
       }
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
     return null;
   }
@@ -43,7 +44,7 @@ class NegotiationRepository {
           .doc(negotiationId)
           .update({"negotiation_status": "DONE"});
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 
@@ -54,7 +55,7 @@ class NegotiationRepository {
           .doc(negotiationId)
           .update({"negotiation_status": "REJECTED"});
     } catch (e) {
-      throw Exception(Constants.genericErrorException);
+      throw CustomException(e.toString());
     }
   }
 }
