@@ -147,14 +147,14 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
     );
   }
 
-  Future<bool> submitDialog(context, umkmAgreement) async {
+  Future<bool> submitDialog(context, influencerAgreement) async {
     Text dialogTitle = const Text("Kirim Persetujuan");
     Text dialogContent =
         const Text("Apakah Anda yakin untuk mengirim catatan persetujuan?");
     TextButton primaryButton = TextButton(
       child: const Text("Kirim"),
       onPressed: () {
-        submitInfluencerNoteAgreement(umkmAgreement);
+        submitInfluencerNoteAgreement(influencerAgreement);
         Navigator.pop(context, true);
       },
     );
@@ -172,9 +172,9 @@ class _InfluencerAgreementPageState extends State<InfluencerAgreementPage> {
     return true;
   }
 
-  void submitInfluencerNoteAgreement(String umkmAgreement) {
-    agreementBloc
-        .add(UpdateInfluencerAgreement(widget.agreementId, umkmAgreement));
+  void submitInfluencerNoteAgreement(String influencerAgreement) {
+    agreementBloc.add(
+        UpdateInfluencerAgreement(widget.agreementId, influencerAgreement));
   }
 
   void saveNoteInfluencerAgreement(String influencerAgreement) {

@@ -104,7 +104,11 @@ class _AgreementRowState extends State<AgreementRow> {
                 ),
               );
             }
-            return Container();
+            return const Center(
+                child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ));
           },
         ),
       ),

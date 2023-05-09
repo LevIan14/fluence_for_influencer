@@ -78,7 +78,11 @@ class ChatRowState extends State<ChatRow> {
                   )),
             );
           }
-          return Container();
+          return const Center(
+              child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ));
         },
       ),
     );
