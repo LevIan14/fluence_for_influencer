@@ -8,6 +8,7 @@ import 'package:fluence_for_influencer/shared/util/date_utility.dart';
 import 'package:fluence_for_influencer/transaction/pages/transaction_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 class TransactionListRow extends StatefulWidget {
   final String transactionId;
@@ -35,22 +36,21 @@ class _TransactionListRowState extends State<TransactionListRow> {
   late final NegotiationBloc negotiationBloc;
   final NegotiationRepository negotiationRepository = NegotiationRepository();
 
-  late final InfluencerBloc influencerBloc;
-  final InfluencerRepository influencerRepository = InfluencerRepository();
-  final CategoryRepository categoryRepository = CategoryRepository();
-
-  String influencerName = "";
+  // late final InfluencerBloc influencerBloc;
+  // final InfluencerRepository influencerRepository = InfluencerRepository();
+  // final CategoryRepository categoryRepository = CategoryRepository();
 
   @override
   void initState() {
     super.initState();
-    influencerBloc = InfluencerBloc(
-        influencerRepository: influencerRepository,
-        categoryRepository: categoryRepository);
-    influencerBloc.add(GetInfluencerDetail(widget.influencerId));
+    // influencerBloc = InfluencerBloc(
+    //     influencerRepository: influencerRepository,
+    //     categoryRepository: categoryRepository);
+    // influencerBloc.add(GetInfluencerDetail(widget.influencerId));
 
     negotiationBloc =
         NegotiationBloc(negotiationRepository: negotiationRepository);
+    negotiationBloc.add(GetNegotiationDetail(widget.negotiationId));
   }
 
   @override
@@ -58,7 +58,7 @@ class _TransactionListRowState extends State<TransactionListRow> {
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => negotiationBloc),
-          BlocProvider(create: (context) => influencerBloc)
+          // BlocProvider(create: (context) => influencerBloc)
         ],
         child: MultiBlocListener(
           listeners: [
@@ -68,7 +68,6 @@ class _TransactionListRowState extends State<TransactionListRow> {
             BlocListener<InfluencerBloc, InfluencerState>(
               listener: (context, state) {
                 if (state is InfluencerLoaded) {
-                  influencerName = state.influencer.fullname;
                   negotiationBloc
                       .add(GetNegotiationDetail(widget.negotiationId));
                 }
@@ -112,7 +111,28 @@ class _TransactionListRowState extends State<TransactionListRow> {
                 ),
               );
             }
-            return Container();
+
+            return const Center(
+                child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ));
+            // return Shimmer.fromColors(
+            //   baseColor: Colors.grey[300]!,
+            //   highlightColor: Colors.grey[100]!,
+            //   child: ListView.builder(
+            //     itemCount: 6,
+            //     itemBuilder: (context, index) {
+            //       return Card(
+            //         elevation: 1.0,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(16),
+            //         ),
+            //         child: const SizedBox(height: 80),
+            //       );
+            //     },
+            //   ),
+            // );
           }),
         ));
   }

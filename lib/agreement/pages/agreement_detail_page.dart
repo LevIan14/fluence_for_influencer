@@ -501,7 +501,7 @@ class _AgreementDetailPageState extends State<AgreementDetailPage> {
                                               BorderRadius.circular(30))),
                                   onPressed: () {
                                     navigateAsFirstScreen(
-                                        context, const MainPage(index: 3));
+                                        context, const MainPage(index: 0));
                                   },
                                   child: const Text("Ke Halaman Transaksi")),
                             ),
