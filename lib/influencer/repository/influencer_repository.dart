@@ -141,8 +141,8 @@ class InfluencerRepository {
   //   }
   // }
 
-  Future<Influencer> getInfluencerInsight(Influencer influencer) async {
-    log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');
+  Future<Map<String, dynamic>> getInfluencerInsight(String instagramUserId, String facebookAccessToken) async {
+    // log('${influencer.userId} with instagram id: ${influencer.instagramUserId}');
     int followersCount = 0;
     int previousImpressions = 0;
     int fourWeekImpressions = 0;
@@ -152,7 +152,7 @@ class InfluencerRepository {
     try {
       try {
         HttpClientResponse response = await getUserFromAPI(
-            influencer.instagramUserId!, influencer.facebookAccessToken!);
+            instagramUserId, facebookAccessToken);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         followersCount = res["followers_count"];
@@ -161,7 +161,7 @@ class InfluencerRepository {
       }
       try {
         HttpClientResponse response = await getAudienceFromAPI(
-            influencer.instagramUserId!, influencer.facebookAccessToken!);
+            instagramUserId!, facebookAccessToken);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         Map<String, dynamic> data = res["data"].first;
@@ -180,7 +180,7 @@ class InfluencerRepository {
       }
       try {
         HttpClientResponse response = await getInsightFromAPI(
-            influencer.instagramUserId!, influencer.facebookAccessToken!);
+            instagramUserId, facebookAccessToken);
         String resp = await response.transform(utf8.decoder).join();
         Map<String, dynamic> res = jsonDecode(resp);
         List<dynamic> data = res["data"];
@@ -197,15 +197,15 @@ class InfluencerRepository {
       }
     } catch (e) {
       throw CustomException(e.toString());
-    } finally {
-      influencer.followersCount = followersCount;
-      influencer.topAudienceCity = topAudienceCity;
-      influencer.previousImpressions = previousImpressions;
-      influencer.fourWeekImpressions = fourWeekImpressions;
-      influencer.previousReach = previousReach;
-      influencer.fourWeekReach = fourWeekReach;
-    }
-    return influencer;
+    } 
+    return {
+        'followersCount': followersCount,
+        'topAudienceCity': topAudienceCity,
+        'previousImpressions': previousImpressions,
+        'fourWeekImpressions': fourWeekImpressions,
+        'previousReach': previousReach,
+        'fourWeekReach': fourWeekReach,
+    };
   }
 
   Future<HttpClientResponse> getUserFromAPI(

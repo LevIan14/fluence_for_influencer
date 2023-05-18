@@ -42,16 +42,16 @@ class GoogleLoginRequestedSuccess extends AuthState {
 }
 
 class FacebookCredentialSuccess extends AuthState {
-  final String? influencerId;
+  // final String? influencerId;
   final String? facebookAccessToken;
   final String? instagramUserId;
 
   FacebookCredentialSuccess(
-      this.influencerId, this.facebookAccessToken, this.instagramUserId);
+      this.facebookAccessToken, this.instagramUserId);
 
   @override
   List<Object?> get props =>
-      [influencerId, facebookAccessToken, instagramUserId];
+      [facebookAccessToken, instagramUserId];
 }
 
 class FacebookCredentialError extends AuthState {

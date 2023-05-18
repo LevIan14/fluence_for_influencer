@@ -61,7 +61,7 @@ class InfluencerPortfolio extends StatelessWidget {
                                       Navigator.pop(context);
                                       nextScreen(
                                           context,
-                                          EditPortfolioPage(
+                                          EditCaptionPage(
                                               portfolio: portfolio));
                                       // influencerBloc.add();
                                     },

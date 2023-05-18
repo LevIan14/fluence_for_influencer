@@ -1,34 +1,34 @@
-part of 'category_bloc.dart';
+// part of 'category_bloc.dart';
 
-abstract class CategoryState extends Equatable {}
+// abstract class CategoryState extends Equatable {}
 
-class CategoryInitial extends CategoryState {
-  CategoryInitial();
+// class CategoryInitial extends CategoryState {
+//   CategoryInitial();
 
-  @override
-  List<Object> get props => [];
-}
+//   @override
+//   List<Object> get props => [];
+// }
 
-class CategoryLoading extends CategoryState {
-  CategoryLoading();
+// class CategoryLoading extends CategoryState {
+//   CategoryLoading();
 
-  @override
-  List<Object> get props => [];
-}
+//   @override
+//   List<Object> get props => [];
+// }
 
-class CategoryLoaded extends CategoryState {
-  final List<CategoryType> categoryList;
-  CategoryLoaded(this.categoryList);
+// class CategoryLoaded extends CategoryState {
+//   final List<CategoryType> categoryList;
+//   CategoryLoaded(this.categoryList);
   
-  @override
-  List<Object> get props => categoryList;
-}
+//   @override
+//   List<Object> get props => categoryList;
+// }
 
-class CategoryError extends CategoryState {
-  final String error;
-  CategoryError(this.error);
+// class CategoryError extends CategoryState {
+//   final String error;
+//   CategoryError(this.error);
 
-   @override
-  List<Object> get props => [error];
-}
+//    @override
+//   List<Object> get props => [error];
+// }
 

@@ -36,10 +36,15 @@ class InfluencerBloc extends Bloc<InfluencerEvent, InfluencerState> {
         influencer.categoryType = influencerCategoryList;
         if (influencer.instagramUserId!.isNotEmpty &&
             influencer.facebookAccessToken!.isNotEmpty) {
-          influencer =
-              await influencerRepository.getInfluencerInsight(influencer);
+          Map<String, dynamic> res =
+              await influencerRepository.getInfluencerInsight(influencer.instagramUserId!, influencer.facebookAccessToken!);
+          influencer.followersCount = res['followersCount'];
+          influencer.topAudienceCity = res['topAudienceCity'];
+          influencer.previousImpressions = res['previousImpressions'];
+          influencer.fourWeekImpressions = res['fourWeekImpressions'];
+          influencer.previousReach = res['previousReach'];
+          influencer.fourWeekReach = res['fourWeekReach'];
         }
-
         emit(InfluencerLoaded(influencer));
       } catch (e) {
         emit(InfluencerError(e.toString()));

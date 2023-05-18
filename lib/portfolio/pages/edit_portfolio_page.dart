@@ -11,16 +11,16 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditPortfolioPage extends StatefulWidget {
-  EditPortfolioPage({super.key, required this.portfolio});
+class EditCaptionPage extends StatefulWidget {
+  EditCaptionPage({super.key, required this.portfolio});
 
   Portfolio portfolio;
 
   @override
-  State<EditPortfolioPage> createState() => _EditPortfolioPageState();
+  State<EditCaptionPage> createState() => _EditCaptionPageState();
 }
 
-class _EditPortfolioPageState extends State<EditPortfolioPage> {
+class _EditCaptionPageState extends State<EditCaptionPage> {
   late final PortfolioBloc portfolioBloc;
   final PortfolioRepository portfolioRepository = PortfolioRepository();
 
@@ -90,7 +90,7 @@ class _EditPortfolioPageState extends State<EditPortfolioPage> {
       child: BlocListener<PortfolioBloc, PortfolioState>(
         listener: (context, state) {
           if (state is InfluencerPortfolioUpdated) {
-            navigateAsFirstScreen(context, const MainPage(index: 1));
+            navigateAsFirstScreen(context, const MainPage(index: 2));
           }
         },
         child: SingleChildScrollView(

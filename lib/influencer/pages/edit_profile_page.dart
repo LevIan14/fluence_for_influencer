@@ -30,14 +30,14 @@ import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 
 import 'widget_directing_textfield.dart';
 
-class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+class InfluencerEditProfilePage extends StatefulWidget {
+  const InfluencerEditProfilePage({super.key});
 
   @override
-  State<EditProfilePage> createState() => _EditProfilePageState();
+  State<InfluencerEditProfilePage> createState() => _InfluencerEditProfilePageState();
 }
 
-class _EditProfilePageState extends State<EditProfilePage> {
+class _InfluencerEditProfilePageState extends State<InfluencerEditProfilePage> {
   final _formSettingsKey = GlobalKey<FormState>();
   late final InfluencerBloc influencerBloc;
   late final CategoryBloc categoryBloc;

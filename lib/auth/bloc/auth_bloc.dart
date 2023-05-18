@@ -148,7 +148,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         Map<String, dynamic>? res =
             await authRepository.connectToFacebook(event.influencerId);
         if (res != null) {
-          emit(FacebookCredentialSuccess(res['id'],
+          emit(FacebookCredentialSuccess(
               res['facebook_access_token'], res['instagram_user_id']));
         } else {
           emit(FacebookCredentialRejected());

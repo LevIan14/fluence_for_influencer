@@ -299,7 +299,6 @@ class AuthRepository {
               // connectingInfluencerWithFacebook(
               //     influencerId, longLivedUserAccessToken, instagramUserId);
               return {
-                'id': influencerId,
                 'facebook_access_token': longLivedUserAccessToken,
                 'instagram_user_id': instagramUserId
               };

@@ -93,10 +93,6 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     });
   }
 
-  navigateToUploadPortfolio(img) {
-    nextScreen(context, InfluencerUploadPortfolio(img: img));
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -133,7 +129,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                           XFile? img = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           if (img == null) return;
-                          navigateToUploadPortfolio(img);
+                          nextScreen(context, InfluencerUploadPortfolioPage(img: img));
                         },
                         child: Container(
                           decoration: BoxDecoration(boxShadow: [
@@ -202,7 +198,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
                           title: Text("Ubah Profil", style: textStyle),
                           onTap: () {
                             Navigator.pop(context);
-                            nextScreen(context, const EditProfilePage());
+                            nextScreen(context, const InfluencerEditProfilePage());
                           },
                         ),
                         ListTile(
@@ -273,7 +269,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
               Container(
                 // decoration: BoxDecoration(color: Constants.primaryColor),
                 margin: EdgeInsets.only(right: margin / 2),
-                child: Text("${influencer.followersCount} Pengikut",
+                child: Text("${influencer.followersCount} Followers",
                     style: const TextStyle(
                         color: Constants.primaryColor,
                         fontWeight: FontWeight.w400,
@@ -404,7 +400,7 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
     ];
     if (verified) {
       widgets.add(ProfileMenuInsights(
-          title: 'Informasi Instagram', influencer: influencer));
+          title: 'Matriks Instagram', influencer: influencer));
     }
     for (var widget in widgets) {
       finalWidgets.add(Container(

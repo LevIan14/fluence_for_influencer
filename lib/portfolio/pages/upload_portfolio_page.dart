@@ -18,17 +18,17 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-class InfluencerUploadPortfolio extends StatefulWidget {
-  const InfluencerUploadPortfolio({super.key, required this.img});
+class InfluencerUploadPortfolioPage extends StatefulWidget {
+  const InfluencerUploadPortfolioPage({super.key, required this.img});
 
   final XFile img;
 
   @override
-  State<InfluencerUploadPortfolio> createState() =>
-      _InfluencerUploadPortfolioState();
+  State<InfluencerUploadPortfolioPage> createState() =>
+      _InfluencerUploadPortfolioPageState();
 }
 
-class _InfluencerUploadPortfolioState extends State<InfluencerUploadPortfolio> {
+class _InfluencerUploadPortfolioPageState extends State<InfluencerUploadPortfolioPage> {
   final String influencerId = Constants.firebaseAuth.currentUser!.uid;
   // final TextEditingController titleController = TextEditingController();
   final TextEditingController captionController = TextEditingController();

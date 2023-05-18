@@ -1,10 +1,10 @@
-part of 'category_bloc.dart';
+// part of 'category_bloc.dart';
 
-abstract class CategoryEvent extends Equatable {
-  @override
-  List<Object> get props => [];
-}
+// abstract class CategoryEvent extends Equatable {
+//   @override
+//   List<Object> get props => [];
+// }
 
-class GetCategoryTypeListRequested extends CategoryEvent {
-  GetCategoryTypeListRequested();
-}
+// class GetCategoryTypeListRequested extends CategoryEvent {
+//   GetCategoryTypeListRequested();
+// }
