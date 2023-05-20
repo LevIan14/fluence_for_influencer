@@ -267,8 +267,8 @@ class AuthRepository {
       final LoginResult result =
           await FacebookAuth.instance.login(permissions: permissionsList);
       if (result.status == LoginStatus.success) {
-        final AuthCredential facebookCredential =
-            FacebookAuthProvider.credential(result.accessToken!.token);
+        // final AuthCredential facebookCredential =
+        //     FacebookAuthProvider.credential(result.accessToken!.token);
         log("successfully logged in to facebook!");
         final String facebookAccessToken = result.accessToken!.token;
         final String facebookUserId = result.accessToken!.userId;

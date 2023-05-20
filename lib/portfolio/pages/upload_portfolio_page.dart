@@ -12,6 +12,7 @@ import 'package:fluence_for_influencer/shared/app_button.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:fluence_for_influencer/shared/widgets/show_alert_dialog.dart';
+import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -55,6 +56,11 @@ class _InfluencerUploadPortfolioPageState extends State<InfluencerUploadPortfoli
         padding: const EdgeInsets.all(16),
         child: ElevatedButton(
             onPressed: () {
+              showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            showDialogWithCircularProgress(context));
               portfolioBloc.add(UploadInfluencerPortfolio(
                   influencerId, widget.img, captionController.text));
             },
