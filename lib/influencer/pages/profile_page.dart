@@ -467,6 +467,8 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
         if (state is InfluencerPortfolioUploaded ||
             state is InfluencerPortfolioUpdated ||
             state is InfluencerPortfolioDeleted) {
+          Navigator.pop(context);
+          Navigator.pop(context);
           portfolioBloc.add(GetInfluencerPortfolioList(influencer.userId));
         }
         if (state is InfluencerPortfoliosLoaded) {
@@ -568,3 +570,4 @@ class _InfluencerProfilePageState extends State<InfluencerProfilePage>
 // },
 //   );
 //
+

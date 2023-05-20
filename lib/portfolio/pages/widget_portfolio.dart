@@ -2,6 +2,7 @@ import 'package:fluence_for_influencer/portfolio/bloc/portfolio_bloc.dart';
 import 'package:fluence_for_influencer/portfolio/pages/edit_portfolio_page.dart';
 import 'package:fluence_for_influencer/models/portfolio.dart';
 import 'package:fluence_for_influencer/shared/constants.dart';
+import 'package:fluence_for_influencer/shared/widgets/widgets.dart';
 import 'package:fluence_for_influencer/shared/navigation_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -69,10 +70,15 @@ class InfluencerPortfolio extends StatelessWidget {
                                   ListTile(
                                     leading: const Icon(Ionicons.trash_outline,
                                         color: Colors.red),
-                                    title: Text("Hapus portfolio",
+                                    title: Text("Hapus portofolio",
                                         style: textStyle.copyWith(
                                             color: Colors.red)),
                                     onTap: () async {
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) =>
+                                            showDialogWithCircularProgress(context));
                                       portfolioBloc.add(
                                           DeleteInfluencerPortfolio(
                                               influencerId, portfolio));
